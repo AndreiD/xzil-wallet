@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="colorPrimary">@color/app_blue</color>
+  <color name="colorPrimaryDark">@color/app_darkblue</color>
+  <color name="colorAccent">@color/app_lightblue</color>
+
+  <color name="app_darkblue">#011c38</color>
+  <color name="app_blue">#007a90</color>
+  <color name="app_lightblue">#42c1c0</color>
+  <color name="app_bluegrey">#1a3552</color>
+
+  <color name="material_pink">#e91e63</color>
+  <color name="material_purple">#673ab7</color>
+  <color name="material_blue">#5677fc</color>
+  <color name="material_red">#ff4444</color>
+  <color name="material_green">#669900</color>
+  <color name="material_yellow">#ff8800</color>
+
+  <color name="transparent_black_25">#25000000</color>
+  <color name="transparent_black_50">#50000000</color>
+  <color name="transparent_black_75">#75000000</color>
+  <color name="transparent_black_90">#90000000</color>
+</resources>
