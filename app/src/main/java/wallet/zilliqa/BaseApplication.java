@@ -17,10 +17,17 @@ public class BaseApplication extends Application {
       KLog.init(false);
     }
 
+
+
     CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
         .setDefaultFontPath("fonts/regular.ttf")
         .setFontAttrId(R.attr.fontPath)
         .build()
     );
+  }
+
+  @Override public void onLowMemory() {
+    super.onLowMemory();
+    KLog.w("onLowMemory triggered");
   }
 }
