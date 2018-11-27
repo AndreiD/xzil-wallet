@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:minWidth="400dp"
+    android:orientation="vertical"
+    android:padding="16dp"
+    >
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="18dp"
+      android:text="Change Currency"
+      android:textAppearance="@style/TextAppearance.Title"
+      android:textColor="@color/zen_color"
+      android:textStyle="bold"
+      />
+
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerview_change_token"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      />
+
+</LinearLayout>

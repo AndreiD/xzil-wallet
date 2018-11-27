@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    android:background="@color/white"
+    >
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_centerInParent="true"
+
+      android:orientation="vertical"
+      >
+
+    <LinearLayout
+        android:id="@+id/linlayout_fragmenthome_public_balance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        >
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_margin="8dp"
+          android:gravity="center"
+          android:text="New ETH Wallet ?"
+          android:textColor="@color/zen_color"
+          />
+      <Button
+          android:id="@+id/button_new_account"
+          android:textAppearance="@style/TextAppearance.Title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="16dp"
+          android:layout_marginLeft="8dp"
+          android:layout_marginRight="8dp"
+          android:background="@drawable/button_send"
+          android:text="GENERATE NEW ACCOUNT"
+          android:textColor="@color/White"
+          />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        >
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center"
+          android:layout_margin="16dp"
+          android:gravity="center"
+          android:text="Import Wallet"
+          android:textColor="@color/zen_color"
+          />
+
+      <android.support.design.widget.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textColorHint="@color/app_black"
+          >
+        <EditText
+            android:id="@+id/editText_seed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:hint="@string/seed"
+            android:inputType="text"
+            android:textColor="@color/app_black"
+            android:textColorHint="@color/app_black"
+            android:textSize="16sp"
+            />
+      </android.support.design.widget.TextInputLayout>
+
+      <android.support.design.widget.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textColorHint="@color/app_black"
+          >
+        <EditText
+            android:id="@+id/editText_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:hint="Passphrase"
+            android:inputType="text"
+            android:textColor="@color/app_black"
+            android:textColorHint="@color/app_black"
+            android:textSize="16sp"
+            />
+      </android.support.design.widget.TextInputLayout>
+      <Button
+          android:id="@+id/button_new_account_import"
+          android:textAppearance="@style/TextAppearance.Title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="8dp"
+          android:background="@drawable/button_send"
+          android:text="IMPORT"
+          android:textColor="@color/White"
+          />
+    </LinearLayout>
+
+  </LinearLayout>
+</RelativeLayout>

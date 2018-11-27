@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+  <ListPreference
+      android:defaultValue="mainnet"
+      android:entries="@array/networks"
+      android:entryValues="@array/networksValues"
+      android:key="network_preference"
+      android:summary="mainnet"
+      android:title="Blockchain Network"/>
+
+  <ListPreference
+      android:defaultValue="normal"
+      android:entries="@array/fee"
+      android:entryValues="@array/feeValues"
+      android:key="fee_preference"
+      android:summary="Cheap, Normal, Fast"
+      android:title="Fee Preference"/>
+
+  <Preference
+      android:key="@string/erase_everything"
+      android:summary="This is equivalent to uninstall / install"
+      android:title="Reset Application"/>
+
+  <Preference
+      android:key="@string/export_wallet"
+      android:summary="your private key"
+      android:title="Export Wallet"/>
+
+  <Preference
+      android:key="@string/change_pin"
+      android:summary="changes the pin code"
+      android:title="Change PIN"/>
+
+  <Preference
+      android:key="@string/send_feedback"
+      android:summary="I appreciate your feedback. What did you liked or disliked ?"
+      android:title="Send Feedback"/>
+
+
+  <Preference
+      android:key="version"
+      android:summary="@string/version"
+      android:title="Version"/>
+
+
+  <Preference
+      android:key="credits"
+      android:summary="I thank to all the open source libraries that were used in this project. You can see the complete list in the gradle file on github."
+      android:title="Credits"/>
+
+  <Preference
+      android:key="credits2"
+      android:summary="For exchange rate to USD, data from cryptocompare.com is used. Source code is on github.com."
+      android:title="Info"/>
+
+
+  <Preference
+      android:key="copyright"
+      android:summary="MyTokenApp © 2018 - present. All rights reserved."
+      android:title="Copyright"/>
+
+
+</PreferenceScreen>

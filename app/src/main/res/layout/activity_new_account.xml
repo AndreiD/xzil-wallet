@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/linLayout_new_account_all"
+      android:orientation="vertical"
+      android:layout_marginTop="8dp" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+      android:layout_marginBottom="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Title"
+        android:text="Your Seed"
+        android:textColor="@color/zen_color"
+    />
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="It's up to you to store it somewhere safe (ex: paper, hardware wallet etc.)"
+        android:textColor="@color/appcolor_grey"
+        android:textSize="16sp"
+    />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_send"
+        android:layout_height="wrap_content" android:layout_margin="16dp" android:padding="8dp">
+      <TextView
+          android:text="seed..."
+          android:layout_width="wrap_content"
+          android:textSize="20sp"
+          android:textColor="@color/white"
+          android:layout_height="wrap_content" android:id="@+id/textView_the_seed"
+          android:layout_weight="1"/>
+    </LinearLayout>
+    <CheckBox
+        android:text="I confirm that I stored it."
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:id="@+id/checkBox_seed"
+        android:layout_weight="0" android:textColor="@color/Black"
+        android:layout_marginLeft="16dp" android:layout_marginRight="16dp"
+        android:background="@color/white" android:gravity="center_vertical"
+        android:paddingTop="16dp" android:paddingBottom="16dp" android:textSize="16sp"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle"
+    >
+
+      <Button
+          android:id="@+id/btn_seed_clipboard"
+          android:textAppearance="@style/TextAppearance.Title"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_marginRight="4dp"
+          android:layout_weight="1"
+          android:background="@drawable/button_send"
+          android:text="Copy to Clipboard"
+          android:textColor="@color/White"
+          android:textStyle="bold"
+          style="?android:attr/borderlessButtonStyle"
+      />
+
+      <Button
+          android:id="@+id/btn_seed_continue"
+          android:textAppearance="@style/TextAppearance.Title"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_marginLeft="4dp"
+          android:layout_weight="1"
+          android:background="@drawable/button_send"
+          android:text="Continue"
+          android:textColor="@color/White"
+          android:textStyle="bold"
+          style="?android:attr/borderlessButtonStyle"
+      />
+    </LinearLayout>
+
+  </LinearLayout>
+</RelativeLayout>

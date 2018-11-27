@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/White">
+
+  <android.support.design.widget.AppBarLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+  </android.support.design.widget.AppBarLayout>
+
+
+  <LinearLayout
+      android:layout_height="wrap_content"
+      android:gravity="center_horizontal"
+      android:layout_width="match_parent"
+      android:background="@color/white"
+      android:padding="16dp"
+      android:layout_marginTop="64sp"
+      android:orientation="vertical"
+  >
+
+
+    <TextView
+        android:text="From"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:id="@+id/textView"
+        android:textColor="@color/app_grey" android:textSize="18sp"
+        android:layout_margin="4dp"/>
+
+    <TextView
+        android:id="@+id/txt_dlg_confirm_from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:gravity="center_vertical"
+        android:text="0x123123"
+        android:textColor="@color/Black"
+        android:textSize="14sp"
+        />
+    <TextView
+        android:text="To"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:id="@+id/textView4"
+        android:textColor="@color/app_grey" android:textSize="18sp"
+        android:layout_margin="4dp"/>
+
+
+    <TextView
+        android:id="@+id/txt_dlg_confirm_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:gravity="center_vertical"
+        android:text="0x123123"
+        android:textColor="@color/Black"
+        android:textSize="14sp"
+        />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+      <TextView
+          android:text="Amount"
+          android:layout_width="wrap_content"
+          android:minWidth="75dp"
+          android:layout_height="wrap_content" android:id="@+id/textView5"
+          android:textColor="@color/app_grey" android:textSize="18sp"
+          android:layout_margin="4dp"/>
+      <TextView
+          android:text="Amount"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" android:id="@+id/txt_dlg_confirm_amount"
+          android:textSize="18sp" android:layout_margin="4dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+      <TextView
+          android:text="Fee (~)"
+          android:layout_width="wrap_content"
+          android:minWidth="75dp"
+          android:layout_height="wrap_content" android:id="@+id/textView7"
+          android:textColor="@color/app_grey" android:textSize="18sp"
+          android:layout_margin="4dp"/>
+      <TextView
+          android:text="0.000X ETH"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" android:id="@+id/txt_dlg_confirm_fee"
+          android:textSize="18sp" android:layout_margin="4dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:layout_margin="8dp"
+        android:background="@drawable/border_round_orange">
+      <TextView
+          android:text="Total"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" android:id="@+id/textView8" android:textSize="20sp"
+          android:gravity="center" android:textColor="@color/White"
+          android:layout_marginTop="4dp"/>
+      <TextView
+          android:text="0.23321 CTV"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" android:id="@+id/txt_dlg_confirm_total"
+          android:textSize="25sp"
+          android:gravity="center" android:textColor="@color/White"
+          android:layout_marginBottom="4dp"/>
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="32dp"
+    >
+      <Button
+          android:id="@+id/btn_dlg_confirm_send"
+          android:layout_width="200dp"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_weight="0"
+          android:textAppearance="@style/TextAppearance.Title"
+          android:background="@drawable/button_send"
+          android:gravity="center"
+          android:text="SEND"
+          android:textColor="@android:color/white"
+          android:textSize="20sp"
+          />
+    </FrameLayout>
+
+  </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
+
+
+
+

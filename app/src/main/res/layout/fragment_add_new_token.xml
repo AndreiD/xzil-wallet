@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+
+    android:orientation="vertical"
+    >
+
+  <TextView
+      android:id="@+id/textView2"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="8dp"
+      android:layout_marginRight="8dp"
+      android:layout_marginTop="16dp"
+      android:gravity="center"
+      android:text="Add New Token"
+      android:textColor="@color/zen_color"
+      android:textAppearance="@style/TextAppearance.Title"
+      />
+  <TextView
+      android:id="@+id/textView9"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="16dp"
+      android:layout_marginLeft="8dp"
+      android:layout_marginRight="8dp"
+      android:layout_marginTop="16dp"
+      android:gravity="center"
+      android:text="Please double check address is correct"
+      android:textColor="@color/appcolor_grey"
+      android:textSize="16sp"
+      />
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      >
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextView_search_tokens"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_search_24dp"
+        android:hint="Search Tokens..."
+        android:ems="10"
+        android:textColor="@color/black"
+        android:textColorHint="@color/appcolor_grey"
+        />
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="or add a custom one"
+        android:textColor="@color/appcolor_grey"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+      <EditText
+          android:id="@+id/edit_token_address"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_weight="10"
+          android:ems="10"
+          android:lines="2"
+          android:inputType="textMultiLine"
+          android:hint="Token Address"
+          android:textColor="@color/Black"
+          android:textColorHint="@color/appcolor_grey"
+          />
+      <Button
+          android:id="@+id/button_token_paste"
+          android:layout_width="50dp"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_weight="1"
+          android:text="PASTE"
+          style="?android:attr/borderlessButtonStyle"
+          />
+    </LinearLayout>
+  </LinearLayout>
+
+  <Button
+      android:id="@+id/button_save_new_token"
+      android:textAppearance="@style/TextAppearance.Title"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginTop="32dp"
+      android:background="@drawable/button_send"
+      android:text="SAVE"
+      android:textColor="@color/White"
+      android:textStyle="bold"
+      style="?android:attr/borderlessButtonStyle"
+      />
+
+
+</LinearLayout>

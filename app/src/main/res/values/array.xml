@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="networks">
+    <item>MainNet</item>
+    <item>Rinkeby (TestNet)</item>
+    <item>Ropsten (TestNet)</item>
+    <item>Kovan (TestNet)</item>
+  </string-array>
+  <string-array name="networksValues">
+    <item>mainnet</item>
+    <item>rinkeby</item>
+    <item>ropsten</item>
+    <item>kovan</item>
+  </string-array>
+
+
+  <string-array name="fee">
+    <item>Cheap</item>
+    <item>Normal</item>
+    <item>Fast</item>
+  </string-array>
+  <string-array name="feeValues">
+    <item>cheap</item>
+    <item>normal</item>
+    <item>fast</item>
+  </string-array>
+
+
+</resources>

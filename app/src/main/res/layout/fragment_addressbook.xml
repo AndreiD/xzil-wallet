@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        >
+
+      <TextView
+          android:id="@+id/textView6"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginRight="16dp"
+          android:layout_marginTop="8dp"
+          android:layout_weight="0"
+          android:text="Add New Entry"
+          android:textColor="@color/app_grey"
+          android:textAppearance="@style/TextAppearance.Title"
+          />
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginRight="16dp"
+          android:layout_marginTop="8dp"
+          android:orientation="horizontal"
+          >
+        <EditText
+            android:id="@+id/editText_add_new_contact_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:ems="10"
+            android:gravity="top|left"
+            android:hint="entry name or description "
+            android:inputType="text"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/app_grey"
+            android:textSize="14sp"
+            />
+        <ImageButton
+            android:id="@+id/send_imageButton_scanqr_addressbook"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:background="@drawable/border_round_orange_border_btn"
+            android:padding="8dp"
+            app:srcCompat="@android:drawable/ic_menu_camera"
+            />
+        <ImageButton
+            android:id="@+id/send_imageButton_save_addressbook"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginLeft="8dp"
+            android:background="@drawable/border_round_orange_border_btn"
+            android:padding="8dp"
+            app:srcCompat="@android:drawable/ic_menu_save"
+            />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginRight="16dp"
+          android:layout_marginTop="8dp"
+          android:orientation="horizontal"
+          >
+
+        <EditText
+            android:id="@+id/edittext_add_new_contact_address"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_marginRight="4dp"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:ems="10"
+            android:gravity="top|left"
+            android:hint="enter or scan contact address "
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:scrollHorizontally="false"
+            android:text=""
+            android:textColor="@color/black"
+            android:textColorHint="@color/app_grey"
+            android:textSize="12sp"
+            />
+      </LinearLayout>
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="@color/LightGrey"
+          />
+    </LinearLayout>
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerview_addressbook"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="16dp" />
+
+
+</LinearLayout>

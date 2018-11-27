@@ -10,6 +10,9 @@ public class Constants {
   private Constants() {
   }
 
+  public static String publicAddress = "";
+  public static String lastScanAddress = "";
+
   public static String getBlockchanPreference(Context ctx) {
 
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
