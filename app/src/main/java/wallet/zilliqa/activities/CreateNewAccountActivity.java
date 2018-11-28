@@ -30,7 +30,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import wallet.zilliqa.BaseActivity;
-import wallet.zilliqa.BuildConfig;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.utils.Cryptography;
