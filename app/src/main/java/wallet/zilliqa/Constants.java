@@ -12,6 +12,7 @@ public class Constants {
 
   public static String publicAddress = "";
   public static String lastScanAddress = "";
+  public static final String TESTADDRESS = "0x000000591672c2Ad77D99f62BE38Eb2C995bb09c"; // used to autofill when app is in debug mode
 
   public static String getBlockchanPreference(Context ctx) {
 

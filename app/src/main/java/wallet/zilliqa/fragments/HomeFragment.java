@@ -1,20 +1,14 @@
 package wallet.zilliqa.fragments;
 
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.BindView;
-import butterknife.OnClick;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -26,13 +20,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.socks.library.KLog;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
@@ -50,28 +40,21 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import org.web3j.protocol.Web3j;
-import org.web3j.utils.Convert;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
-import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.ExchangeRatesAPI;
-import wallet.zilliqa.dialogs.ChangeTokenDialog;
 import wallet.zilliqa.utils.Cryptography;
 
 public class HomeFragment extends BaseFragment {
 
-  @BindView(R.id.textView_fragmentHome_tokenName) TextView textView_fragmentHome_tokenName;
   @BindView(R.id.textView_fragmentHome_balance_eth) TextView textView_fragmentHome_balance_eth;
-  @BindView(R.id.textView_fragmentHome_balance_token) TextView textView_fragmentHome_balance_token;
   @BindView(R.id.textView_fragmentHome_status) TextView textView_fragmentHome_status;
   @BindView(R.id.textView_fragmentHome_greeting) TextView textView_fragmentHome_greeting;
-  @BindView(R.id.linlayout_fragmenthome_balance_token) LinearLayout
-      linlayout_fragmenthome_balance_token;
   @BindView(R.id.textView_fragmentHome_date) TextView textView_fragmentHome_date;
   @BindView(R.id.home_line_chart) LineChart home_line_chart;
   private Web3j web3j = null;
@@ -101,7 +84,6 @@ public class HomeFragment extends BaseFragment {
 
     preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
     textView_fragmentHome_balance_eth.setText("");
-    textView_fragmentHome_balance_token.setText("");
 
     textView_fragmentHome_status.setText("Updating...");
     showGreeting();
@@ -202,12 +184,6 @@ public class HomeFragment extends BaseFragment {
 
   @Override public void onResume() {
     super.onResume();
-
-    if (preferencesHelper.getDefaultToken() == null) {
-      linlayout_fragmenthome_balance_token.setVisibility(View.GONE);
-    } else {
-      linlayout_fragmenthome_balance_token.setVisibility(View.VISIBLE);
-    }
 
     //web3j = BaseApplication.getWeb3(getActivity());
 
@@ -330,27 +306,6 @@ public class HomeFragment extends BaseFragment {
     //    }
     //  }
     //});
-  }
-
-  @OnClick(R.id.linlayout_fragmenthome_balance_token) public void onClickLayoutToken() {
-
-    FragmentManager fm = getActivity().getSupportFragmentManager();
-    ChangeTokenDialog changeTokenDialog = new ChangeTokenDialog();
-    changeTokenDialog.show(fm, "change_token_dialog");
-
-    fm.registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
-      @Override
-      public void onFragmentViewDestroyed(FragmentManager fm, Fragment f) {
-        super.onFragmentViewDestroyed(fm, f);
-        if (f instanceof ChangeTokenDialog) {
-          KLog.d(">>> update balances triggered");
-          textView_fragmentHome_balance_token.setText("");
-          textView_fragmentHome_tokenName.setText("");
-          updateBalances(-1L);
-        }
-        fm.unregisterFragmentLifecycleCallbacks(this);
-      }
-    }, false);
   }
 
   private void showGreeting() {

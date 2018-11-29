@@ -65,4 +65,6 @@
   <string name="action_manage_tokens">Manage Tokens</string>
   <string name="confirm_seed">Confirm Seed</string>
   <string name="continue_lowercase">continue</string>
+  <string name="action_manage_wallets">Manage Wallets</string>
+  <string name="wallet_creation">Wallet Creation</string>
 </resources>

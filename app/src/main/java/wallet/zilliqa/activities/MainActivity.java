@@ -1,9 +1,8 @@
 package wallet.zilliqa.activities;
 
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,11 +16,11 @@ import hotchemi.android.rate.AppRate;
 import wallet.zilliqa.BaseActivity;
 import wallet.zilliqa.R;
 import wallet.zilliqa.fragments.HomeFragment;
-import wallet.zilliqa.fragments.ManageTokensFragment;
+import wallet.zilliqa.fragments.ManageWalletsFragment;
+import wallet.zilliqa.fragments.NewAccountFragment;
 import wallet.zilliqa.fragments.ReceiveFragment;
 import wallet.zilliqa.fragments.SendFragment;
 import wallet.zilliqa.utils.DUtils;
-import wallet.zilliqa.utils.DialogFactory;
 
 public class MainActivity extends BaseActivity {
 
@@ -38,6 +37,7 @@ public class MainActivity extends BaseActivity {
     ButterKnife.bind(this);
     setSupportActionBar(theToolbar);
     getSupportActionBar().setElevation(0);
+    getSupportActionBar().setTitle(getString(R.string.app_name) + " Wallet");
     mContext = MainActivity.this;
 
     Bundle bundle = getIntent().getExtras();
@@ -99,11 +99,15 @@ public class MainActivity extends BaseActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.action_add:
-        DialogFactory.warning_toast(mContext,"todo....").show();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+            .replace(android.R.id.content, NewAccountFragment.newInstance())
+            .addToBackStack(null)
+            .commit();
         break;
-      case R.id.action_manage_tokens:
+      case R.id.action_manage_wallets:
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.contentContainer, new ManageTokensFragment());
+        ft.replace(R.id.contentContainer, new ManageWalletsFragment());
         ft.addToBackStack("fragment_manage_tokens");
         ft.commit();
         break;

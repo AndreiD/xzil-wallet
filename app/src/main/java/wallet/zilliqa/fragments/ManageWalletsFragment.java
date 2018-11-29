@@ -10,28 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import butterknife.BindView;
-import com.socks.library.KLog;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
-import wallet.zilliqa.BuildConfig;
-import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
-import wallet.zilliqa.adapters.ManageTokensAdapter;
 import wallet.zilliqa.data.local.AppDatabase;
-import wallet.zilliqa.data.local.Wallet;
-import wallet.zilliqa.data.local.PreferencesHelper;
-import wallet.zilliqa.utils.Cryptography;
-import wallet.zilliqa.utils.DUtils;
-import wallet.zilliqa.utils.DialogFactory;
-import wallet.zilliqa.utils.MyClipboardManager;
 
-public class ManageTokensFragment extends BaseFragment {
+public class ManageWalletsFragment extends BaseFragment {
 
   @BindView(R.id.recycler_view_tokens)
   RecyclerView recycler_view_tokens;
   private AppDatabase db;
 
-  public ManageTokensFragment() {
+  public ManageWalletsFragment() {
   }
 
   @Nullable

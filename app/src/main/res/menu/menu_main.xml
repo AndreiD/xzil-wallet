@@ -10,10 +10,10 @@
       app:showAsAction="ifRoom"/>
 
   <item
-      android:id="@+id/action_manage_tokens"
+      android:id="@+id/action_manage_wallets"
       android:icon="@drawable/ic_manage_toekns_24dp"
       android:orderInCategory="98"
-      android:title="@string/action_manage_tokens"
+      android:title="@string/action_manage_wallets"
       app:showAsAction="never"/>
 
 

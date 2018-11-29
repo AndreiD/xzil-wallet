@@ -10,14 +10,6 @@
       android:summary="mainnet"
       android:title="Blockchain Network"/>
 
-  <ListPreference
-      android:defaultValue="normal"
-      android:entries="@array/fee"
-      android:entryValues="@array/feeValues"
-      android:key="fee_preference"
-      android:summary="Cheap, Normal, Fast"
-      android:title="Fee Preference"/>
-
   <Preference
       android:key="@string/erase_everything"
       android:summary="This is equivalent to uninstall / install"

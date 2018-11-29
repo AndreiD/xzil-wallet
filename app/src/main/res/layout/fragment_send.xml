@@ -14,68 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
         >
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="4dp"
-          android:layout_marginLeft="16dp"
-          android:layout_marginRight="16dp"
-          android:layout_marginTop="8dp"
-          android:orientation="vertical"
-          >
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="Send"
-            android:textColor="@color/app_grey"
-            android:textSize="18sp"
-            />
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
 
-            android:layout_weight="0"
-            android:orientation="horizontal"
-            >
-          <RadioButton
-              android:id="@+id/send_token_radioButton"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center"
-              android:layout_margin="4dp"
-              android:layout_weight="1"
-              android:checked="true"
-              android:padding="8dp"
-              android:text=""
-              android:textColor="@color/black"
-              style="@style/AppTheme.RadioButtonStyle"
-              />
-          <RadioButton
-              android:id="@+id/send_eth_radioButton"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center"
-              android:layout_margin="8dp"
-              android:layout_weight="1"
-              android:padding="8dp"
-              android:text="ETH"
-              android:textColor="@color/black"
-              style="@style/AppTheme.RadioButtonStyle"
-              />
-        </RadioGroup>
-      </LinearLayout>
-
-
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="@color/LightGrey"
-          />
 
       <TextView
           android:id="@+id/textView3"
@@ -155,7 +97,6 @@
           >
         <EditText
             android:id="@+id/send_editText_amount"
-            android:textAppearance="@style/TextAppearance.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -165,6 +106,7 @@
             android:inputType="numberDecimal"
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
+            android:textAppearance="@style/TextAppearance.Title"
             android:textColor="@color/black"
             android:textColorHint="@color/appcolor_grey"
             />
@@ -175,7 +117,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:gravity="left|center_vertical"
-            android:text="ANDY"
+            android:text="ZIL"
             android:textSize="25sp"
             />
 
@@ -192,7 +134,7 @@
           android:layout_marginRight="16dp"
           android:layout_marginTop="8dp"
           android:layout_weight="0"
-          android:text="Gas Price: 0.0001 ETH"
+          android:text="Gas Price: 0.0001 ZIL"
           android:textColor="@color/app_grey"
           />
 
@@ -213,11 +155,11 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textAppearance="@style/TextAppearance.Title"
             android:layout_weight="0"
             android:background="@drawable/button_send"
             android:gravity="center"
             android:text="CONTINUE"
+            android:textAppearance="@style/TextAppearance.Title"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             />

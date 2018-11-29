@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,15 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import butterknife.BindView;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import com.socks.library.KLog;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import java.io.IOException;
@@ -37,25 +31,20 @@ import java.util.concurrent.TimeUnit;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import org.web3j.crypto.Credentials;
+import org.web3j.crypto.WalletUtils;
+import org.web3j.protocol.Web3j;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.BuildConfig;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
-import wallet.zilliqa.data.local.Wallet;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.dialogs.ConfirmPaymentDialog;
 import wallet.zilliqa.qrscanner.QRScannerActivity;
 import wallet.zilliqa.utils.Cryptography;
-import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
-import wallet.zilliqa.utils.MyClipboardManager;
-import org.web3j.abi.datatypes.generated.Uint256;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
-import org.web3j.protocol.Web3j;
-import org.web3j.utils.Convert;
 
 public class SendFragment extends BaseFragment {
 
@@ -63,8 +52,6 @@ public class SendFragment extends BaseFragment {
   @BindView(R.id.send_editText_amount) EditText send_editText_amount;
   @BindView(R.id.send_button_send) Button send_button_send;
   @BindView(R.id.send_imageButton_scanqr) ImageView send_imageButton_scanqr;
-  @BindView(R.id.send_eth_radioButton) RadioButton send_eth_radioButton;
-  @BindView(R.id.send_token_radioButton) RadioButton send_token_radioButton;
 
   @BindView(R.id.send_textView_amount) TextView send_textView_amount;
   @BindView(R.id.send_textView_currency) TextView send_textView_currency;
@@ -103,29 +90,12 @@ public class SendFragment extends BaseFragment {
     preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
     db = BaseApplication.getAppDatabase(getActivity());
 
-    if (preferencesHelper.getDefaultToken() == null) {
-      send_token_radioButton.setVisibility(View.GONE);
-      send_eth_radioButton.performClick();
-      send_textView_currency.setText("ETH");
-    } else {
-      //get the default token from the db
-
-      //db.tokenDao().findByAddress(preferencesHelper.getDefaultToken()).subscribe(
-      //    ethToken -> {
-      //      token_symbol = ethToken.getSymbol();
-      //      send_token_radioButton.setText(token_symbol);
-      //      send_textView_currency.setText(token_symbol);
-      //    });
-    }
-
     //TODO: remove me
     if (BuildConfig.DEBUG) {
       send_editText_to.setText(
-          "0x000000591672c2Ad77D99f62BE38Eb2C995bb09c");
+          Constants.TESTADDRESS);
       send_editText_amount.setText("0.1");
     }
-
-
 
     //send_textView_fee.setText(
     //    String.format("Fee (~): %s ETH",
@@ -179,23 +149,13 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    if (send_eth_radioButton.isChecked()) {
-      if (balanceETH.compareTo(new BigDecimal(amount_to_send)) < 0) {
-        DialogFactory.warning_toast(getActivity(),
-            "Seems you don't have enough ETH for this transaction.").show();
-        send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
-        return;
-      }
-      sendTheMoney(true, send_editText_to.getText().toString().trim(), amount_to_send, null, null);
-    } else {
-      if (balanceToken.compareTo(new BigDecimal(amount_to_send)) < 0) {
-        DialogFactory.warning_toast(getActivity(),
-            "Seems you don't have enough tokens for this transaction.").show();
-        send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
-        return;
-      }
-      sendTheMoney(false, send_editText_to.getText().toString().trim(), amount_to_send, token_symbol, preferencesHelper.getDefaultToken());
+    if (balanceETH.compareTo(new BigDecimal(amount_to_send)) < 0) {
+      DialogFactory.warning_toast(getActivity(),
+          "Seems you don't have enough ETH for this transaction.").show();
+      send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
+      return;
     }
+    sendTheMoney(true, send_editText_to.getText().toString().trim(), amount_to_send, null, null);
   }
 
   private void sendTheMoney(boolean isEth, String destinationAddress, double amount, String tokenSymbol, String tokenAddress) {
@@ -210,78 +170,6 @@ public class SendFragment extends BaseFragment {
     Intent iScan = new Intent(getActivity(), QRScannerActivity.class);
     iScan.putExtra("type", "address");
     startActivity(iScan);
-  }
-
-  @OnCheckedChanged(R.id.send_eth_radioButton) public void onCheckedChangedRadioEth() {
-
-    if (send_eth_radioButton.isChecked()) {
-      send_textView_currency.setText("ETH");
-      if (balanceETH != null) {
-        send_textView_amount.setText(String.format("Amount (balance: %s ETH)",
-            Constants.getDecimalFormat().format(balanceETH)));
-      }
-
-      if (feeEth != null) {
-        send_textView_fee.setText(
-            String.format("Fee (~): %s ETH",
-                Convert.fromWei(feeEth.toString(), Convert.Unit.ETHER).toString()));
-      }
-    }
-
-    send_textView_amount.setTextColor(getResources().getColor(R.color.app_grey));
-  }
-
-  @OnClick(R.id.send_token_radioButton) public void onClickToken() {
-
-    // if we have more than 1 token, show a token picker dialog
-    //db.walletDao().totalTokens().subscribe(totalTokensDb -> {
-    //  if (totalTokensDb > 1) {
-    //
-    //    FragmentManager fm = getActivity().getSupportFragmentManager();
-    //    ChangeTokenDialog changeTokenDialog = new ChangeTokenDialog();
-    //    changeTokenDialog.show(fm, "change_token_dialog");
-    //
-    //    fm.registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
-    //      @Override
-    //      public void onFragmentViewDestroyed(FragmentManager fm, Fragment f) {
-    //        super.onFragmentViewDestroyed(fm, f);
-    //        if (f instanceof ChangeTokenDialog) {
-    //          db.tokenDao().findByAddress(preferencesHelper.getDefaultToken()).subscribe(
-    //              ethToken -> {
-    //                token_symbol = ethToken.getSymbol();
-    //                send_token_radioButton.setText(token_symbol);
-    //                send_textView_currency.setText(token_symbol);
-    //              });
-    //          onCheckedChangedRadioToken();
-    //          updateBalances(-1L);
-    //        }
-    //        fm.unregisterFragmentLifecycleCallbacks(this);
-    //      }
-    //    }, false);
-    //  }
-    //}, throwable -> KLog.e(throwable));
-  }
-
-  @OnCheckedChanged(R.id.send_token_radioButton) public void onCheckedChangedRadioToken() {
-
-    if (send_token_radioButton.isChecked()) {
-
-      if (token_symbol != null) {
-        send_textView_currency.setText(token_symbol);
-      } else {
-        KLog.e("token symbol is null");
-        return;
-      }
-      if (balanceToken != null) {
-        send_textView_amount.setText(
-            String.format("Amount (balance: %s  %s)", Constants.getDecimalFormat().format(
-                balanceToken), token_symbol));
-      }
-
-      send_textView_fee.setText(
-          String.format("Fee (~): %s ETH",
-              Convert.fromWei(feeToken.toString(), Convert.Unit.ETHER).toString()));
-    }
   }
 
   private void updateBalances(Long aLong) {
@@ -329,12 +217,5 @@ public class SendFragment extends BaseFragment {
 
     // get balance for token
     Credentials credentials = WalletUtils.loadBip39Credentials(decodedPassword, decodedSeed);
-
-  }
-
-  private void refreshUI() {
-    onCheckedChangedRadioToken();
-    onCheckedChangedRadioEth();
-    send_button_send.setClickable(true);
   }
 }
