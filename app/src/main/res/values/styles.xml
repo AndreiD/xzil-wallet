@@ -1,12 +1,13 @@
 <resources>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
     <!-- Customize your theme here. -->
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
 
+    <item name="android:textColor">@color/app_text_label</item>
     <item name="android:buttonStyle">@style/NormalButton</item>
   </style>
 
@@ -33,14 +34,83 @@
 
   </style>
 
-  <style name="TextAppearance.Title" parent="android:TextAppearance">
-    <item name="fontPath">fonts/bold.ttf</item>
-    <item name="android:textSize">43sp</item>
-  </style>
 
   <style name="TextAppearance.Body" parent="android:TextAppearance">
     <item name="fontPath">fonts/regular.ttf</item>
     <item name="android:textSize">14sp</item>
+  </style>
+
+
+  <style name="TextAppearance.Title" parent="android:TextAppearance">
+    <item name="android:textSize">18sp</item>
+    <item name="fontPath">fonts/old.ttf</item>
+  </style>
+
+  <style name="AppTheme.RadioButtonStyle">
+    <item name="android:gravity">center_horizontal</item>
+    <item name="android:background">@drawable/radiobuttonselector</item>
+    <item name="android:padding">8dp</item>
+    <item name="android:button">@android:color/transparent</item>
+  </style>
+
+  <style name="Title" parent="android:TextAppearance">
+    <item name="android:textSize">20sp</item>
+    <item name="android:textColor">@color/zen_color</item>
+  </style>
+
+  <style name="TitleError" parent="android:TextAppearance">
+    <item name="android:textSize">20sp</item>
+    <item name="android:textColor">@color/material_red</item>
+  </style>
+
+  <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Dialog.Alert">
+    <item name="colorAccent">@color/zen_color</item>
+    <item name="android:windowTitleStyle">@style/Title</item>
+    <item name="android:textColorPrimary">@color/app_text_label</item>
+    <item name="android:background">@color/app_window_bglight_color</item>
+  </style>
+
+  <style name="AppCompatAlertDialogErrorStyle" parent="Theme.AppCompat.Dialog.Alert">
+    <item name="colorAccent">@color/material_red</item>
+    <item name="android:windowTitleStyle">@style/TitleError</item>
+    <item name="android:textColorPrimary">@color/app_text_label</item>
+    <item name="android:background">@color/app_window_bglight_color</item>
+  </style>
+
+  <style name="ImportantText" parent="@android:style/Widget.TextView">
+    <item name="android:background">@color/white</item>
+    <item name="android:textColor">@color/app_text_unimportant</item>
+    <item name="android:paddingLeft">4dp</item>
+    <item name="android:paddingRight">4dp</item>
+    <item name="android:paddingTop">2dp</item>
+    <item name="android:paddingBottom">2dp</item>
+  </style>
+
+  <style name="FullScreen" parent="@style/Theme.AppCompat">
+    <item name="windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+    <item name="android:windowFullscreen">true</item>
+    <item name="android:windowContentOverlay">@null</item>
+  </style>
+
+  <style name="FullScreenDialogStyle" parent="Theme.AppCompat.Dialog">
+    <item name="colorControlActivated">@color/zen_color</item>
+    <item name="colorControlNormal">@color/app_text_unimportant</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="colorPrimaryDark">@color/appcolor_red_darker</item>
+    <item name="colorPrimary">@color/appcolor_red</item>
+
+    <!-- Set this to true if you want Full Screen without status bar -->
+    <item name="android:windowFullscreen">false</item>
+
+    <item name="android:windowIsFloating">false</item>
+
+    <!-- This is important! Don't forget to set window background -->
+    <item name="android:windowBackground">@color/White</item>
+
+    <!-- Additionally if you want animations when dialog opening -->
+    <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+    <item name="android:windowExitAnimation">@android:anim/fade_out</item>
   </style>
 
 </resources>

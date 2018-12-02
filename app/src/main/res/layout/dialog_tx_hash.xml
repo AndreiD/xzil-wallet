@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:minWidth="400dp"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    >
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="8dp"
+      android:text="Transaction sent"
+      android:textAppearance="@style/TextAppearance.Title"
+      />
+
+
+  <TextView
+      android:id="@+id/textView_dlg_txHash"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:padding="16dp"
+      android:text="tx hash"
+      />
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginTop="16dp"
+      android:orientation="horizontal"
+      >
+
+    <Button
+        android:id="@+id/btn_dlg_hash_etherscan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:layout_weight="1"
+        android:text="on Etherscan"
+        style="?android:attr/buttonBarButtonStyle"
+        />
+
+
+    <Button
+        android:id="@+id/btn_dlg_hash_close"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_weight="1"
+        android:text="Close"
+        style="?android:attr/buttonBarButtonStyle"
+        />
+
+  </LinearLayout>
+
+</LinearLayout>

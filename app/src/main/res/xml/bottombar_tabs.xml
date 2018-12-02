@@ -1,0 +1,24 @@
+<tabs>
+    <tab
+        id="@+id/tab_send"
+        icon="@drawable/ic_send_24dp"
+        inActiveColor="#888888"
+        activeColor="#EEEEEE"
+        barColorWhenSelected="@color/app_black"
+        title="Send" />
+    <tab
+        id="@+id/tab_home"
+        icon="@drawable/ic_home_24dp"
+        inActiveColor="#888888"
+        activeColor="#EEEEEE"
+        barColorWhenSelected="@color/app_black"
+        title="Home" />
+    <tab
+        id="@+id/tab_receive"
+        icon="@drawable/ic_receive_24dp"
+        inActiveColor="#888888"
+        activeColor="#EEEEEE"
+        barColorWhenSelected="@color/app_black"
+        title="Receive" />
+
+</tabs>
