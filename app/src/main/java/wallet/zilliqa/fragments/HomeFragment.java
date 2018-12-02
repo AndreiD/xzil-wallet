@@ -22,24 +22,12 @@ import com.socks.library.KLog;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import org.web3j.protocol.Web3j;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,16 +36,14 @@ import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.ExchangeRatesAPI;
-import wallet.zilliqa.utils.Cryptography;
 
 public class HomeFragment extends BaseFragment {
 
-  @BindView(R.id.textView_fragmentHome_balance_eth) TextView textView_fragmentHome_balance_eth;
+  @BindView(R.id.textView_fragmentHome_balance_zil) TextView textView_fragmentHome_balance_eth;
   @BindView(R.id.textView_fragmentHome_status) TextView textView_fragmentHome_status;
   @BindView(R.id.textView_fragmentHome_greeting) TextView textView_fragmentHome_greeting;
   @BindView(R.id.textView_fragmentHome_date) TextView textView_fragmentHome_date;
   @BindView(R.id.home_line_chart) LineChart home_line_chart;
-  private Web3j web3j = null;
   private Disposable disposable;
   private PreferencesHelper preferencesHelper;
 
@@ -83,7 +69,6 @@ public class HomeFragment extends BaseFragment {
     super.onActivityCreated(savedInstanceState);
 
     preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
-    textView_fragmentHome_balance_eth.setText("");
 
     textView_fragmentHome_status.setText("Updating...");
     showGreeting();
@@ -93,9 +78,11 @@ public class HomeFragment extends BaseFragment {
     if (isjustcreated) {
       textView_fragmentHome_status.setText("Thank you for creating a wallet with us.");
     }
+
+    setupChart();
   }
 
-  private void setupChart(String tokenSymbol) {
+  private void setupChart() {
     home_line_chart.setDrawGridBackground(false);
     home_line_chart.getDescription().setEnabled(false);
     home_line_chart.setTouchEnabled(false);
@@ -110,7 +97,7 @@ public class HomeFragment extends BaseFragment {
 
     ExchangeRatesAPI exchangeRatesAPI = ExchangeRatesAPI.Factory.getIstance(getActivity());
 
-    exchangeRatesAPI.getGraphData(tokenSymbol).enqueue(new Callback<JsonObject>() {
+    exchangeRatesAPI.getGraphData("ZIL").enqueue(new Callback<JsonObject>() {
       @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
         if (response.code() > 299) {
           KLog.e("failed to get historical data for the chart");
@@ -119,12 +106,6 @@ public class HomeFragment extends BaseFragment {
         }
 
         JsonObject jsonObject = response.body();
-
-        //try it again, but only if it's not ETH
-        if (jsonObject.toString().toLowerCase().contains("error") && !tokenSymbol.equals("ETH")) {
-          setupChart("ETH");
-          return;
-        }
 
         JsonArray jArrayData = jsonObject.get("Data").getAsJsonArray();
         for (int i = 0; i < jArrayData.size(); i++) {
@@ -141,7 +122,7 @@ public class HomeFragment extends BaseFragment {
           return;
         }
 
-        LineDataSet ethToUsdLine = new LineDataSet(values, tokenSymbol + " - last 3 months");
+        LineDataSet ethToUsdLine = new LineDataSet(values, "ZIL - last 3 months");
         ethToUsdLine.setDrawIcons(false);
         ethToUsdLine.setColor(Color.BLACK);
         ethToUsdLine.setLineWidth(2f);
@@ -185,9 +166,7 @@ public class HomeFragment extends BaseFragment {
   @Override public void onResume() {
     super.onResume();
 
-    //web3j = BaseApplication.getWeb3(getActivity());
-
-    disposable = Observable.interval(100, 15000,
+    disposable = Observable.interval(100, 10000,
         TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(this::updateBalances);
@@ -200,112 +179,7 @@ public class HomeFragment extends BaseFragment {
 
   private void updateBalances(Long aLong) {
 
-    // get the coinbase
-    String encAddress = preferencesHelper.getAddress();
-
-    String address = "";
-    String decodedPassword = "";
-    String decodedSeed = "";
-    Cryptography cryptography = new Cryptography(getActivity());
-    try {
-      decodedPassword = cryptography.decryptData(preferencesHelper.getPassword());
-      decodedSeed = cryptography.decryptData(preferencesHelper.getSeed());
-
-      address = cryptography.decryptData(encAddress);
-    } catch (NoSuchPaddingException | NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException | CertificateException | InvalidAlgorithmParameterException | IOException | InvalidKeyException | NoSuchProviderException | IllegalBlockSizeException | BadPaddingException e) {
-      e.printStackTrace();
-      return;
-    }
-
-    // get balance for ETH
-    //Single<BigInteger> balanceForETH =
-    //    QueryBlockchain.getBalanceForETH(web3j, address);
-    //balanceForETH.subscribe(new SingleObserver<BigInteger>() {
-    //  @Override
-    //  public void onSubscribe(Disposable d) {
-    //  }
-    //
-    //  @Override
-    //  public void onSuccess(BigInteger bigInteger) {
-    //    BigDecimal balanceETH =
-    //        Convert.fromWei(new BigDecimal(bigInteger.toString()), Convert.Unit.ETHER);
-    //    String balanceETHFormatted = Constants.getDecimalFormat().format(balanceETH);
-    //    textView_fragmentHome_balance_eth.setText(balanceETHFormatted);
-    //    textView_fragmentHome_status.setText("all is good.");
-    //
-    //    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-    //    String network_preference = prefs.getString("network_preference", "mainnet");
-    //    if (!network_preference.equals("mainnet")) {
-    //      textView_fragmentHome_status.setText("you are using a test network");
-    //      textView_fragmentHome_status.setTextColor(
-    //          getResources().getColor(R.color.appcolor_red_darker));
-    //    }
-    //  }
-    //
-    //  @Override
-    //  public void onError(Throwable e) {
-    //    KLog.e(e);
-    //  }
-    //});
-
-    if (preferencesHelper.getDefaultToken() == null) {
-      setupChart("ETH");
-      return;
-    }
-
-    ////get the default token from the db
-    //AppDatabase db = BaseApplication.getAppDatabase(getActivity());
-    //db.walletDao().findByAddress(preferencesHelper.getDefaultToken()).subscribe(
-    //    ethToken -> {
-    //      textView_fragmentHome_tokenName.setText(ethToken.getAddress());
-    //      setupChart(ethToken.getAddress().toUpperCase());
-    //    });
-    //
-    //// get balance for token
-    //Credentials credentials = WalletUtils.loadBip39Credentials(decodedPassword, decodedSeed);
-    //Token mToken;
-    //try {
-    //  mToken = Token.load(preferencesHelper.getDefaultToken(), web3j, credentials,
-    //      Constants.getGasPrice(getActivity()),
-    //      Constants.DEFAULT_GAS_LIMIT);
-    //} catch (Exception ex) {
-    //  KLog.e(ex);
-    //  return;
-    //}
-    //
-    //Single<Uint256> balanceForToken =
-    //    QueryBlockchain.balanceOf(mToken, address);
-    //balanceForToken.subscribe(new SingleObserver<Uint256>() {
-    //  @Override
-    //  public void onSubscribe(Disposable d) {
-    //  }
-    //
-    //  @Override
-    //  public void onSuccess(Uint256 uint256) {
-    //
-    //    BigInteger decimals = new BigInteger("18"); //defaults to 18
-    //    try {
-    //      decimals = mToken.decimals().sendAsync().get().getValue();
-    //    } catch (Exception e) {
-    //      e.printStackTrace();
-    //      KLog.e("decimals...", e.getLocalizedMessage());
-    //    }
-    //    BigDecimal balanceBigDecimal = new BigDecimal(uint256.getValue().toString());
-    //    balanceBigDecimal = balanceBigDecimal.divide(
-    //        new BigDecimal(String.valueOf(Math.pow(10, decimals.doubleValue()))));
-    //    String balanceTokenFormatted = Constants.getDecimalFormat().format(balanceBigDecimal);
-    //    textView_fragmentHome_balance_token.setText(balanceTokenFormatted);
-    //  }
-    //
-    //  @Override
-    //  public void onError(Throwable e) {
-    //    if (e.getMessage().contains("returned a null value")) {
-    //      textView_fragmentHome_balance_token.setText("0");
-    //    } else {
-    //      KLog.e(e);
-    //    }
-    //  }
-    //});
+    KLog.d(">>> updating the balances...");
   }
 
   private void showGreeting() {

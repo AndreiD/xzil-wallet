@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -31,9 +32,6 @@ import java.util.concurrent.TimeUnit;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
-import org.web3j.protocol.Web3j;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.BuildConfig;
@@ -52,18 +50,15 @@ public class SendFragment extends BaseFragment {
   @BindView(R.id.send_editText_amount) EditText send_editText_amount;
   @BindView(R.id.send_button_send) Button send_button_send;
   @BindView(R.id.send_imageButton_scanqr) ImageView send_imageButton_scanqr;
+  @BindView(R.id.seekBar_fee) SeekBar seekBar_fee;
 
   @BindView(R.id.send_textView_amount) TextView send_textView_amount;
   @BindView(R.id.send_textView_currency) TextView send_textView_currency;
   @BindView(R.id.send_textView_fee) TextView send_textView_fee;
   Disposable disposable;
-  private BigDecimal balanceETH;
-  private BigDecimal balanceToken;
-  private Web3j web3j = null;
-  private BigInteger feeToken;
-  private BigInteger feeEth;
+  private BigDecimal balanceZIL;
+  private BigInteger feeZIL;
   private PreferencesHelper preferencesHelper;
-  private String token_symbol;
   private AppDatabase db;
 
   public SendFragment() {
@@ -98,7 +93,7 @@ public class SendFragment extends BaseFragment {
     }
 
     //send_textView_fee.setText(
-    //    String.format("Fee (~): %s ETH",
+    //    String.format("Fee (~): %s ZIL",
     //        Convert.fromWei(feeToken.toString(), Convert.Unit.ETHER).toString()));
 
     send_button_send.setClickable(false);
@@ -149,9 +144,9 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    if (balanceETH.compareTo(new BigDecimal(amount_to_send)) < 0) {
+    if (balanceZIL.compareTo(new BigDecimal(amount_to_send)) < 0) {
       DialogFactory.warning_toast(getActivity(),
-          "Seems you don't have enough ETH for this transaction.").show();
+          "Seems you don't have enough ZIL for this transaction.").show();
       send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
       return;
     }
@@ -189,33 +184,5 @@ public class SendFragment extends BaseFragment {
     } catch (NoSuchPaddingException | NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException | CertificateException | InvalidAlgorithmParameterException | IOException | InvalidKeyException | NoSuchProviderException | IllegalBlockSizeException | BadPaddingException e) {
       e.printStackTrace();
     }
-
-    // get balance for ETH
-    //Single<BigInteger> balanceForETH =
-    //    QueryBlockchain.getBalanceForETH(web3j, address);
-    //balanceForETH.subscribe(new SingleObserver<BigInteger>() {
-    //  @Override
-    //  public void onSubscribe(Disposable d) {
-    //  }
-    //
-    //  @Override
-    //  public void onSuccess(BigInteger bigInteger) {
-    //    balanceETH =
-    //        Convert.fromWei(new BigDecimal(bigInteger.toString()), Convert.Unit.ETHER);
-    //    refreshUI();
-    //  }
-    //
-    //  @Override
-    //  public void onError(Throwable e) {
-    //    KLog.e(e);
-    //  }
-    //});
-
-    if (preferencesHelper.getDefaultToken() == null) {
-      return;
-    }
-
-    // get balance for token
-    Credentials credentials = WalletUtils.loadBip39Credentials(decodedPassword, decodedSeed);
   }
 }
