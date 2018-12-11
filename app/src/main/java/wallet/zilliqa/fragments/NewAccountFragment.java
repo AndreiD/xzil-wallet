@@ -1,52 +1,23 @@
 package wallet.zilliqa.fragments;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.OnClick;
-import java.io.File;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
-import wallet.zilliqa.BuildConfig;
-import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.activities.CreateNewAccountActivity;
-import wallet.zilliqa.activities.MainActivity;
-import wallet.zilliqa.data.local.AppDatabase;
-import wallet.zilliqa.data.local.Wallet;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.utils.Cryptography;
-import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
-import wallet.zilliqa.utils.MyClipboardManager;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
 
 public class NewAccountFragment extends BaseFragment {
 
@@ -82,7 +53,6 @@ public class NewAccountFragment extends BaseFragment {
 
     toolbar.setTitle(getString(R.string.wallet_creation));
     toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
-
   }
 
   @OnClick(R.id.button_new_account) public void onClickNewAccount() {
@@ -103,31 +73,12 @@ public class NewAccountFragment extends BaseFragment {
       DialogFactory.error_toast(getActivity(), "Invalid password or seed").show();
       return;
     }
-    Credentials credentials = WalletUtils.loadBip39Credentials(password, seed);
-    Log.d("Importing account", credentials.getAddress());
-    try {
-      String encryptedPassword = cryptography.encryptData(password);
-      String encryptedMnemonic = cryptography.encryptData(seed);
-      String encryptedAddress = cryptography.encryptData(credentials.getAddress());
-      preferencesHelper.setSeed(encryptedMnemonic);
-      preferencesHelper.setPassword(encryptedPassword);
-      preferencesHelper.setAddress(encryptedAddress);
 
-      if ((progressDialog != null) && progressDialog.isShowing()) {
-        progressDialog.dismiss();
-      }
+    //Intent intent = new Intent(getActivity(), MainActivity.class);
+    //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    //startActivity(intent);
+    //getActivity().finish();
 
-      Intent intent = new Intent(getActivity(), MainActivity.class);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      startActivity(intent);
-      getActivity().finish();
-    } catch (NoSuchPaddingException | NoSuchAlgorithmException |
-        UnrecoverableEntryException | CertificateException | KeyStoreException |
-        IOException | InvalidAlgorithmParameterException | InvalidKeyException |
-        NoSuchProviderException | BadPaddingException | IllegalBlockSizeException e) {
-      e.printStackTrace();
-      DialogFactory.createGenericErrorDialog(getActivity(), e.getLocalizedMessage()).show();
-    }
   }
 
   @Override public void onPause() {
@@ -136,6 +87,4 @@ public class NewAccountFragment extends BaseFragment {
       progressDialog.dismiss();
     }
   }
-
-
 }

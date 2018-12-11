@@ -32,8 +32,6 @@ import java.security.cert.CertificateException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
 import wallet.zilliqa.BaseActivity;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.R;
@@ -119,19 +117,10 @@ public class SettingsActivity extends BaseActivity {
       Preference exportWallet = findPreference(getString(R.string.export_wallet));
       exportWallet.setOnPreferenceClickListener(preference -> {
 
-        Cryptography cryptography = new Cryptography(getActivity());
-        try {
-          PreferencesHelper preferencesHelper = new PreferencesHelper(getActivity());
-          String decodedPassword = cryptography.decryptData(preferencesHelper.getPassword());
-          String decodedSeed = cryptography.decryptData(preferencesHelper.getSeed());
-          Credentials credentials = WalletUtils.loadBip39Credentials(decodedPassword, decodedSeed);
 
-          String privateKey = credentials.getEcKeyPair().getPrivateKey().toString(16);
 
-          showPrivateKeysDialog(getActivity(), privateKey);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException | CertificateException | InvalidAlgorithmParameterException | IOException | InvalidKeyException | NoSuchProviderException | IllegalBlockSizeException | BadPaddingException e) {
-          e.printStackTrace();
-        }
+         // showPrivateKeysDialog(getActivity(), privateKey);
+
 
         return true;
       });
