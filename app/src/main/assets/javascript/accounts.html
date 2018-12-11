@@ -1,10 +1,7 @@
 <html>
-
 <head>
 </head>
-
 <body>
-  Click me
   <script type="text/javascript" src="ZiliqaJS.browser.js"></script>
   <script>
     const { Zilliqa } = window.ZilliqaJS
@@ -17,32 +14,11 @@
 
       const newAccount = zjs.wallet.addByMnemonic(mnemonic, 0);
       var address = zjs.wallet.accounts[newAccount].address;
+      var privateKey = zjs.wallet.accounts[newAccount].privateKey;
       console.log("We got address: " + address);
-
-
-      zjs.wallet.export(address, passphrase, "pbkdf2").then(function (result) {
-        Android.getKeystore(result);
-      }, function (err) {
-        console.log("Something broke in generating account");
-      });
+      Android.setAccount(address, privateKey);
     }
 
-
-
-    function importAccount(mnemonic, passphrase) {
-
-     const newAccount = zjs.wallet.addByMnemonic(mnemonic, 0);
-
-     zjs.wallet.addByKeystore(result, passphrase).then(function (result) {
-        console.log("We got 1>> : " + result);
-        var privateKey = zjs.wallet.accounts[newAccount].privateKey;
-        Android.privateKey(privateKey
-      }, function (err) {
-        console.log("Something in importing");
-      });
-
-
-    }
   </script>
 </body>
 

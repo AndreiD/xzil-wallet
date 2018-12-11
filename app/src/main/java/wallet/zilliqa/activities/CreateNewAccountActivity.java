@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,6 +65,8 @@ public class CreateNewAccountActivity extends BaseActivity {
     theWebView.getSettings().setJavaScriptEnabled(true);
     theWebView.getSettings().setAppCacheEnabled(false);
     theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+    theWebView.setBackgroundColor(Color.TRANSPARENT);
+    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 
     theWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
     theWebView.loadUrl("file:///android_asset/javascript/accounts.html");
@@ -104,12 +107,15 @@ public class CreateNewAccountActivity extends BaseActivity {
             new SecureRandom().nextBytes(entropy);
             new MnemonicGenerator(English.INSTANCE)
                 .createMnemonic(entropy, sb::append);
-            String seed = sb.toString();
-            String passPhrase =  editText_wallet_password.getText().toString();
-            theWebView.loadUrl("javascript:generateAccount(\""+seed+"###"+ passPhrase +"\")");
+            String mnemonic = sb.toString();
 
-            //new CreateAccountAsyncTask().execute(editText_wallet_password.getText().toString());
 
+            textView_the_seed.setText(mnemonic);
+            linLayout_new_account_all.setVisibility(View.VISIBLE);
+
+
+
+            theWebView.loadUrl("javascript:generateAccount(\""+mnemonic+"\")");
             dismiss();
           });
     }
@@ -138,41 +144,6 @@ public class CreateNewAccountActivity extends BaseActivity {
     }
   }
 
-  private class CreateAccountAsyncTask extends AsyncTask<String, String, String> {
-    @Override protected void onPreExecute() {
-      super.onPreExecute();
-      progressDialog =
-          DialogFactory.createProgressDialog(mContext,
-              "Creating new wallet...");
-      progressDialog.show();
-    }
-
-    @Override protected String doInBackground(String... params) {
-      String password = params[0];
-
-      File folder = new File(mContext.getFilesDir(), "MyTokenApp");
-      if (!folder.exists()) {
-        Log.d("NewAccount", "folder did not exist, creating the key folder");
-        folder.mkdirs();
-      }
-
-      //preferencesHelper.setSeed(encryptedMnemonic);
-      //preferencesHelper.setPassword(encryptedPassword);
-      //preferencesHelper.setAddress(encryptedAddress);
-
-      return null;
-    }
-
-    @Override protected void onPostExecute(String mnemonic) {
-      super.onPostExecute(mnemonic);
-      if ((progressDialog != null) && progressDialog.isShowing()) {
-        progressDialog.dismiss();
-      }
-
-      textView_the_seed.setText(mnemonic);
-      linLayout_new_account_all.setVisibility(View.VISIBLE);
-    }
-  }
 
   @Override protected void onPause() {
     super.onPause();
@@ -189,16 +160,9 @@ public class CreateNewAccountActivity extends BaseActivity {
     }
 
     @JavascriptInterface
-    public void getKeystore(String payload) {
-      KLog.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-      KLog.d("KeyStore to save -> " + payload);
-      KLog.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    }
-
-    @JavascriptInterface
-    public void privateKey(String payload) {
-      KLog.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-      KLog.d("Private key: " + payload);
+    public void setAccount(String address, String privateKey) {
+      KLog.d(">>>>>>>>>>>>>>> SAVE IT >>>>>>>>>>>>>>>");
+      KLog.d("Address: " + address + " Private Key: " + privateKey);
       KLog.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
   }
