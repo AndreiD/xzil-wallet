@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.socks.library.KLog;
 import io.reactivex.Completable;
@@ -23,6 +24,7 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
   private List<Wallet> walletList;
   private Context ctx;
   private PreferencesHelper preferencesHelper;
+  private String defaultAddress;
 
   public ManageWalletsAdapter(Context ctx, List<Wallet> walletList) {
     this.walletList = walletList;
@@ -35,6 +37,7 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
         .inflate(R.layout.row_wallet_list, parent, false);
 
     preferencesHelper = new PreferencesHelper(ctx);
+    defaultAddress = preferencesHelper.getDefaulAddress();
     return new TokenViewHolder(itemView);
   }
 
@@ -46,6 +49,8 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
 
 
     holder.wallet_address.setText(address);
+
+
 
     holder.cardView_wallet.setOnClickListener(view -> {
 
@@ -69,6 +74,10 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
         AppDatabase db = BaseApplication.getAppDatabase(ctx);
         Completable.fromAction(() -> db.walletDao().delete(wallet)).subscribe(() -> {
 
+          if (address.equals(preferencesHelper.getDefaulAddress())) {
+            DialogFactory.error_toast(ctx, "cannot remove your default address").show();
+            return;
+          }
           DialogFactory.success_toast(ctx, "address removed").show();
 
           //update UI
@@ -99,11 +108,11 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
   public class TokenViewHolder extends RecyclerView.ViewHolder {
     public TextView wallet_address;
     public CardView cardView_wallet;
-
     public TokenViewHolder(View view) {
       super(view);
       cardView_wallet = view.findViewById(R.id.cardView_wallet);
       wallet_address = view.findViewById(R.id.wallet_address);
+
     }
   }
 }

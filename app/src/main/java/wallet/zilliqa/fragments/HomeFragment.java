@@ -122,7 +122,7 @@ public class HomeFragment extends BaseFragment {
           return;
         }
 
-        LineDataSet ethToUsdLine = new LineDataSet(values, "ZIL - last 3 months");
+        LineDataSet ethToUsdLine = new LineDataSet(values, "ZIL (ERC-20) - last 3 months");
         ethToUsdLine.setDrawIcons(false);
         ethToUsdLine.setColor(Color.BLACK);
         ethToUsdLine.setLineWidth(2f);
