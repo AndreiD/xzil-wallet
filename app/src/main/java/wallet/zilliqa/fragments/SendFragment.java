@@ -18,20 +18,9 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.BuildConfig;
@@ -41,7 +30,6 @@ import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.dialogs.ConfirmPaymentDialog;
 import wallet.zilliqa.qrscanner.QRScannerActivity;
-import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
 
 public class SendFragment extends BaseFragment {
@@ -169,20 +157,7 @@ public class SendFragment extends BaseFragment {
 
   private void updateBalances(Long aLong) {
 
-    // get the coinbase
-    String encAddress = preferencesHelper.getAddress();
-
-    String address = "";
-    String decodedPassword = "";
-    String decodedSeed = "";
-    Cryptography cryptography = new Cryptography(getActivity());
-    try {
-      decodedPassword = cryptography.decryptData(preferencesHelper.getPassword());
-      decodedSeed = cryptography.decryptData(preferencesHelper.getSeed());
-
-      address = cryptography.decryptData(encAddress);
-    } catch (NoSuchPaddingException | NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException | CertificateException | InvalidAlgorithmParameterException | IOException | InvalidKeyException | NoSuchProviderException | IllegalBlockSizeException | BadPaddingException e) {
-      e.printStackTrace();
-    }
+    // get the default address
+    String encAddress = preferencesHelper.getDefaulAddress();
   }
 }

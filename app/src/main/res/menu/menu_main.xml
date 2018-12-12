@@ -14,7 +14,7 @@
       android:icon="@drawable/ic_manage_toekns_24dp"
       android:orderInCategory="98"
       android:title="@string/action_manage_wallets"
-      app:showAsAction="never"/>
+      app:showAsAction="ifRoom"/>
 
 
   <item
@@ -24,10 +24,4 @@
       android:title="@string/action_settings"
       app:showAsAction="never"/>
 
-  <item
-      android:id="@+id/action_exit"
-      android:icon="@drawable/ic_exit_24dp"
-      android:orderInCategory="100"
-      android:title="@string/action_exit"
-      app:showAsAction="never"/>
 </menu>

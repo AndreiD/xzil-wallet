@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "e7a792095d5b31a72ab9c2e61e7ad306",
+    "identityHash": "5b38722fbc9172238ab9a7ce654af980",
     "entities": [
       {
         "tableName": "contacts_table",
@@ -47,7 +47,7 @@
       },
       {
         "tableName": "wallets_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `address` TEXT, `seed` TEXT, `password` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `address` TEXT, `encrypted_private_key` TEXT)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -62,14 +62,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "seed",
-            "columnName": "seed",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "password",
-            "columnName": "password",
+            "fieldPath": "encrypted_private_key",
+            "columnName": "encrypted_private_key",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -95,7 +89,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"e7a792095d5b31a72ab9c2e61e7ad306\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"5b38722fbc9172238ab9a7ce654af980\")"
     ]
   }
 }

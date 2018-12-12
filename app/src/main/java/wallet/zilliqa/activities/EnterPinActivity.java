@@ -114,7 +114,7 @@ public class EnterPinActivity extends BaseActivity {
             preferencesHelper.setInvalidPins(0);
 
             //check if the wallet was created
-            String encAddress = preferencesHelper.getAddress();
+            String encAddress = preferencesHelper.getDefaulAddress();
             if (encAddress == null) {
               FragmentManager fragmentManager = getSupportFragmentManager();
               fragmentManager.beginTransaction()

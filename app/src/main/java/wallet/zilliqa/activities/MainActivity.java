@@ -97,22 +97,19 @@ public class MainActivity extends BaseActivity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    FragmentManager fragmentManager = getSupportFragmentManager();
     switch (item.getItemId()) {
       case R.id.action_add:
-        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
             .replace(android.R.id.content, NewAccountFragment.newInstance())
             .addToBackStack(null)
             .commit();
         break;
       case R.id.action_manage_wallets:
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.contentContainer, new ManageWalletsFragment());
-        ft.addToBackStack("fragment_manage_tokens");
-        ft.commit();
-        break;
-      case R.id.action_exit:
-        finish();
+        fragmentManager.beginTransaction()
+            .replace(android.R.id.content, ManageWalletsFragment.newInstance())
+            .addToBackStack(null)
+            .commit();
         break;
       case R.id.action_settings:
         startActivity(new Intent(mContext, SettingsActivity.class));
