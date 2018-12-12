@@ -1,5 +1,6 @@
 package wallet.zilliqa.fragments;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +8,9 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.TextView;
 import butterknife.BindView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -39,11 +43,12 @@ import wallet.zilliqa.data.remote.ExchangeRatesAPI;
 
 public class HomeFragment extends BaseFragment {
 
-  @BindView(R.id.textView_fragmentHome_balance_zil) TextView textView_fragmentHome_balance_eth;
+  @BindView(R.id.textView_fragmentHome_balance_zil) TextView textView_fragmentHome_balance_zil;
   @BindView(R.id.textView_fragmentHome_status) TextView textView_fragmentHome_status;
   @BindView(R.id.textView_fragmentHome_greeting) TextView textView_fragmentHome_greeting;
   @BindView(R.id.textView_fragmentHome_date) TextView textView_fragmentHome_date;
   @BindView(R.id.home_line_chart) LineChart home_line_chart;
+  @BindView(R.id.home_webview) WebView theWebView;
   private Disposable disposable;
   private PreferencesHelper preferencesHelper;
 
@@ -69,6 +74,15 @@ public class HomeFragment extends BaseFragment {
     super.onActivityCreated(savedInstanceState);
 
     preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
+
+    theWebView.getSettings().setJavaScriptEnabled(true);
+    theWebView.getSettings().setAppCacheEnabled(false);
+    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+    theWebView.setBackgroundColor(Color.TRANSPARENT);
+    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+
+    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
+    theWebView.loadUrl("file:///android_asset/javascript/balance.html");
 
     textView_fragmentHome_status.setText("Updating...");
     showGreeting();
@@ -166,7 +180,7 @@ public class HomeFragment extends BaseFragment {
   @Override public void onResume() {
     super.onResume();
 
-    disposable = Observable.interval(100, 10000,
+    disposable = Observable.interval(500, 10000,
         TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(this::updateBalances);
@@ -180,6 +194,8 @@ public class HomeFragment extends BaseFragment {
   private void updateBalances(Long aLong) {
 
     KLog.d(">>> updating the balances...");
+
+    theWebView.loadUrl("javascript:getBalance(\"" + preferencesHelper.getDefaulAddress() + "\")");
   }
 
   private void showGreeting() {
@@ -198,5 +214,20 @@ public class HomeFragment extends BaseFragment {
 
     DateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.getDefault());
     textView_fragmentHome_date.setText(formatter.format(c.getTime()));
+  }
+
+
+  private class WebAppInterface {
+    Context mContext;
+
+    WebAppInterface(Context c) {
+      mContext = c;
+    }
+
+    @JavascriptInterface
+    public void balance(String balance) {
+      textView_fragmentHome_status.setText("all looks good.");
+      textView_fragmentHome_balance_zil.setText(balance +" ZIL (testnet)");
+    }
   }
 }
