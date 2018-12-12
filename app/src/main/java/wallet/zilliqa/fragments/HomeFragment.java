@@ -103,7 +103,7 @@ public class HomeFragment extends BaseFragment {
     home_line_chart.setDragEnabled(false);
     home_line_chart.setScaleEnabled(false);
     home_line_chart.setPinchZoom(false);
-    home_line_chart.setBackgroundColor(Color.WHITE);
+    home_line_chart.setBackgroundColor(Color.TRANSPARENT);
     home_line_chart.setDrawGridBackground(false);
     home_line_chart.setDrawBorders(false);
 

@@ -25,5 +25,4 @@ public interface WalletDAO {
   @Delete
   void delete(Wallet wallet);
 
-  @Query("DELETE FROM wallets_table") void nukeWallets();
 }

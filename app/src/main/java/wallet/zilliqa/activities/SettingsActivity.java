@@ -1,6 +1,5 @@
 package wallet.zilliqa.activities;
 
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
 import com.socks.library.KLog;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -62,6 +60,37 @@ public class SettingsActivity extends BaseActivity {
 
   public static class MyPreferenceFragment extends PreferenceFragment {
     private ProgressDialog progressDialog;
+
+    public static void showPrivateKeysDialog(Context context, String textToCopyToClipboard) {
+
+      final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+      LayoutInflater inflater =
+          (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+      View view = inflater.inflate(R.layout.dialog_private_keys, null);
+      alertDialogBuilder.setView(view);
+      alertDialogBuilder.setCancelable(false);
+      final AlertDialog dialog = alertDialogBuilder.create();
+      dialog.show();
+
+      Button btn_dlg_clipboard = view.findViewById(R.id.btn_dlg_clipboard);
+      Button btn_dlg_close = view.findViewById(R.id.btn_dlg_close);
+      EditText editText_dlg_keys = view.findViewById(R.id.editText_dlg_keys);
+
+      editText_dlg_keys.setText(textToCopyToClipboard);
+
+      btn_dlg_clipboard.setOnClickListener(v -> {
+
+        android.content.ClipboardManager clipboard =
+            (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        android.content.ClipData clip =
+            android.content.ClipData.newPlainText("private", textToCopyToClipboard);
+        if (clipboard != null) {
+          clipboard.setPrimaryClip(clip);
+          DialogFactory.success_toast(context, "Text has been copied to clipboard.").show();
+        }
+      });
+      btn_dlg_close.setOnClickListener(view1 -> dialog.dismiss());
+    }
 
     @Override public void onCreate(final Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -106,7 +135,7 @@ public class SettingsActivity extends BaseActivity {
           AppDatabase db =
               BaseApplication.getAppDatabase(getActivity());
           db.clearAllTables();
-        }catch (Exception ex){
+        } catch (Exception ex) {
           KLog.e(ex);
         }
         getActivity().finish();
@@ -114,14 +143,9 @@ public class SettingsActivity extends BaseActivity {
         return true;
       });
 
-      Preference exportWallet = findPreference(getString(R.string.export_wallet));
-      exportWallet.setOnPreferenceClickListener(preference -> {
-
-
-
-         // showPrivateKeysDialog(getActivity(), privateKey);
-
-
+      Preference exportWallets = findPreference(getString(R.string.export_wallets));
+      exportWallets.setOnPreferenceClickListener(preference -> {
+        DialogFactory.warning_toast(getActivity(), "Under Construction...").show();
         return true;
       });
 
@@ -155,7 +179,8 @@ public class SettingsActivity extends BaseActivity {
           // prevent brute forcing
           new CountDownTimer(1000, 1000) {
 
-            @Override public void onTick(long l) { }
+            @Override public void onTick(long l) {
+            }
 
             @Override public void onFinish() {
               if (progressDialog != null && progressDialog.isShowing()) {
@@ -213,37 +238,6 @@ public class SettingsActivity extends BaseActivity {
 
         return true;
       });
-    }
-
-    public static void showPrivateKeysDialog(Context context, String textToCopyToClipboard) {
-
-      final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-      LayoutInflater inflater =
-          (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      View view = inflater.inflate(R.layout.dialog_private_keys, null);
-      alertDialogBuilder.setView(view);
-      alertDialogBuilder.setCancelable(false);
-      final AlertDialog dialog = alertDialogBuilder.create();
-      dialog.show();
-
-      Button btn_dlg_clipboard = view.findViewById(R.id.btn_dlg_clipboard);
-      Button btn_dlg_close = view.findViewById(R.id.btn_dlg_close);
-      EditText editText_dlg_keys = view.findViewById(R.id.editText_dlg_keys);
-
-      editText_dlg_keys.setText(textToCopyToClipboard);
-
-      btn_dlg_clipboard.setOnClickListener(v -> {
-
-        android.content.ClipboardManager clipboard =
-            (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        android.content.ClipData clip =
-            android.content.ClipData.newPlainText("private", textToCopyToClipboard);
-        if (clipboard != null) {
-          clipboard.setPrimaryClip(clip);
-          DialogFactory.success_toast(context, "Text has been copied to clipboard.").show();
-        }
-      });
-      btn_dlg_close.setOnClickListener(view1 -> dialog.dismiss());
     }
   }
 }

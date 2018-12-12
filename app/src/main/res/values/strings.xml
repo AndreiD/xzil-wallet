@@ -67,4 +67,5 @@
   <string name="continue_lowercase">continue</string>
   <string name="action_manage_wallets">Manage Wallets</string>
   <string name="wallet_creation">Wallet Creation</string>
+  <string name="export_wallets">Export Wallets</string>
 </resources>

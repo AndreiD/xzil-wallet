@@ -16,9 +16,9 @@
       android:title="Reset Application"/>
 
   <Preference
-      android:key="@string/export_wallet"
-      android:summary="your private key"
-      android:title="Export Wallet"/>
+      android:key="@string/export_wallets"
+      android:summary="your private keys"
+      android:title="Export Wallets"/>
 
   <Preference
       android:key="@string/change_pin"

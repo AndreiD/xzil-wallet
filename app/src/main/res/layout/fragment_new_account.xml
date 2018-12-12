@@ -51,7 +51,7 @@
           android:layout_gravity="center"
           android:layout_margin="8dp"
           android:gravity="center"
-          android:text="New ETH Wallet ?"
+          android:text="New ZIL Wallet ?"
           android:textColor="@color/zen_color"
           />
       <Button
@@ -62,7 +62,7 @@
           android:layout_marginLeft="8dp"
           android:layout_marginRight="8dp"
           android:background="@drawable/button_send"
-          android:text="GENERATE NEW ACCOUNT"
+          android:text="GENERATE NEW WALLET"
           android:textAppearance="@style/TextAppearance.Title"
           android:textColor="@color/White"
           />
@@ -82,7 +82,7 @@
           android:layout_gravity="center"
           android:layout_margin="16dp"
           android:gravity="center"
-          android:text="Import Wallet"
+          android:text="already have one ?"
           android:textColor="@color/zen_color"
           />
 
@@ -99,43 +99,32 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:hint="@string/seed"
-            android:inputType="text"
+            android:inputType="text|textMultiLine|textNoSuggestions"
+            android:lines="2"
             android:textColor="@color/app_black"
             android:textColorHint="@color/app_black"
             android:textSize="16sp"
             />
       </android.support.design.widget.TextInputLayout>
 
-      <android.support.design.widget.TextInputLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textColorHint="@color/app_black"
-          >
-        <EditText
-            android:id="@+id/editText_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:hint="Passphrase"
-            android:inputType="text"
-            android:textColor="@color/app_black"
-            android:textColorHint="@color/app_black"
-            android:textSize="16sp"
-            />
-      </android.support.design.widget.TextInputLayout>
       <Button
           android:id="@+id/button_new_account_import"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_margin="8dp"
           android:background="@drawable/button_send"
-          android:text="IMPORT"
+          android:text="IMPORT WALLET"
           android:textAppearance="@style/TextAppearance.Title"
           android:textColor="@color/White"
           />
     </LinearLayout>
 
   </LinearLayout>
+
+  <WebView
+      android:id="@+id/theWebView"
+      android:layout_alignParentBottom="true"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      ></WebView>
 </RelativeLayout>
