@@ -19,29 +19,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
-import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import org.web3j.abi.FunctionEncoder;
-import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.Bool;
-import org.web3j.abi.datatypes.Function;
-import org.web3j.abi.datatypes.generated.Uint256;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
@@ -54,10 +32,8 @@ public class ConfirmPaymentDialog extends DialogFragment {
   public static final String IS_ETH = "is_eth";
   public static final String TOKEN_SYMBOL = "token_symbol";
   public static final String TOKEN_ADDRESS = "token_address";
-  Credentials credentials = null;
   BigInteger nonce = null;
   private ProgressDialog progressDialog;
-  private Web3j web3j = null;
 
   public static ConfirmPaymentDialog newInstance(boolean isETH, String toAddress, double amount,
       String tokenSymbol, String tokenAddress) {
@@ -70,16 +46,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
     args.putString(TOKEN_ADDRESS, tokenAddress);
     frag.setArguments(args);
     return frag;
-  }
-
-  public static String encodeTransferData(String toAddress, BigInteger sum) {
-    Function function = new Function(
-        "transfer",  // function we're calling
-        Arrays.asList(new Address(toAddress), new Uint256(sum)),
-        // Parameters to pass as Solidity Types
-        Arrays.asList(new org.web3j.abi.TypeReference<Bool>() {
-        }));
-    return FunctionEncoder.encode(function);
   }
 
   @Override
@@ -163,18 +129,8 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
     //BigDecimal value = Convert.toWei(String.valueOf(amount), Convert.Unit.ETHER);
 
-    try {
-      String decodedPassword = cryptography.decryptData(preferencesHelper.getPassword());
-      String decodedSeed = cryptography.decryptData(preferencesHelper.getSeed());
+    //String decodedPassword = cryptography.decryptData(preferencesHelper.getPassword());
+    //String decodedSeed = cryptography.decryptData(preferencesHelper.getSeed());
 
-      credentials = WalletUtils.loadBip39Credentials(decodedPassword, decodedSeed);
-
-      nonce =
-          web3j.ethGetTransactionCount(credentials.getAddress(), DefaultBlockParameterName.LATEST)
-              .sendAsync()
-              .get().getTransactionCount();
-    } catch (NoSuchPaddingException | NoSuchAlgorithmException | UnrecoverableEntryException | CertificateException | KeyStoreException | InvalidKeyException | BadPaddingException | NoSuchProviderException | IllegalBlockSizeException | InterruptedException | ExecutionException | InvalidAlgorithmParameterException | IOException e) {
-      e.printStackTrace();
-    }
   }
 }

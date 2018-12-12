@@ -4,7 +4,7 @@ android {
   compileSdkVersion 27
   defaultConfig {
     applicationId "wallet.zilliqa"
-    minSdkVersion 23
+    minSdkVersion 26
     targetSdkVersion 27
     versionCode 3
     versionName "1.2"
@@ -77,9 +77,6 @@ dependencies {
   implementation "android.arch.persistence.room:rxjava2:1.1.1"
   annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 
-  //Web3j
-  implementation 'org.web3j:core:3.4.0'
-
   //----- Bottom Bar
   implementation 'com.roughike:bottom-bar:2.3.1'
 
@@ -119,10 +116,7 @@ dependencies {
 
   //------ Graphs
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-}
 
-
-//------ Automatically pulls on startup
-task gitPull(type: Exec) {
-  commandLine 'git', 'pull'
+  //------ Address Generation
+  implementation 'io.github.novacrypto:BIP39:2018.10.06'
 }

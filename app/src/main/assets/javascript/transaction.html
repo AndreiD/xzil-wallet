@@ -1,0 +1,67 @@
+<html>
+<head>
+</head>
+<body>
+<script type="text/javascript" src="ZiliqaJS.browser.js"></script>
+<body>
+<div id=“root”>
+
+</div>
+<script src=“../bundle/ZilliqaJs.browser.js”></script>
+
+<script src=“bn.js”></script>
+<script src=“long.js”></script>
+<script>
+       const {Zilliqa}=window.ZilliqaJS
+       const zjs=new Zilliqa(’https://api-scilla.zilliqa.com')
+
+       // const adr = zjs.wallet.create()
+
+       // console.log(“>> ADDRESS >> ” + adr);
+
+       // let privateKey = zjs.wallet.accounts[adr].privateKey;
+
+       // getAddressFromPrivateKey(privateKey);
+
+       // function getAddressFromPrivateKey(privKey){
+       //   let addr = zjs.wallet.addByPrivateKey(privKey);
+       //    console.log(“>> ADDRES2 >> ” + adr);
+       //   return addr;
+       // }
+
+       sendTransaction(123);
+
+        function sendTransaction(amount){
+
+         zjs.wallet.addByPrivateKey(
+         ‘3375F915F3F9AE35E6B301B7670F53AD1A5BE15D8221EC7FD5E503F21D3450C8’,
+        );
+
+
+        sendTx(amount).then(function(output){
+           console.log(“>> output ” + output);
+        });
+
+        }
+
+
+
+async function sendTx(amount) {
+ try {
+   // Send a transaction to the network
+   const tx = await zjs.blockchain.createTransaction(
+     zjs.transactions.new({
+       version: 1,
+       toAddr: ‘affc3236b726660ed9b99dff11451e4e8c107dea’,
+       amount: new BN(amount),
+       gasPrice: new BN(100),
+       gasLimit: Long.fromNumber(10),
+     }),
+   );
+   console.log(tx);
+}catch (err) {
+   console.log(err);
+ }
+}
+
+</script>

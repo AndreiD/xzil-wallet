@@ -10,6 +10,11 @@ public class Constants {
   private Constants() {
   }
 
+  // For Debug Mode in the App
+  public static String newWalletPublicAddress = "0x573EC96638C8BB1C386394602E1460634F02ADDD";
+  public static String newWalletPrivateKey = "69122B6C3A70B6CC7908546B7F6233F1F5501ECC5759D2940E32FEE250E7AA7A";
+
+
   public static String publicAddress = "";
   public static String lastScanAddress = "";
   public static final String TESTADDRESS = "0x000000591672c2Ad77D99f62BE38Eb2C995bb09c"; // used to autofill when app is in debug mode

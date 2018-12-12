@@ -1,0 +1,25 @@
+<html>
+<head>
+</head>
+<body>
+  <script type="text/javascript" src="ZiliqaJS.browser.js"></script>
+  <script>
+    const { Zilliqa } = window.ZilliqaJS
+    const zjs = new Zilliqa('https://api-scilla.zilliqa.com')
+
+
+    function generateAccount(mnemonic) {
+      console.log("From activity: " + mnemonic);
+
+
+      const newAccount = zjs.wallet.addByMnemonic(mnemonic, 0);
+      var address = zjs.wallet.accounts[newAccount].address;
+      var privateKey = zjs.wallet.accounts[newAccount].privateKey;
+      console.log("We got address: " + address);
+      Android.setAccount(address, privateKey);
+    }
+
+  </script>
+</body>
+
+</html>
