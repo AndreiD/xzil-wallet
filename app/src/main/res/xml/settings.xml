@@ -7,7 +7,7 @@
       android:entries="@array/networks"
       android:entryValues="@array/networksValues"
       android:key="network_preference"
-      android:summary="mainnet"
+      android:summary="testnet"
       android:title="Blockchain Network"/>
 
   <Preference

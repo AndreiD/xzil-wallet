@@ -180,21 +180,20 @@ public class HomeFragment extends BaseFragment {
   @Override public void onResume() {
     super.onResume();
 
-    disposable = Observable.interval(500, 10000,
-        TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(this::updateBalances);
+    //disposable = Observable.interval(500, 10000,
+    //    TimeUnit.MILLISECONDS)
+    //    .observeOn(AndroidSchedulers.mainThread())
+    //    .subscribe(this::updateBalances);
   }
 
   @Override public void onPause() {
     super.onPause();
-    disposable.dispose();
+    try {
+      disposable.dispose();
+    }catch (Exception ignored){}
   }
 
   private void updateBalances(Long aLong) {
-
-    KLog.d(">>> updating the balances...");
-
     theWebView.loadUrl("javascript:getBalance(\"" + preferencesHelper.getDefaulAddress() + "\")");
   }
 

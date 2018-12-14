@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     >
 
@@ -134,7 +135,7 @@
           android:layout_marginRight="16dp"
           android:layout_marginTop="8dp"
           android:layout_weight="0"
-          android:text="Gas Price: 0.0001 ZIL"
+          tools:text="Gas Price: 0.0001 ZIL"
           android:textColor="@color/app_grey"
           />
 
@@ -179,7 +180,6 @@
           android:layout_height="1dp"
           android:background="@color/LightGrey"
           />
-
       <FrameLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -202,4 +202,9 @@
       </FrameLayout>
     </LinearLayout>
   </ScrollView>
+  <WebView
+      android:id="@+id/theWebView"
+      android:layout_width="match_parent"
+      android:layout_height="10dp"
+      ></WebView>
 </LinearLayout>

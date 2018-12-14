@@ -1,6 +1,8 @@
 package wallet.zilliqa.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,6 +10,9 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,11 +20,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.socks.library.KLog;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
@@ -39,15 +44,15 @@ public class SendFragment extends BaseFragment {
   @BindView(R.id.send_button_send) Button send_button_send;
   @BindView(R.id.send_imageButton_scanqr) ImageView send_imageButton_scanqr;
   @BindView(R.id.seekBar_fee) SeekBar seekBar_fee;
-
+  @BindView(R.id.theWebView) WebView theWebView;
   @BindView(R.id.send_textView_amount) TextView send_textView_amount;
   @BindView(R.id.send_textView_currency) TextView send_textView_currency;
   @BindView(R.id.send_textView_fee) TextView send_textView_fee;
-  Disposable disposable;
   private BigDecimal balanceZIL;
-  private BigInteger feeZIL;
+  private String gasPrice;
   private PreferencesHelper preferencesHelper;
   private AppDatabase db;
+  private Disposable disposable;
 
   public SendFragment() {
   }
@@ -76,15 +81,39 @@ public class SendFragment extends BaseFragment {
     //TODO: remove me
     if (BuildConfig.DEBUG) {
       send_editText_to.setText(
-          Constants.TESTADDRESS);
+          Constants.newWalletPublicAddress2);
       send_editText_amount.setText("0.1");
     }
 
-    //send_textView_fee.setText(
-    //    String.format("Fee (~): %s ZIL",
-    //        Convert.fromWei(feeToken.toString(), Convert.Unit.ETHER).toString()));
+    // update the balance
+    theWebView.getSettings().setJavaScriptEnabled(true);
+    theWebView.getSettings().setAppCacheEnabled(false);
+    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+    theWebView.setBackgroundColor(Color.TRANSPARENT);
+    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 
-    send_button_send.setClickable(false);
+    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
+    theWebView.loadUrl("file:///android_asset/javascript/balance.html");
+
+
+    seekBar_fee.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+      @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        gasPrice = String.valueOf((progress + 1) * 10);
+        send_textView_fee.setText(
+            String.format("Gas Price: %s ZIL", gasPrice));
+      }
+
+      @Override public void onStartTrackingTouch(SeekBar seekBar) {
+      }
+
+      @Override public void onStopTrackingTouch(SeekBar seekBar) {
+      }
+    });
+
+    //set default gas price
+    gasPrice = String.valueOf(2 * 10);
+    send_textView_fee.setText(
+        String.format("Gas Price: %s ZIL", gasPrice));
   }
 
   @Override public void onResume() {
@@ -94,15 +123,12 @@ public class SendFragment extends BaseFragment {
       send_editText_to.setText(Constants.lastScanAddress);
     }
 
-    disposable = Observable.interval(100, 15000,
-        TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(this::updateBalances);
-  }
 
-  @Override public void onPause() {
-    super.onPause();
-    disposable.dispose();
+      //disposable = Observable.interval(500, 10000,
+      //    TimeUnit.MILLISECONDS)
+      //    .observeOn(AndroidSchedulers.mainThread())
+      //    .subscribe(this::updateBalances);
+
   }
 
   @OnClick(R.id.send_button_send) public void onClickSend() {
@@ -132,20 +158,21 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
+    balanceZIL = new BigDecimal(11111);
     if (balanceZIL.compareTo(new BigDecimal(amount_to_send)) < 0) {
       DialogFactory.warning_toast(getActivity(),
           "Seems you don't have enough ZIL for this transaction.").show();
       send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
       return;
     }
-    sendTheMoney(true, send_editText_to.getText().toString().trim(), amount_to_send, null, null);
+    sendTheMoney(send_editText_to.getText().toString().trim(), amount_to_send, gasPrice);
   }
 
-  private void sendTheMoney(boolean isEth, String destinationAddress, double amount, String tokenSymbol, String tokenAddress) {
+  private void sendTheMoney(String destinationAddress, double amount, String gasPrice) {
 
     FragmentManager fm = getActivity().getSupportFragmentManager();
     ConfirmPaymentDialog confirmPaymentDialog =
-        ConfirmPaymentDialog.newInstance(isEth, destinationAddress, amount, tokenSymbol, tokenAddress);
+        ConfirmPaymentDialog.newInstance(destinationAddress, amount, gasPrice);
     confirmPaymentDialog.show(fm, "confirm_dialog_fragment");
   }
 
@@ -156,8 +183,27 @@ public class SendFragment extends BaseFragment {
   }
 
   private void updateBalances(Long aLong) {
+    theWebView.loadUrl("javascript:getBalance(\"" + preferencesHelper.getDefaulAddress() + "\")");
+  }
 
-    // get the default address
-    String encAddress = preferencesHelper.getDefaulAddress();
+  private class WebAppInterface {
+    Context mContext;
+
+    WebAppInterface(Context c) {
+      mContext = c;
+    }
+
+    @JavascriptInterface
+    public void balance(String balance) {
+      balanceZIL = new BigDecimal(balance);
+      send_textView_amount.setText("Amount: " + balance + " ZIL (testnet)");
+    }
+  }
+
+  @Override public void onPause() {
+    super.onPause();
+    try {
+      disposable.dispose();
+    }catch (Exception ignored){}
   }
 }

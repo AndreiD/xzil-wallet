@@ -2,48 +2,52 @@ package wallet.zilliqa.dialogs;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.socks.library.KLog;
 import java.math.BigInteger;
+import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
+import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.utils.Cryptography;
+import wallet.zilliqa.utils.DialogFactory;
 
 public class ConfirmPaymentDialog extends DialogFragment {
 
   public static final String TOADDRESS = "toaddress";
   public static final String AMOUNT = "amount";
-  public static final String IS_ETH = "is_eth";
-  public static final String TOKEN_SYMBOL = "token_symbol";
-  public static final String TOKEN_ADDRESS = "token_address";
+  public static final String GAS_PRICE = "gas_price";
   BigInteger nonce = null;
   private ProgressDialog progressDialog;
+  private PreferencesHelper preferencesHelper;
+  private AppDatabase db;
 
-  public static ConfirmPaymentDialog newInstance(boolean isETH, String toAddress, double amount,
-      String tokenSymbol, String tokenAddress) {
+  public static ConfirmPaymentDialog newInstance(String toAddress, double amount, String gasPrice) {
     ConfirmPaymentDialog frag = new ConfirmPaymentDialog();
     Bundle args = new Bundle();
     args.putString(TOADDRESS, toAddress);
     args.putDouble(AMOUNT, amount);
-    args.putBoolean(IS_ETH, isETH);
-    args.putString(TOKEN_SYMBOL, tokenSymbol);
-    args.putString(TOKEN_ADDRESS, tokenAddress);
+    args.putString(GAS_PRICE, gasPrice);
     frag.setArguments(args);
     return frag;
   }
@@ -86,33 +90,39 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
     String toAddress = getArguments().getString(TOADDRESS, "");
     double amount = getArguments().getDouble(AMOUNT, 0.0);
-    boolean isEth = getArguments().getBoolean(IS_ETH, true);
-    String tokenSymbol = getArguments().getString(TOKEN_SYMBOL, null);
-    String tokenAddress = getArguments().getString(TOKEN_ADDRESS, null);
+    String gasPrice = getArguments().getString(GAS_PRICE, "20");
 
     TextView txt_dlg_confirm_to = view.findViewById(R.id.txt_dlg_confirm_to);
     TextView txt_dlg_confirm_from = view.findViewById(R.id.txt_dlg_confirm_from);
     TextView txt_dlg_confirm_amount = view.findViewById(R.id.txt_dlg_confirm_amount);
     TextView txt_dlg_confirm_fee = view.findViewById(R.id.txt_dlg_confirm_fee);
     TextView txt_dlg_confirm_total = view.findViewById(R.id.txt_dlg_confirm_total);
+    WebView theWebView = view.findViewById(R.id.theWebView);
+
+    // update the balance
+    theWebView.getSettings().setJavaScriptEnabled(true);
+    theWebView.getSettings().setAppCacheEnabled(false);
+    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+    theWebView.setBackgroundColor(Color.TRANSPARENT);
+    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+
+    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
+    theWebView.loadUrl("file:///android_asset/javascript/transaction.html");
 
     Button btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
 
     txt_dlg_confirm_to.setText(toAddress);
 
-    txt_dlg_confirm_amount.setText(String.format("%s ETH",
+    preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
+
+    db = BaseApplication.getAppDatabase(getActivity());
+
+    // Setup Initial Views
+    txt_dlg_confirm_from.setText(preferencesHelper.getDefaulAddress());
+    txt_dlg_confirm_amount.setText(String.format("%s ZIL",
         Constants.getDecimalFormat().format(amount)));
-
-    if (!isEth) {
-      txt_dlg_confirm_amount.setText(amount + " " + tokenSymbol);
-    }
-
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-    String network_preference = prefs.getString("network_preference", "mainnet");
-    if (!network_preference.equals("mainnet")) {
-      txt_dlg_confirm_amount.setText(amount + " ETH (testnet)");
-      txt_dlg_confirm_amount.setTextColor(getResources().getColor(R.color.appcolor_red_darker));
-    }
+    txt_dlg_confirm_fee.setText(String.format("%s ZIL", gasPrice));
+    txt_dlg_confirm_total.setText(String.format("%s ZIL", Constants.getDecimalFormat().format(amount + Double.valueOf(gasPrice))));
 
     getDialog().setCancelable(true);
     getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -123,14 +133,56 @@ public class ConfirmPaymentDialog extends DialogFragment {
     getDialog().getWindow().setSoftInputMode(
         WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-    PreferencesHelper preferencesHelper = new PreferencesHelper(getActivity());
+    btn_dlg_confirm_send.setOnClickListener(v -> {
 
-    Cryptography cryptography = new Cryptography(getActivity());
+      progressDialog = DialogFactory.createProgressDialog(getActivity(),
+          "Sending " + txt_dlg_confirm_total.getText().toString() + " to " + toAddress + ". Please Stand-By");
+      progressDialog.show();
+      db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 
-    //BigDecimal value = Convert.toWei(String.valueOf(amount), Convert.Unit.ETHER);
+        Cryptography cryptography = new Cryptography(getActivity());
+        String decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
 
-    //String decodedPassword = cryptography.decryptData(preferencesHelper.getPassword());
-    //String decodedSeed = cryptography.decryptData(preferencesHelper.getSeed());
+        //sendTransaction('f03ececc92a157aa4c3f26de32069749f7325bac', 12, '69122B6C3A70B6CC7908546B7F6233F1F5501ECC5759D2940E32FEE250E7AA7A');
+        theWebView.loadUrl("javascript:sendTransaction('f03ececc92a157aa4c3f26de32069749f7325bac','12','69122B6C3A70B6CC7908546B7F6233F1F5501ECC5759D2940E32FEE250E7AA7A')");
+      }, throwable -> {
+        KLog.e(throwable);
+        try {
+          progressDialog.dismiss();
+        } catch (Exception ignored) {
+        }
+      });
+    });
+    //gets the private key
 
+  }
+
+  private class WebAppInterface {
+    Context mContext;
+
+    WebAppInterface(Context c) {
+      mContext = c;
+    }
+
+    @JavascriptInterface
+    public void showError(String error) {
+      try {
+        progressDialog.dismiss();
+      } catch (Exception ignored) {
+      }
+      DialogFactory.createGenericErrorDialog(getActivity(), error).show();
+    }
+
+    @JavascriptInterface
+    public void showHash(String hash) {
+      try {
+        progressDialog.dismiss();
+      } catch (Exception ignored) {
+      }
+      FragmentManager fm = getActivity().getSupportFragmentManager();
+      TxHashDialog txHashDialog =
+          TxHashDialog.newInstance(hash);
+      txHashDialog.show(fm, "tx_hash_dialog");
+    }
   }
 }

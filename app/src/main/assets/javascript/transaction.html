@@ -1,67 +1,55 @@
+<!DOCTYPE html>
 <html>
+<meta charset="UTF-8">
+
 <head>
 </head>
+
 <body>
-<script type="text/javascript" src="ZiliqaJS.browser.js"></script>
-<body>
-<div id=“root”>
+  <script type="text/javascript" src="ZiliqaJS.browser.js"></script>
+  <script type="text/javascript" src="bn.js"></script>
+  <script type="text/javascript" src="long.js"></script>
+  <script type="text/javascript">
+    const { Zilliqa } = window.ZilliqaJS
+    const zjs = new Zilliqa('https://api.zilliqa.com')
 
-</div>
-<script src=“../bundle/ZilliqaJs.browser.js”></script>
+    sendTransaction('f03ececc92a157aa4c3f26de32069749f7325bac', '12', '69122B6C3A70B6CC7908546B7F6233F1F5501ECC5759D2940E32FEE250E7AA7A');
 
-<script src=“bn.js”></script>
-<script src=“long.js”></script>
-<script>
-       const {Zilliqa}=window.ZilliqaJS
-       const zjs=new Zilliqa(’https://api-scilla.zilliqa.com')
 
-       // const adr = zjs.wallet.create()
+    function sendTransaction(toaddress, amount, senderPrivateKey) {
 
-       // console.log(“>> ADDRESS >> ” + adr);
+      zjs.wallet.addByPrivateKey(
+        senderPrivateKey,
+      );
+      console.log("Preparing to send the transaction...");
 
-       // let privateKey = zjs.wallet.accounts[adr].privateKey;
+      sendTx(toaddress, parseFloat(amount)).then(function (output) {
+        console.log(">> output status " + output.status);
+        console.log(">> transaction id " + output.id);
+        Android.showHash(output.id);
+      });
+    }
 
-       // getAddressFromPrivateKey(privateKey);
-
-       // function getAddressFromPrivateKey(privKey){
-       //   let addr = zjs.wallet.addByPrivateKey(privKey);
-       //    console.log(“>> ADDRES2 >> ” + adr);
-       //   return addr;
-       // }
-
-       sendTransaction(123);
-
-        function sendTransaction(amount){
-
-         zjs.wallet.addByPrivateKey(
-         ‘3375F915F3F9AE35E6B301B7670F53AD1A5BE15D8221EC7FD5E503F21D3450C8’,
+    async function sendTx(toaddress, amount) {
+      try {
+        // Send a transaction to the network
+        console.log(">> to : " + toaddress + " > amount > " + amount);
+        const tx = await zjs.blockchain.createTransaction(
+          zjs.transactions.new({
+            version: 1,
+            toAddr: toaddress,
+            amount: new BN(amount),
+            gasPrice: new BN(100),
+            gasLimit: Long.fromNumber(10),
+          }),
         );
+        return tx;
+      } catch (err) {
+        Android.showError(err.message)
+        console.log(err);
+      }
+    }
+  </script>
+</body>
 
-
-        sendTx(amount).then(function(output){
-           console.log(“>> output ” + output);
-        });
-
-        }
-
-
-
-async function sendTx(amount) {
- try {
-   // Send a transaction to the network
-   const tx = await zjs.blockchain.createTransaction(
-     zjs.transactions.new({
-       version: 1,
-       toAddr: ‘affc3236b726660ed9b99dff11451e4e8c107dea’,
-       amount: new BN(amount),
-       gasPrice: new BN(100),
-       gasLimit: Long.fromNumber(10),
-     }),
-   );
-   console.log(tx);
-}catch (err) {
-   console.log(err);
- }
-}
-
-</script>
+</html>

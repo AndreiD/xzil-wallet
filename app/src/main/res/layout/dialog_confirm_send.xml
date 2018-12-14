@@ -101,7 +101,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent" android:layout_margin="8dp"
-        android:background="@drawable/border_round_orange">
+        android:background="@drawable/border_round_red">
       <TextView
           android:text="Total"
           android:layout_width="match_parent"
@@ -137,8 +137,13 @@
           />
     </FrameLayout>
 
-  </LinearLayout>
 
+  </LinearLayout>
+  <WebView
+      android:id="@+id/theWebView"
+      android:layout_width="match_parent"
+      android:layout_height="10dp"
+      />
 </android.support.design.widget.CoordinatorLayout>
 
 
