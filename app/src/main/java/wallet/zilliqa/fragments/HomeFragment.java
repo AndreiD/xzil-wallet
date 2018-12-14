@@ -40,6 +40,7 @@ import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.ExchangeRatesAPI;
+import wallet.zilliqa.utils.BlockiesIdenticon;
 
 public class HomeFragment extends BaseFragment {
 
@@ -48,6 +49,7 @@ public class HomeFragment extends BaseFragment {
   @BindView(R.id.textView_fragmentHome_greeting) TextView textView_fragmentHome_greeting;
   @BindView(R.id.textView_fragmentHome_date) TextView textView_fragmentHome_date;
   @BindView(R.id.home_line_chart) LineChart home_line_chart;
+  @BindView(R.id.identicon_home) BlockiesIdenticon identicon_home;
   @BindView(R.id.home_webview) WebView theWebView;
   private Disposable disposable;
   private PreferencesHelper preferencesHelper;
@@ -84,6 +86,7 @@ public class HomeFragment extends BaseFragment {
     theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
     theWebView.loadUrl("file:///android_asset/javascript/balance.html");
 
+    textView_fragmentHome_balance_zil.setVisibility(View.GONE);
     textView_fragmentHome_status.setText("Updating...");
     showGreeting();
 
@@ -180,6 +183,7 @@ public class HomeFragment extends BaseFragment {
   @Override public void onResume() {
     super.onResume();
 
+    identicon_home.setAddress(preferencesHelper.getDefaulAddress());
     disposable = Observable.interval(500, 10000,
         TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -190,7 +194,8 @@ public class HomeFragment extends BaseFragment {
     super.onPause();
     try {
       disposable.dispose();
-    }catch (Exception ignored){}
+    } catch (Exception ignored) {
+    }
   }
 
   private void updateBalances(Long aLong) {
@@ -215,7 +220,6 @@ public class HomeFragment extends BaseFragment {
     textView_fragmentHome_date.setText(formatter.format(c.getTime()));
   }
 
-
   private class WebAppInterface {
     Context mContext;
 
@@ -225,8 +229,13 @@ public class HomeFragment extends BaseFragment {
 
     @JavascriptInterface
     public void balance(String balance) {
-      textView_fragmentHome_status.setText("all looks good.");
-      textView_fragmentHome_balance_zil.setText(balance +" ZIL (testnet)");
+
+      getActivity().runOnUiThread(() -> {
+        textView_fragmentHome_status.setText("all looks good.");
+        textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
+        textView_fragmentHome_balance_zil.setText(balance + " ZIL");
+      });
+
     }
   }
 }

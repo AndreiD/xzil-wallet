@@ -27,8 +27,6 @@
         android:text="Good morning"
         android:textAppearance="@style/TextAppearance.Title"
         />
-    android:textColor="@color/grey_h"
-    />
     <TextView
         android:id="@+id/textView_fragmentHome_date"
         android:layout_width="match_parent"
@@ -45,38 +43,36 @@
 
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
+        android:background="@drawable/border_round_grey"
         android:orientation="horizontal"
+        android:padding="16dp"
         >
 
 
-      <LinearLayout
-          android:id="@+id/linlayout_fragmenthome_balance_eth"
-          android:layout_width="0dp"
+      <wallet.zilliqa.utils.BlockiesIdenticon
+          android:id="@+id/identicon_home"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:layout_gravity="center_vertical"
+          android:layout_marginLeft="16dp"
+          android:layout_marginRight="16dp"
+          android:gravity="center_vertical"
+          />
+      <TextView
+          android:id="@+id/textView_fragmentHome_balance_zil"
+          android:layout_width="wrap_content"
           android:layout_height="match_parent"
-          android:layout_marginLeft="4dp"
-          android:layout_marginRight="4dp"
-          android:layout_weight="1"
-          android:background="@drawable/border_round_grey"
-          android:orientation="vertical"
-          android:padding="4dp"
-          >
-        <TextView
-            android:id="@+id/textView_fragmentHome_balance_zil"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:padding="16dp"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            tools:text="... ZIL"
-            />
-      </LinearLayout>
+          android:layout_gravity="center"
+          android:layout_marginRight="16dp"
+          android:gravity="center"
+          android:padding="16dp"
+          android:textColor="@color/white"
+          android:textSize="16sp"
+          tools:text="... ZIL"
+          />
     </LinearLayout>
 
 
@@ -96,7 +92,6 @@
         android:layout_height="200dp"
         android:layout_margin="16dp"
         />
-
 
 
   </LinearLayout>
