@@ -15,7 +15,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:padding="8dp"
-      android:text="Transaction sent"
+      android:text="Transaction Completed"
       android:textAppearance="@style/TextAppearance.Title"
       />
 
@@ -42,19 +42,19 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="4dp"
         android:layout_weight="1"
-        android:text="on Etherscan"
-        style="?android:attr/buttonBarButtonStyle"
+        android:background="@drawable/button_send"
+        android:text="VIEW IN Explorer"
         />
 
 
     <Button
         android:id="@+id/btn_dlg_hash_close"
         android:layout_width="0dp"
+        android:background="@drawable/button_send"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_weight="1"
         android:text="Close"
-        style="?android:attr/buttonBarButtonStyle"
         />
 
   </LinearLayout>

@@ -1,24 +1,19 @@
 package wallet.zilliqa.activities;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -26,11 +21,24 @@ import com.socks.library.KLog;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip39.wordlists.English;
-import java.io.File;
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import wallet.zilliqa.BaseActivity;
+import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.R;
+import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
+import wallet.zilliqa.data.local.Wallet;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
 
@@ -47,7 +55,8 @@ public class CreateNewAccountActivity extends BaseActivity {
   private CreateNewAccountActivity mContext;
   private Cryptography cryptography;
   private PreferencesHelper preferencesHelper;
-  private String mnemonic;
+  private String address;
+  private String privateKey;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -71,61 +80,34 @@ public class CreateNewAccountActivity extends BaseActivity {
     theWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
     theWebView.loadUrl("file:///android_asset/javascript/accounts.html");
 
-    new EnterPasswordDialog(CreateNewAccountActivity.this).show();
-  }
+    StringBuilder sb = new StringBuilder();
+    byte[] entropy = new byte[Words.TWELVE.byteLength()];
+    new SecureRandom().nextBytes(entropy);
+    new MnemonicGenerator(English.INSTANCE)
+        .createMnemonic(entropy, sb::append);
+    String mnemonic = sb.toString();
 
-  private class EnterPasswordDialog extends Dialog {
+    progressDialog = DialogFactory.createProgressDialog(mContext, "working...");
+    progressDialog.show();
 
-    public Activity activity;
-    private EditText editText_wallet_password;
-    private Button btn_dialog_password_continue;
+    new CountDownTimer(500, 500) {
+      @Override public void onTick(long l) {
+      }
 
-    public EnterPasswordDialog(Activity activity) {
-      super(activity);
-      this.activity = activity;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-
-      setContentView(R.layout.dialog_wallet_password);
-      editText_wallet_password = findViewById(R.id.editText_wallet_password);
-      btn_dialog_password_continue = findViewById(R.id.btn_dialog_password_continue);
-
-      btn_dialog_password_continue.setOnClickListener(
-          view -> {
-
-            if (editText_wallet_password.getText().toString().length() < 4) {
-              DialogFactory.error_toast(CreateNewAccountActivity.this,
-                  "Please enter at least a 4 characters passphrase").show();
-              return;
-            }
-
-            StringBuilder sb = new StringBuilder();
-            byte[] entropy = new byte[Words.TWELVE.byteLength()];
-            new SecureRandom().nextBytes(entropy);
-            new MnemonicGenerator(English.INSTANCE)
-                .createMnemonic(entropy, sb::append);
-            String mnemonic = sb.toString();
-
-
-            textView_the_seed.setText(mnemonic);
-            linLayout_new_account_all.setVisibility(View.VISIBLE);
-
-
-
-            theWebView.loadUrl("javascript:generateAccount(\""+mnemonic+"\")");
-            dismiss();
-          });
-    }
+      @Override public void onFinish() {
+        progressDialog.dismiss();
+        textView_the_seed.setText(mnemonic);
+        linLayout_new_account_all.setVisibility(View.VISIBLE);
+        theWebView.loadUrl("javascript:generateAccount(\"" + mnemonic + "\")");
+      }
+    }.start();
   }
 
   @OnClick(R.id.btn_seed_clipboard) public void onClickCopyToClipboard() {
     android.content.ClipboardManager clipboard =
         (android.content.ClipboardManager) mContext.getSystemService(
             Context.CLIPBOARD_SERVICE);
-    android.content.ClipData clip = android.content.ClipData.newPlainText("", mnemonic);
+    android.content.ClipData clip = android.content.ClipData.newPlainText("", textView_the_seed.getText().toString());
     if (clipboard != null) {
       clipboard.setPrimaryClip(clip);
       DialogFactory.simple_toast(mContext, "copied to clipboard").show();
@@ -138,12 +120,33 @@ public class CreateNewAccountActivity extends BaseActivity {
       DialogFactory.error_toast(mContext, "Please check that you stored the seed safely!")
           .show();
     } else {
+
+      // encrypt the private key &  stores it encrypted
+      Cryptography cryptography = new Cryptography(getApplication());
+      try {
+        String encryptedPrivateKey = cryptography.encryptData(privateKey);
+
+        AppDatabase appDatabase = BaseApplication.getAppDatabase(mContext);
+        appDatabase.walletDao().insertAll(new Wallet(address, encryptedPrivateKey));
+
+        //set it as default
+        preferencesHelper.setDefaultAddress(address);
+
+        KLog.d(">>> new wallet with address " + address + " stored in the db");
+      } catch (NoSuchPaddingException | NoSuchAlgorithmException |
+          UnrecoverableEntryException | CertificateException | KeyStoreException |
+          IOException | InvalidAlgorithmParameterException | InvalidKeyException |
+          NoSuchProviderException | BadPaddingException | IllegalBlockSizeException e) {
+        e.printStackTrace();
+        DialogFactory.error_toast(mContext, e.getLocalizedMessage()).show();
+        return;
+      }
+
       Intent intent = new Intent(mContext, MainActivity.class);
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
       startActivity(intent);
     }
   }
-
 
   @Override protected void onPause() {
     super.onPause();
@@ -160,10 +163,10 @@ public class CreateNewAccountActivity extends BaseActivity {
     }
 
     @JavascriptInterface
-    public void setAccount(String address, String privateKey) {
-      KLog.d(">>>>>>>>>>>>>>> SAVE IT >>>>>>>>>>>>>>>");
-      KLog.d("Address: " + address + " Private Key: " + privateKey);
-      KLog.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    public void setAccount(String maddress, String mprivateKey) {
+      KLog.d(">>>>>>>>>>>>>>> Address & Private Key Generated >>>>>>>>>>>>>>>");
+      address = maddress;
+      privateKey = mprivateKey;
     }
   }
 }

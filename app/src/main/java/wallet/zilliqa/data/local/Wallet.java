@@ -14,16 +14,13 @@ public class Wallet {
   @ColumnInfo(name = "address")
   private String address;
 
-  @ColumnInfo(name = "seed")
-  private String seed;
+  @ColumnInfo(name = "encrypted_private_key")
+  private String encrypted_private_key;
 
-  @ColumnInfo(name = "password")
-  private String password;
 
-  public Wallet(String address, String seed, String password) {
+  public Wallet(String address, String encrypted_private_key) {
     this.address = address;
-    this.seed = seed;
-    this.password = password;
+    this.encrypted_private_key = encrypted_private_key;
   }
 
   public int getUid() {
@@ -42,28 +39,19 @@ public class Wallet {
     this.address = address;
   }
 
-  public String getSeed() {
-    return seed;
+  public String getEncrypted_private_key() {
+    return encrypted_private_key;
   }
 
-  public void setSeed(String seed) {
-    this.seed = seed;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
+  public void setEncrypted_private_key(String encrypted_private_key) {
+    this.encrypted_private_key = encrypted_private_key;
   }
 
   @Override public String toString() {
     return "Wallet{" +
         "uid=" + uid +
         ", address='" + address + '\'' +
-        ", seed='" + seed + '\'' +
-        ", password='" + password + '\'' +
+        ", encrypted_private_key='" + encrypted_private_key + '\'' +
         '}';
   }
 }

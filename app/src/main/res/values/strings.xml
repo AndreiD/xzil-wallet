@@ -50,7 +50,7 @@
     android.support.design.widget.AppBarLayout$ScrollingViewBehavior
   </string>
   <string name="tos_terms">
-    If you continue, you agree to proceed to xZIL, a third party service. We use XXXXXXXX for
+    If you continue, you agree to proceed to xZIL, a third party service. We use a direct javascript library without any server for
     all the Blockchain interaction.
     Your wallet is stored on your device. We DO NOT have access to your public address, private
     keys, pin code. All your
@@ -67,4 +67,5 @@
   <string name="continue_lowercase">continue</string>
   <string name="action_manage_wallets">Manage Wallets</string>
   <string name="wallet_creation">Wallet Creation</string>
+  <string name="export_wallets">Export Wallets</string>
 </resources>

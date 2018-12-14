@@ -12,13 +12,11 @@ public class PreferencesHelper {
 
   private static final String PREF_FILE_NAME = "myapp_shared_prefs";
   private static final String KEY_PIN_CREATED = "KEY_PIN_CREATED";
-  private static final String KEY_SEED = "KEY_SEED";
-  private static final String KEY_ADDRESS = "KEY_ADDRESS";
   private static final String KEY_PASSWORD = "KEY_PASSWORD";
   private static final String KEY_PIN = "KEY_PIN";
   private static final String KEY_CONFIRMED_TOS = "KEY_CONFIRMED_TOS";
   private static final String KEY_INVALID_PINS = "KEY_INVALID_PINS";
-  private static final String KEY_DEFAULT_TOKEN = "KEY_DEFAULT_TOKEN";
+  private static final String KEY_DEFAULT_ADDRESS = "KEY_DEFAULT_ADDRESS";
   private static SharedPreferences mPref;
 
   public PreferencesHelper(Context context) {
@@ -55,22 +53,6 @@ public class PreferencesHelper {
     mPref.edit().putInt(KEY_INVALID_PINS, invalidPins).commit();
   }
 
-  public String getAddress() {
-    return mPref.getString(KEY_ADDRESS, null);
-  }
-
-  public void setAddress(String addr) {
-    mPref.edit().putString(KEY_ADDRESS, addr).commit();
-  }
-
-  public String getSeed() {
-    return mPref.getString(KEY_SEED, "");
-  }
-
-  public void setSeed(String seed) {
-    mPref.edit().putString(KEY_SEED, seed).commit();
-  }
-
   public String getPassword() {
     return mPref.getString(KEY_PASSWORD, "");
   }
@@ -87,12 +69,12 @@ public class PreferencesHelper {
     mPref.edit().putString(KEY_PIN, encryptedPin).commit();
   }
 
-  public String getDefaultToken() {
-    return mPref.getString(KEY_DEFAULT_TOKEN, null);
+  public String getDefaulAddress() {
+    return mPref.getString(KEY_DEFAULT_ADDRESS, null);
   }
 
-  public void setDefaultToken(String address) {
-    mPref.edit().putString(KEY_DEFAULT_TOKEN, address).commit();
+  public void setDefaultAddress(String address) {
+    mPref.edit().putString(KEY_DEFAULT_ADDRESS, address).commit();
   }
 }
 
