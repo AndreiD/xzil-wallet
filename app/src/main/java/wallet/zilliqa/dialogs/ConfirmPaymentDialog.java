@@ -29,6 +29,7 @@ import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
+import wallet.zilliqa.utils.BlockiesIdenticon;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
 
@@ -97,6 +98,13 @@ public class ConfirmPaymentDialog extends DialogFragment {
     TextView txt_dlg_confirm_amount = view.findViewById(R.id.txt_dlg_confirm_amount);
     TextView txt_dlg_confirm_fee = view.findViewById(R.id.txt_dlg_confirm_fee);
     TextView txt_dlg_confirm_total = view.findViewById(R.id.txt_dlg_confirm_total);
+    BlockiesIdenticon identicon_to = view.findViewById(R.id.identicon_to);
+    BlockiesIdenticon identicon_from = view.findViewById(R.id.identicon_from);
+
+    preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
+
+    identicon_to.setAddress(toAddress);
+    identicon_from.setAddress(preferencesHelper.getDefaulAddress());
     WebView theWebView = view.findViewById(R.id.theWebView);
 
     // update the balance
@@ -113,7 +121,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
     txt_dlg_confirm_to.setText(toAddress);
 
-    preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
 
     db = BaseApplication.getAppDatabase(getActivity());
 
@@ -136,7 +143,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
     btn_dlg_confirm_send.setOnClickListener(v -> {
 
       progressDialog = DialogFactory.createProgressDialog(getActivity(),
-          "Sending " + String.valueOf(amount) + " to be mined. Please wait");
+          "Sending " + String.valueOf(amount) + " to be mined.\nPlease wait");
       progressDialog.show();
       db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 

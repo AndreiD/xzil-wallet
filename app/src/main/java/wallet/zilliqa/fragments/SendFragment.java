@@ -20,7 +20,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
-import com.socks.library.KLog;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -82,7 +81,7 @@ public class SendFragment extends BaseFragment {
     if (BuildConfig.DEBUG) {
       send_editText_to.setText(
           Constants.newWalletPublicAddress2);
-      send_editText_amount.setText("1.123");
+      send_editText_amount.setText("50");
     }
 
     // update the balance
@@ -95,6 +94,7 @@ public class SendFragment extends BaseFragment {
     theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
     theWebView.loadUrl("file:///android_asset/javascript/balance.html");
 
+    send_button_send.setClickable(false);
 
     seekBar_fee.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -123,12 +123,10 @@ public class SendFragment extends BaseFragment {
       send_editText_to.setText(Constants.lastScanAddress);
     }
 
-
-      disposable = Observable.interval(500, 10000,
-          TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(this::updateBalances);
-
+    disposable = Observable.interval(500, 10000,
+        TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::updateBalances);
   }
 
   @OnClick(R.id.send_button_send) public void onClickSend() {
@@ -185,6 +183,14 @@ public class SendFragment extends BaseFragment {
     theWebView.loadUrl("javascript:getBalance(\"" + preferencesHelper.getDefaulAddress() + "\")");
   }
 
+  @Override public void onPause() {
+    super.onPause();
+    try {
+      disposable.dispose();
+    } catch (Exception ignored) {
+    }
+  }
+
   private class WebAppInterface {
     Context mContext;
 
@@ -195,14 +201,8 @@ public class SendFragment extends BaseFragment {
     @JavascriptInterface
     public void balance(String balance) {
       balanceZIL = new BigDecimal(balance);
-      send_textView_amount.setText("Amount: " + balance + " ZIL (testnet)");
+      send_textView_amount.setText("Amount: " + balance + " ZIL");
+      send_button_send.setClickable(true);
     }
-  }
-
-  @Override public void onPause() {
-    super.onPause();
-    try {
-      disposable.dispose();
-    }catch (Exception ignored){}
   }
 }
