@@ -13,23 +13,23 @@
     const zjs = new Zilliqa('https://api-scilla.zilliqa.com')
 
     //private key is for address: 0x573EC96638C8BB1C386394602E1460634F02ADDD
-    //sendTransaction('f03ececc92a157aa4c3f26de32069749f7325bac', '15000', '69122B6C3A70B6CC7908546B7F6233F1F5501ECC5759D2940E32FEE250E7AA7A');
+    //sendTransaction('f03ececc92a157aa4c3f26de32069749f7325bac', '15000', '100', '69122B6C3A70B6CC7908546B7F6233F1F5501ECC5759D2940E32FEE250E7AA7A');
 
-    function sendTransaction(toaddress, amount, senderPrivateKey) {
+    function sendTransaction(toaddress, amount, gasPrice, senderPrivateKey) {
 
       zjs.wallet.addByPrivateKey(
         senderPrivateKey,
       );
       console.log("Preparing to send the transaction...");
 
-      sendTx(toaddress, parseFloat(amount)).then(function (output) {
+      sendTx(toaddress, parseFloat(amount), gasPrice).then(function (output) {
         console.log(">> output status " + output.status);
         console.log(">> transaction id " + output.id);
         Android.showHash(output.id);
       });
     }
 
-    async function sendTx(toaddress, amount) {
+    async function sendTx(toaddress, amount, gPrice) {
       try {
         // Send a transaction to the network
         console.log(">> to : " + toaddress + " > amount > " + amount);
@@ -38,7 +38,7 @@
             version: 1,
             toAddr: toaddress,
             amount: new BN(amount),
-            gasPrice: new BN(100),
+            gasPrice: new BN(gPrice),
             gasLimit: Long.fromNumber(10),
           }),
         );

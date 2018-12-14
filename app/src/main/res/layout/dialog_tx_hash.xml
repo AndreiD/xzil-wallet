@@ -42,13 +42,15 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="4dp"
         android:layout_weight="1"
-        android:text="on Explorer"
+        android:background="@drawable/button_send"
+        android:text="VIEW IN Explorer"
         />
 
 
     <Button
         android:id="@+id/btn_dlg_hash_close"
         android:layout_width="0dp"
+        android:background="@drawable/button_send"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_weight="1"

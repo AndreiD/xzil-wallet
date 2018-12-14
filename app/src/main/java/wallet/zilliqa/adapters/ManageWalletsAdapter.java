@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import com.socks.library.KLog;
 import io.reactivex.Completable;
@@ -17,6 +16,7 @@ import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.local.Wallet;
+import wallet.zilliqa.utils.BlockiesIdenticon;
 import wallet.zilliqa.utils.DialogFactory;
 
 public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdapter.TokenViewHolder> {
@@ -47,11 +47,8 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
     Wallet wallet = walletList.get(position);
     String address = wallet.getAddress();
 
-
     holder.wallet_address.setText(address);
-
-
-
+    holder.identicon.setAddress(address);
     holder.cardView_wallet.setOnClickListener(view -> {
 
       AlertDialog.Builder builder = new AlertDialog.Builder(ctx, R.style.AppCompatAlertDialogStyle);
@@ -70,14 +67,14 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
 
       builder.setPositiveButton("REMOVE", (dialog, which) -> {
 
+        if (address.equals(preferencesHelper.getDefaulAddress())) {
+          DialogFactory.error_toast(ctx, "cannot remove your default address").show();
+          return;
+        }
+
         // delete it from the database
         AppDatabase db = BaseApplication.getAppDatabase(ctx);
         Completable.fromAction(() -> db.walletDao().delete(wallet)).subscribe(() -> {
-
-          if (address.equals(preferencesHelper.getDefaulAddress())) {
-            DialogFactory.error_toast(ctx, "cannot remove your default address").show();
-            return;
-          }
           DialogFactory.success_toast(ctx, "address removed").show();
 
           //update UI
@@ -108,11 +105,13 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
   public class TokenViewHolder extends RecyclerView.ViewHolder {
     public TextView wallet_address;
     public CardView cardView_wallet;
+    public BlockiesIdenticon identicon;
+
     public TokenViewHolder(View view) {
       super(view);
       cardView_wallet = view.findViewById(R.id.cardView_wallet);
       wallet_address = view.findViewById(R.id.wallet_address);
-
+      identicon = view.findViewById(R.id.identicon);
     }
   }
 }
