@@ -180,10 +180,10 @@ public class HomeFragment extends BaseFragment {
   @Override public void onResume() {
     super.onResume();
 
-    //disposable = Observable.interval(500, 10000,
-    //    TimeUnit.MILLISECONDS)
-    //    .observeOn(AndroidSchedulers.mainThread())
-    //    .subscribe(this::updateBalances);
+    disposable = Observable.interval(500, 10000,
+        TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::updateBalances);
   }
 
   @Override public void onPause() {

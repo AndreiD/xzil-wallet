@@ -21,7 +21,7 @@ public class Constants {
   public static String publicAddress = "";
   public static String lastScanAddress = "";
 
-  public static final String EXPLORER_URL = "https://explorer.zilliqa.com/transactions/";
+  public static final String EXPLORER_URL = "https://explorer-scilla.zilliqa.com/transactions/";
 
 
 

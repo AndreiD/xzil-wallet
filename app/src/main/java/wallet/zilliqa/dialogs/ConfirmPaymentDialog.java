@@ -136,15 +136,17 @@ public class ConfirmPaymentDialog extends DialogFragment {
     btn_dlg_confirm_send.setOnClickListener(v -> {
 
       progressDialog = DialogFactory.createProgressDialog(getActivity(),
-          "Sending " + txt_dlg_confirm_total.getText().toString() + " to " + toAddress + ". Please Stand-By");
+          "Sending " + String.valueOf(amount) + " to be mined. Please wait");
       progressDialog.show();
       db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 
         Cryptography cryptography = new Cryptography(getActivity());
         String decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
 
+        // address default: 0XF03ECECC92A157AA4C3F26DE32069749F7325BAC
+        KLog.d(">> decrypted private key is " + decryptedPrivateKey);
         //sendTransaction('f03ececc92a157aa4c3f26de32069749f7325bac', 12, '69122B6C3A70B6CC7908546B7F6233F1F5501ECC5759D2940E32FEE250E7AA7A');
-        theWebView.loadUrl("javascript:sendTransaction('f03ececc92a157aa4c3f26de32069749f7325bac','12','69122B6C3A70B6CC7908546B7F6233F1F5501ECC5759D2940E32FEE250E7AA7A')");
+        theWebView.loadUrl("javascript:sendTransaction('" + toAddress + "','" + String.valueOf(amount) + "','" + decryptedPrivateKey + "')");
       }, throwable -> {
         KLog.e(throwable);
         try {
@@ -183,6 +185,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
       TxHashDialog txHashDialog =
           TxHashDialog.newInstance(hash);
       txHashDialog.show(fm, "tx_hash_dialog");
+      getActivity().getSupportFragmentManager().popBackStack();
     }
   }
 }

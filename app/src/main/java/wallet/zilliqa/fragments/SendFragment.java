@@ -82,7 +82,7 @@ public class SendFragment extends BaseFragment {
     if (BuildConfig.DEBUG) {
       send_editText_to.setText(
           Constants.newWalletPublicAddress2);
-      send_editText_amount.setText("0.1");
+      send_editText_amount.setText("1.123");
     }
 
     // update the balance
@@ -98,7 +98,7 @@ public class SendFragment extends BaseFragment {
 
     seekBar_fee.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        gasPrice = String.valueOf((progress + 1) * 10);
+        gasPrice = String.valueOf(100 + progress);
         send_textView_fee.setText(
             String.format("Gas Price: %s ZIL", gasPrice));
       }
@@ -111,7 +111,7 @@ public class SendFragment extends BaseFragment {
     });
 
     //set default gas price
-    gasPrice = String.valueOf(2 * 10);
+    gasPrice = String.valueOf(101);
     send_textView_fee.setText(
         String.format("Gas Price: %s ZIL", gasPrice));
   }
@@ -124,10 +124,10 @@ public class SendFragment extends BaseFragment {
     }
 
 
-      //disposable = Observable.interval(500, 10000,
-      //    TimeUnit.MILLISECONDS)
-      //    .observeOn(AndroidSchedulers.mainThread())
-      //    .subscribe(this::updateBalances);
+      disposable = Observable.interval(500, 10000,
+          TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(this::updateBalances);
 
   }
 
@@ -158,7 +158,6 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    balanceZIL = new BigDecimal(11111);
     if (balanceZIL.compareTo(new BigDecimal(amount_to_send)) < 0) {
       DialogFactory.warning_toast(getActivity(),
           "Seems you don't have enough ZIL for this transaction.").show();
