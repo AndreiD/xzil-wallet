@@ -11,18 +11,18 @@
 
 ## The TODO:
 
- - UI/UX 30 nov
- - Wallet logic for sending/receiving ZILs on testnet 30 dec
- - Import & Create multiple wallets
- - BIP39
+ - ~~UI/UX 30 nov~~
+ - ~~Wallet logic for sending/receiving ZILs on testnet 30 dec~~
+ - ~~Import & Create multiple wallets~~
+ - ~~BIP39~~
  - Identicons
- - Checksum
- - Transaction status & history
- - Gas fees slider
- - QR Code
+ - Checksum (?)
+ - ~~Transaction status & history~~
+ - ~~Gas fees slider~~
+ - ~~QR Code~~
  - Sending feature locked with passphrase / fingerprint
  - unit testing 20 jan
- - google store release 31 jan
+ - ~~google store release 31 jan~~
 
 
 ## Contributing
