@@ -2,9 +2,12 @@
 <resources>
   <string-array name="networks">
     <item>Testnet (Scilla)</item>
+    <item>Mainnet</item>
   </string-array>
+
   <string-array name="networksValues">
     <item>testnet</item>
+    <item>mainnet</item>
   </string-array>
 
   <string-array name="fee">

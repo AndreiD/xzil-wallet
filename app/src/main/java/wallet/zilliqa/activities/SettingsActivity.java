@@ -105,10 +105,10 @@ public class SettingsActivity extends BaseActivity {
         e.printStackTrace();
       }
 
-      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-      String network_preference = prefs.getString("network_preference", "mainnet");
-      Preference networkPreference = findPreference("network_preference");
-      networkPreference.setSummary(network_preference);
+      //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+      //String network_preference = prefs.getString("network_preference", "testnet");
+      //Preference networkPreference = findPreference("network_preference");
+      //networkPreference.setSummary(network_preference);
 
       //networkPreference.setOnPreferenceChangeListener((preference, newValue) -> {
       //  preference.setSummary(newValue.toString());
@@ -118,10 +118,8 @@ public class SettingsActivity extends BaseActivity {
 
       Preference buttonfeedback = findPreference(getString(R.string.send_feedback));
       buttonfeedback.setOnPreferenceClickListener(preference -> {
-        DialogFactory.simple_toast(getActivity(), "You should have Telegram installed...")
-            .show();
         Intent viewIntent =
-            new Intent("android.intent.action.VIEW", Uri.parse("https://t.me/mytokenapp"));
+            new Intent("android.intent.action.VIEW", Uri.parse("https://gitter.im/Zilliqa/CommunityDev"));
         startActivity(viewIntent);
 
         return true;
