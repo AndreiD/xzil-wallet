@@ -20,7 +20,7 @@
 </p>
 <br />
 &nbsp;
-&nbsp;
+
 ## How to build & run
 
 1. fork the project
