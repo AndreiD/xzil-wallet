@@ -15,15 +15,14 @@
  - ~~Wallet logic for sending/receiving ZILs on testnet 30 dec~~
  - ~~Import & Create multiple wallets~~
  - ~~BIP39~~
- - Identicons
- - Checksum (?)
+ - ~~Identicons~~
+ - ~~Checksum~~
  - ~~Transaction status & history~~
  - ~~Gas fees slider~~
  - ~~QR Code~~
- - Sending feature locked with passphrase / fingerprint
- - unit testing 20 jan
  - ~~google store release 31 jan~~
-
+ - sending feature locked with passphrase / fingerprint
+ - unit testing 20 jan
 
 ## Contributing
 
