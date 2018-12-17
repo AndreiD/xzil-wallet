@@ -8,13 +8,13 @@
 
 
 ## Screenshots
-
+<br />
 <img width="350" align="right" src="https://raw.githubusercontent.com/AndreiD/xzil-wallet/master/other/Screenshot_1545053897.png" alt="screenshot #1"/>
 <img width="350" align="right" src="https://raw.githubusercontent.com/AndreiD/xzil-wallet/master/other/Screenshot_1545053909.png" alt="screenshot #2"/>
-
+<br />
 <img width="350" align="right" src="https://raw.githubusercontent.com/AndreiD/xzil-wallet/master/other/Screenshot_1545053914.png" alt="screenshot #3"/>
 <img width="350" align="right" src="https://raw.githubusercontent.com/AndreiD/xzil-wallet/master/other/Screenshot_1545053935.png" alt="screenshot #4"/>
-
+<br />
 ## How to build & run
 
 1. fork the project
