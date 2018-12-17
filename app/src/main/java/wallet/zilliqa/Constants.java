@@ -16,6 +16,7 @@ public class Constants {
   public static String newWalletPublicAddress2 = "37182D3C7033D76080E04F70BED76A0496D14CD1";
   public static String newWalletPrivateKey2 = "BD04FFE30016A975B4193468A54A852F58F10E913BE8945C1C33CB5EA0CF5881";
   public static String newWalletSeed = "spike bleak robust note resist typical unfair domain easy cousin similar sister";
+  public static String newWalletSeed2 = "will grow market harsh elbow divert keep course absorb brass phrase lucky";
   //----------------------------------------------------------------------------------------------------------------------
 
   public static String publicAddress = "";

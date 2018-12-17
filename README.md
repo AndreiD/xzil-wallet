@@ -3,6 +3,12 @@
 
 :snowflake: This is an android application for ZIL blockchain  https://zilliqa.com/index.html
 
+<a href='https://play.google.com/store/apps/details?id=wallet.zilliqa&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+
+## Screenshots
+
+<img src="" alt="screenshot #1"/>
+
 ## How to build & run
 
 1. fork the project
@@ -15,15 +21,14 @@
  - ~~Wallet logic for sending/receiving ZILs on testnet 30 dec~~
  - ~~Import & Create multiple wallets~~
  - ~~BIP39~~
- - Identicons
- - Checksum (?)
+ - ~~Identicons~~
+ - ~~Checksum~~
  - ~~Transaction status & history~~
  - ~~Gas fees slider~~
  - ~~QR Code~~
- - Sending feature locked with passphrase / fingerprint
- - unit testing 20 jan
  - ~~google store release 31 jan~~
-
+ - sending feature locked with passphrase / fingerprint
+ - unit testing 20 jan
 
 ## Contributing
 

@@ -62,7 +62,7 @@ public class ReceiveFragment extends BaseFragment {
     for (int y = 0; y < height; y++) {
       int offset = y * width;
       for (int x = 0; x < width; x++) {
-        pixels[offset + x] = bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE;
+        pixels[offset + x] = bitMatrix.get(x, y) ? Color.BLACK : Color.TRANSPARENT;
       }
     }
 
