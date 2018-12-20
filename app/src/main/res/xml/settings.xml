@@ -2,13 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-  <ListPreference
-      android:defaultValue="mainnet"
-      android:entries="@array/networks"
-      android:entryValues="@array/networksValues"
-      android:key="network_preference"
-      android:summary="testnet"
-      android:title="Blockchain Network"/>
+  <!--<ListPreference-->
+      <!--android:defaultValue="testnet"-->
+      <!--android:entries="@array/networks"-->
+      <!--android:entryValues="@array/networksValues"-->
+      <!--android:key="network_preference"-->
+      <!--android:summary="testnet"-->
+      <!--android:title="Blockchain Network"/>-->
 
   <Preference
       android:key="@string/erase_everything"

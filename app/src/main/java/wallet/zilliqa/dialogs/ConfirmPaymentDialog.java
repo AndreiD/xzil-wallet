@@ -143,7 +143,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
     btn_dlg_confirm_send.setOnClickListener(v -> {
 
       progressDialog = DialogFactory.createProgressDialog(getActivity(),
-          "Sending " + String.valueOf(amount) + " to be mined.\nPlease wait");
+          "Sending " + String.valueOf(amount) + " ZIL. Please wait...");
       progressDialog.show();
       db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 
