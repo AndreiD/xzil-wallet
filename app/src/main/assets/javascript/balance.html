@@ -5,16 +5,19 @@
 </head>
 
 <body>
-  <script type="text/javascript" src="ZiliqaJS.browser.js"></script>
+  <script type="text/javascript" src="ZilliqaJS.browser.js"></script>
   <script>
     const { Zilliqa } = window.ZilliqaJS
     const zjs = new Zilliqa('https://api.zilliqa.com')
 
+    getBalance('f03ececc92a157aa4c3f26de32069749f7325bac');
+
     function getBalance(address) {
       zjs.provider.send("GetBalance", address).then(function (result) {
+        console.log("Balance: "+ result.result.balance);
         Android.balance(result.result.balance);
       }, function (err) {
-        console.log("Something broke");
+        console.log(err);
       });
     }
   </script>
