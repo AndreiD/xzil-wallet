@@ -1,8 +1,5 @@
 package wallet.zilliqa;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 

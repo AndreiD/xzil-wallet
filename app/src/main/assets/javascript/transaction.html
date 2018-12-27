@@ -13,19 +13,17 @@
     const zjs = new Zilliqa('https://api.zilliqa.com')
 
     //private key is for address: 0x573EC96638C8BB1C386394602E1460634F02ADDD
-    //sendTransaction('f03ececc92a157aa4c3f26de32069749f7325bac', '15000', '100', 'f03ececc92a157aa4c3f26de32069749f7325bac');
+    //sendTransaction('136df6c4ce41113e77e2e858ffc793be9b74ffbd', '15000', '1000000000', '8c33694c8f5d905d1b829e816aa2c6b24b5a54e15701bd583234c3dcba8c49ff');
 
     function sendTransaction(toaddress, amount, gasPrice, senderPrivateKey) {
-
       zjs.wallet.addByPrivateKey(
         senderPrivateKey,
       );
       console.log("Preparing to send the transaction...");
 
       sendTx(toaddress, parseFloat(amount), gasPrice).then(function (output) {
-        console.log(">> output status " + output.status);
-        console.log(">> transaction id " + output.id);
-        Android.showHash(output.id);
+        console.log(output);
+        Android.showHash(output);
       });
     }
 

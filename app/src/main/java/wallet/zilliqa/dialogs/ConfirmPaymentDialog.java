@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -91,7 +92,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
     String toAddress = getArguments().getString(TOADDRESS, "");
     double amount = getArguments().getDouble(AMOUNT, 0.0);
-    String gasPrice = getArguments().getString(GAS_PRICE, "20");
+    String gasPrice = getArguments().getString(GAS_PRICE, "1000000000");
 
     TextView txt_dlg_confirm_to = view.findViewById(R.id.txt_dlg_confirm_to);
     TextView txt_dlg_confirm_from = view.findViewById(R.id.txt_dlg_confirm_from);
@@ -126,10 +127,10 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
     // Setup Initial Views
     txt_dlg_confirm_from.setText(preferencesHelper.getDefaulAddress());
-    txt_dlg_confirm_amount.setText(String.format("%s ZIL",
+    txt_dlg_confirm_amount.setText(String.format("%s Qa",
         Constants.getDecimalFormat().format(amount)));
-    txt_dlg_confirm_fee.setText(String.format("%s ZIL", gasPrice));
-    txt_dlg_confirm_total.setText(String.format("%s ZIL", Constants.getDecimalFormat().format(amount + Double.valueOf(gasPrice))));
+    txt_dlg_confirm_fee.setText(String.format("%s Qa", gasPrice));
+    txt_dlg_confirm_total.setText(String.format("%s Qa", Constants.getDecimalFormat().format(amount + Double.valueOf(gasPrice))));
 
     getDialog().setCancelable(true);
     getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -143,8 +144,18 @@ public class ConfirmPaymentDialog extends DialogFragment {
     btn_dlg_confirm_send.setOnClickListener(v -> {
 
       progressDialog = DialogFactory.createProgressDialog(getActivity(),
-          "Sending " + String.valueOf(amount) + " ZIL. Please wait...");
+          "Sending " + txt_dlg_confirm_total.getText().toString() + ". Please wait...");
       progressDialog.show();
+
+      new CountDownTimer(29000,29000){
+        @Override public void onTick(long millisUntilFinished) {
+        }
+        @Override public void onFinish() {
+          progressDialog.dismiss();
+          DialogFactory.warning_toast(getActivity(),"transaction should be sent by now. On the next app update I'll try to display the tx id.").show();
+        }
+      }.start();
+
       db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 
         Cryptography cryptography = new Cryptography(getActivity());

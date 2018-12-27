@@ -233,7 +233,11 @@ public class HomeFragment extends BaseFragment {
       getActivity().runOnUiThread(() -> {
         textView_fragmentHome_status.setText("all looks good.");
         textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
-        textView_fragmentHome_balance_zil.setText(balance + " ZIL");
+        if(balance.contains("undefined")){
+          textView_fragmentHome_balance_zil.setText("0 ZIL");
+        }else {
+          textView_fragmentHome_balance_zil.setText(balance + " Qa");
+        }
       });
 
     }

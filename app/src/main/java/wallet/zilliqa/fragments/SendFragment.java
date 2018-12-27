@@ -98,9 +98,9 @@ public class SendFragment extends BaseFragment {
 
     seekBar_fee.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        gasPrice = String.valueOf(100 + progress);
+        gasPrice = String.valueOf(1000000000 + progress);
         send_textView_fee.setText(
-            String.format("Gas Price: %s ZIL", gasPrice));
+            String.format("Gas Price: %s Qa", gasPrice));
       }
 
       @Override public void onStartTrackingTouch(SeekBar seekBar) {
@@ -111,7 +111,7 @@ public class SendFragment extends BaseFragment {
     });
 
     //set default gas price
-    gasPrice = String.valueOf(101);
+    gasPrice = String.valueOf(1000000000);
     send_textView_fee.setText(
         String.format("Gas Price: %s ZIL", gasPrice));
   }
@@ -138,14 +138,8 @@ public class SendFragment extends BaseFragment {
       } catch (Exception ignored) {
       }
     }
-    if (amount_to_send > 9999999) {
-      DialogFactory.warning_toast(getActivity(),
-          "This app doesn't believe that you have so much ETH/Tokens so it blocks this call")
-          .show();
-      return;
-    }
 
-    if (send_editText_to.getText().toString().length() < 30) {
+    if (send_editText_to.getText().toString().length() < 30) {  // checksum her
       DialogFactory.warning_toast(getActivity(), "You need to enter the destination address.")
           .show();
       return;
@@ -200,9 +194,16 @@ public class SendFragment extends BaseFragment {
 
     @JavascriptInterface
     public void balance(String balance) {
-      balanceZIL = new BigDecimal(balance);
-      send_textView_amount.setText("Amount: " + balance + " ZIL");
-      send_button_send.setClickable(true);
+
+      if (balance.contains("undefined")) {
+        balanceZIL = new BigDecimal(0);
+        send_textView_amount.setText("Amount: 0 ZIL");
+        send_button_send.setClickable(true);
+      } else {
+        balanceZIL = new BigDecimal(balance);
+        send_textView_amount.setText("Amount: " + balance + " Qa");
+        send_button_send.setClickable(true);
+      }
     }
   }
 }
