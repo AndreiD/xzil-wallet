@@ -19,7 +19,7 @@
       zjs.wallet.addByPrivateKey(
         senderPrivateKey,
       );
-      console.log("Preparing to send the transaction...");
+
 
       sendTx(toaddress, parseFloat(amount), gasPrice).then(function (output) {
         console.log(output);
@@ -29,8 +29,7 @@
 
     async function sendTx(toaddress, amount, gPrice) {
       try {
-        // Send a transaction to the network
-        console.log(">> to : " + toaddress + " > amount > " + amount);
+        console.log(">>----> To:  " + toaddress + " Amount:  " + amount +"  Gas Price: "+gPrice);
         const tx = await zjs.blockchain.createTransaction(
           zjs.transactions.new({
             version: 1,

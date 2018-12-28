@@ -34,6 +34,7 @@ import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.dialogs.ConfirmPaymentDialog;
 import wallet.zilliqa.qrscanner.QRScannerActivity;
+import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.DialogFactory;
 
 public class SendFragment extends BaseFragment {
@@ -47,8 +48,8 @@ public class SendFragment extends BaseFragment {
   @BindView(R.id.send_textView_amount) TextView send_textView_amount;
   @BindView(R.id.send_textView_currency) TextView send_textView_currency;
   @BindView(R.id.send_textView_fee) TextView send_textView_fee;
-  private BigDecimal balanceZIL;
-  private String gasPrice;
+  private BigDecimal balanceZIL = new BigDecimal(0);
+  private BigDecimal gasPriceInZil;
   private PreferencesHelper preferencesHelper;
   private AppDatabase db;
   private Disposable disposable;
@@ -94,13 +95,11 @@ public class SendFragment extends BaseFragment {
     theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
     theWebView.loadUrl("file:///android_asset/javascript/balance.html");
 
-    send_button_send.setClickable(false);
-
     seekBar_fee.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        gasPrice = String.valueOf(1000000000 + progress);
+        gasPriceInZil = Convert.fromQa(new BigDecimal(String.valueOf(1000000000 + progress*100000)), Convert.Unit.ZIL);
         send_textView_fee.setText(
-            String.format("Gas Price: %s Qa", gasPrice));
+            String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
       }
 
       @Override public void onStartTrackingTouch(SeekBar seekBar) {
@@ -111,9 +110,9 @@ public class SendFragment extends BaseFragment {
     });
 
     //set default gas price
-    gasPrice = String.valueOf(1000000000);
+    gasPriceInZil = Convert.fromQa(new BigDecimal("1000000000"), Convert.Unit.ZIL);
     send_textView_fee.setText(
-        String.format("Gas Price: %s ZIL", gasPrice));
+        String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
   }
 
   @Override public void onResume() {
@@ -130,13 +129,15 @@ public class SendFragment extends BaseFragment {
   }
 
   @OnClick(R.id.send_button_send) public void onClickSend() {
-    double amount_to_send = 0;
+    BigDecimal amount_to_send = new BigDecimal(0);
     if (send_editText_amount.getText().toString().trim().length() > 0) {
       try {
-        //TODO: transform this to BigDecimal
-        amount_to_send = Double.valueOf(send_editText_amount.getText().toString().trim());
+        amount_to_send = new BigDecimal(send_editText_amount.getText().toString().trim());
       } catch (Exception ignored) {
       }
+    } else {
+      DialogFactory.warning_toast(getActivity(), "Please enter the amount you want to send").show();
+      return;
     }
 
     if (send_editText_to.getText().toString().length() < 30) {  // checksum her
@@ -145,25 +146,20 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    if (amount_to_send <= 0) {
-      DialogFactory.warning_toast(getActivity(), "Please enter the amount you want to send").show();
-      return;
-    }
-
-    if (balanceZIL.compareTo(new BigDecimal(amount_to_send)) < 0) {
+    if (balanceZIL.compareTo(amount_to_send) < 0) {
       DialogFactory.warning_toast(getActivity(),
           "Seems you don't have enough ZIL for this transaction.").show();
       send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
       return;
     }
-    sendTheMoney(send_editText_to.getText().toString().trim(), amount_to_send, gasPrice);
+    sendTheMoney(send_editText_to.getText().toString().trim(), amount_to_send, gasPriceInZil);
   }
 
-  private void sendTheMoney(String destinationAddress, double amount, String gasPrice) {
+  private void sendTheMoney(String destinationAddress, BigDecimal amount, BigDecimal gasPriceInZil) {
 
     FragmentManager fm = getActivity().getSupportFragmentManager();
     ConfirmPaymentDialog confirmPaymentDialog =
-        ConfirmPaymentDialog.newInstance(destinationAddress, amount, gasPrice);
+        ConfirmPaymentDialog.newInstance(destinationAddress, amount, gasPriceInZil);
     confirmPaymentDialog.show(fm, "confirm_dialog_fragment");
   }
 
@@ -198,11 +194,9 @@ public class SendFragment extends BaseFragment {
       if (balance.contains("undefined")) {
         balanceZIL = new BigDecimal(0);
         send_textView_amount.setText("Amount: 0 ZIL");
-        send_button_send.setClickable(true);
       } else {
-        balanceZIL = new BigDecimal(balance);
-        send_textView_amount.setText("Amount: " + balance + " Qa");
-        send_button_send.setClickable(true);
+        balanceZIL = Convert.fromQa(balance, Convert.Unit.ZIL);
+        send_textView_amount.setText("Amount: " + balanceZIL.toString() + " ZIL");
       }
     }
   }
