@@ -36,12 +36,14 @@
             toAddr: toaddress,
             amount: new BN(amount),
             gasPrice: new BN(gPrice),
-            gasLimit: Long.fromNumber(10),
+            gasLimit: Long.fromNumber(1000),
           }),
         );
+        console.log("The transaction status is:");
+        console.log(tx);
         return tx;
       } catch (err) {
-        Android.showError(err.message)
+        //Android.showError(err.message)
         console.log(err);
       }
     }

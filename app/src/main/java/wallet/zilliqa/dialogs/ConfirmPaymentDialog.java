@@ -148,7 +148,8 @@ public class ConfirmPaymentDialog extends DialogFragment {
           "Sending " + txt_dlg_confirm_total.getText().toString() + ". Please wait...");
       progressDialog.show();
 
-      new CountDownTimer(29000,29000){
+      //TODO: remove me after...
+      new CountDownTimer(329000,329000){
         @Override public void onTick(long millisUntilFinished) {
         }
         @Override public void onFinish() {
