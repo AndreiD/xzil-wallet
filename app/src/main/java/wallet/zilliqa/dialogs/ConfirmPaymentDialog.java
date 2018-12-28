@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -23,13 +24,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.socks.library.KLog;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import wallet.zilliqa.BaseApplication;
-import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.utils.BlockiesIdenticon;
+import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
 
@@ -43,12 +45,12 @@ public class ConfirmPaymentDialog extends DialogFragment {
   private PreferencesHelper preferencesHelper;
   private AppDatabase db;
 
-  public static ConfirmPaymentDialog newInstance(String toAddress, double amount, String gasPrice) {
+  public static ConfirmPaymentDialog newInstance(String toAddress, BigDecimal amount, BigDecimal gasPriceInZil) {
     ConfirmPaymentDialog frag = new ConfirmPaymentDialog();
     Bundle args = new Bundle();
     args.putString(TOADDRESS, toAddress);
-    args.putDouble(AMOUNT, amount);
-    args.putString(GAS_PRICE, gasPrice);
+    args.putString(AMOUNT, amount.toString());
+    args.putString(GAS_PRICE, gasPriceInZil.toString());
     frag.setArguments(args);
     return frag;
   }
@@ -90,8 +92,8 @@ public class ConfirmPaymentDialog extends DialogFragment {
     super.onViewCreated(view, savedInstanceState);
 
     String toAddress = getArguments().getString(TOADDRESS, "");
-    double amount = getArguments().getDouble(AMOUNT, 0.0);
-    String gasPrice = getArguments().getString(GAS_PRICE, "20");
+    BigDecimal amountInZIL = new BigDecimal(getArguments().getString(AMOUNT, "0"));
+    BigDecimal gasPriceInZIL = new BigDecimal(getArguments().getString(GAS_PRICE, "0"));
 
     TextView txt_dlg_confirm_to = view.findViewById(R.id.txt_dlg_confirm_to);
     TextView txt_dlg_confirm_from = view.findViewById(R.id.txt_dlg_confirm_from);
@@ -127,9 +129,9 @@ public class ConfirmPaymentDialog extends DialogFragment {
     // Setup Initial Views
     txt_dlg_confirm_from.setText(preferencesHelper.getDefaulAddress());
     txt_dlg_confirm_amount.setText(String.format("%s ZIL",
-        Constants.getDecimalFormat().format(amount)));
-    txt_dlg_confirm_fee.setText(String.format("%s ZIL", gasPrice));
-    txt_dlg_confirm_total.setText(String.format("%s ZIL", Constants.getDecimalFormat().format(amount + Double.valueOf(gasPrice))));
+        amountInZIL));
+    txt_dlg_confirm_fee.setText(String.format("%s ZIL", gasPriceInZIL));
+    txt_dlg_confirm_total.setText(String.format("%s ZIL", amountInZIL.add(gasPriceInZIL)));
 
     getDialog().setCancelable(true);
     getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -143,14 +145,27 @@ public class ConfirmPaymentDialog extends DialogFragment {
     btn_dlg_confirm_send.setOnClickListener(v -> {
 
       progressDialog = DialogFactory.createProgressDialog(getActivity(),
-          "Sending " + String.valueOf(amount) + " ZIL. Please wait...");
+          "Sending " + txt_dlg_confirm_total.getText().toString() + ". Please wait...");
       progressDialog.show();
+
+      //TODO: remove me after...
+      new CountDownTimer(329000,329000){
+        @Override public void onTick(long millisUntilFinished) {
+        }
+        @Override public void onFinish() {
+          progressDialog.dismiss();
+          DialogFactory.warning_toast(getActivity(),"transaction should be sent by now. On the next app update I'll try to display the tx id.").show();
+        }
+      }.start();
+
       db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 
         Cryptography cryptography = new Cryptography(getActivity());
         String decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
+        String amountToSendInQA =  Convert.toQa(amountInZIL,Convert.Unit.ZIL).toString();
+        String gasPriceToSendInQA =  Convert.toQa(gasPriceInZIL,Convert.Unit.ZIL).toString();
 
-        theWebView.loadUrl("javascript:sendTransaction('" + toAddress + "','" + String.valueOf(amount) + "','" + gasPrice + "','" + decryptedPrivateKey + "')");
+        theWebView.loadUrl("javascript:sendTransaction('" + toAddress + "','" + amountToSendInQA + "','" + gasPriceToSendInQA + "','" + decryptedPrivateKey + "')");
       }, throwable -> {
         KLog.e(throwable);
         try {
@@ -185,11 +200,12 @@ public class ConfirmPaymentDialog extends DialogFragment {
         progressDialog.dismiss();
       } catch (Exception ignored) {
       }
-      FragmentManager fm = getActivity().getSupportFragmentManager();
-      TxHashDialog txHashDialog =
-          TxHashDialog.newInstance(hash);
-      txHashDialog.show(fm, "tx_hash_dialog");
-      getActivity().getSupportFragmentManager().popBackStack();
+      // Disable it for now...
+      //FragmentManager fm = getActivity().getSupportFragmentManager();
+      //TxHashDialog txHashDialog =
+      //    TxHashDialog.newInstance(hash);
+      //txHashDialog.show(fm, "tx_hash_dialog");
+      //getActivity().getSupportFragmentManager().popBackStack();
     }
   }
 }

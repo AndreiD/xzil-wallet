@@ -4,11 +4,10 @@
 :snowflake: This is an android application for ZIL blockchain  https://zilliqa.com/index.html
 
 
-<a href='https://play.google.com/store/apps/details?id=wallet.zilliqa&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="200" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+<a target="_blank" href='https://play.google.com/store/apps/details?id=wallet.zilliqa&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="200" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
 
 ## Screenshots
-<br />
 &nbsp;
 <p float="left">
 <img width="350"  src="https://raw.githubusercontent.com/AndreiD/xzil-wallet/master/other/Screenshot_1545053897.png" alt="screenshot #1"/> <img width="350"  src="https://raw.githubusercontent.com/AndreiD/xzil-wallet/master/other/Screenshot_1545053909.png" alt="screenshot #2"/>

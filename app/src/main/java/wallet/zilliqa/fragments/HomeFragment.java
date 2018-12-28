@@ -26,6 +26,7 @@ import com.socks.library.KLog;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.ExchangeRatesAPI;
 import wallet.zilliqa.utils.BlockiesIdenticon;
+import wallet.zilliqa.utils.Convert;
 
 public class HomeFragment extends BaseFragment {
 
@@ -233,7 +235,12 @@ public class HomeFragment extends BaseFragment {
       getActivity().runOnUiThread(() -> {
         textView_fragmentHome_status.setText("all looks good.");
         textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
-        textView_fragmentHome_balance_zil.setText(balance + " ZIL");
+        if(balance.contains("undefined")){
+          textView_fragmentHome_balance_zil.setText("0 ZIL");
+        }else {
+          BigDecimal balanceZil = Convert.fromQa(balance, Convert.Unit.ZIL);
+          textView_fragmentHome_balance_zil.setText(balanceZil.toString() + " ZIL");
+        }
       });
 
     }

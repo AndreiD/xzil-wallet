@@ -6,8 +6,8 @@ android {
     applicationId "wallet.zilliqa"
     minSdkVersion 26
     targetSdkVersion 27
-    versionCode 7
-    versionName "1.42"
+    versionCode 9
+    versionName "1.44"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
 
