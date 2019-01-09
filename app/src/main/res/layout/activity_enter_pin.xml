@@ -34,7 +34,7 @@
             android:layout_marginLeft="64dp"
             android:layout_marginRight="64dp"
             android:gravity="center"
-            android:inputType="text|number"
+            android:inputType="text|textPassword"
             android:textColor="@color/primary_text"
             android:textSize="30sp"
             />

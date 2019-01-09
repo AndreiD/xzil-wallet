@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
+import android.support.v7.app.AppCompatActivity;
 import com.google.zxing.Result;
 import com.socks.library.KLog;
 
@@ -19,7 +20,7 @@ import wallet.zilliqa.utils.DialogFactory;
 
 import static android.Manifest.permission.CAMERA;
 
-public class QRScannerActivity extends BaseActivity implements ZXingScannerView.ResultHandler {
+public class QRScannerActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
 
   private static final int REQUEST_CAMERA = 1;
   private ZXingScannerView mScannerView;
