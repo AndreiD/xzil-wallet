@@ -20,11 +20,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.google.gson.JsonObject;
+import com.socks.library.KLog;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.BuildConfig;
@@ -32,9 +39,12 @@ import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
+import wallet.zilliqa.data.remote.RpcMethod;
+import wallet.zilliqa.data.remote.ZilliqaRPC;
 import wallet.zilliqa.dialogs.ConfirmPaymentDialog;
 import wallet.zilliqa.qrscanner.QRScannerActivity;
 import wallet.zilliqa.utils.Convert;
+import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
 
 public class SendFragment extends BaseFragment {
@@ -53,6 +63,7 @@ public class SendFragment extends BaseFragment {
   private PreferencesHelper preferencesHelper;
   private AppDatabase db;
   private Disposable disposable;
+  private BigDecimal minimumGasPrice = new BigDecimal("1000000000"); // default min gas price
 
   public SendFragment() {
   }
@@ -97,7 +108,21 @@ public class SendFragment extends BaseFragment {
 
     seekBar_fee.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        gasPriceInZil = Convert.fromQa(new BigDecimal(String.valueOf(1000000000 + progress*100000)), Convert.Unit.ZIL);
+        gasPriceInZil = minimumGasPrice;
+        switch (progress) {
+          case 0:
+            gasPriceInZil = Convert.fromQa(minimumGasPrice, Convert.Unit.ZIL); //10% more
+            break;
+          case 1:
+            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL); //10% more
+            break;
+          case 2:
+            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("2")), Convert.Unit.ZIL); //100% more
+            break;
+          default:
+            KLog.w("unknown seekbar value!");
+            break;
+        }
         send_textView_fee.setText(
             String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
       }
@@ -109,10 +134,44 @@ public class SendFragment extends BaseFragment {
       }
     });
 
-    //set default gas price
-    gasPriceInZil = Convert.fromQa(new BigDecimal("1000000000"), Convert.Unit.ZIL);
+    getMinimumGasPrice();
+
+    //set default gas price (10% more)
+    gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
     send_textView_fee.setText(
         String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
+  }
+
+  private void getMinimumGasPrice() {
+    KLog.d(">> GETTING MINIMUM GAS PRICE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    RpcMethod rpcMethod = new RpcMethod();
+    rpcMethod.setId("1");
+    rpcMethod.setJsonrpc("2.0");
+    rpcMethod.setMethod("GetMinimumGasPrice");
+    List<String> emptyList = new ArrayList<>();
+    emptyList.add("");
+    rpcMethod.setParams(emptyList);
+    zilliqaRPC.getMinimumGasPrice(rpcMethod).enqueue(new Callback<JsonObject>() {
+      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+        if (response.code() == 200) {
+          String resp = response.body().get("result").getAsString();
+          minimumGasPrice = new BigDecimal(resp); // update min gas price
+          KLog.d("got min gas price from api: " + minimumGasPrice);
+
+          //set default gas price (10% more)
+          gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
+          send_textView_fee.setText(
+              String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
+        } else {
+          KLog.e("getMinimumGasPrice: response code is not 200!");
+        }
+      }
+
+      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+        KLog.e(t);
+      }
+    });
   }
 
   @Override public void onResume() {
@@ -156,7 +215,7 @@ public class SendFragment extends BaseFragment {
   }
 
   private void sendTheMoney(String destinationAddress, BigDecimal amount, BigDecimal gasPriceInZil) {
-
+    DUtils.hideKeyboard(getActivity());
     FragmentManager fm = getActivity().getSupportFragmentManager();
     ConfirmPaymentDialog confirmPaymentDialog =
         ConfirmPaymentDialog.newInstance(destinationAddress, amount, gasPriceInZil);
