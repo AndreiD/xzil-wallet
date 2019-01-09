@@ -33,6 +33,7 @@ import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.utils.BlockiesIdenticon;
 import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.Cryptography;
+import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
 
 public class ConfirmPaymentDialog extends DialogFragment {
@@ -83,7 +84,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
     toolbar.setNavigationIcon(R.drawable.ic_close_white_24dp);
     toolbar.setNavigationOnClickListener(view1 -> dismiss());
     toolbar.setTitle(getString(R.string.confirm_payment));
-
+    DUtils.hideKeyboard(getActivity()); //hides the keyboard, TODO:// shows for a fraction of a second. use somethign else else
     return view;
   }
 
