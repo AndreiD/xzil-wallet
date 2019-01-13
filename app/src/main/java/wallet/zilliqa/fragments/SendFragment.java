@@ -211,6 +211,16 @@ public class SendFragment extends BaseFragment {
       send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
       return;
     }
+
+    askForPINDialog(amount_to_send);
+
+
+  }
+
+  private void askForPINDialog(BigDecimal amount_to_send) {
+    KLog.d("asking for PIN now...");
+
+    // if it's good then
     sendTheMoney(send_editText_to.getText().toString().trim(), amount_to_send, gasPriceInZil);
   }
 
