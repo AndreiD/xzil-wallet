@@ -20,6 +20,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.firestack.laksaj.utils.Validation;
 import com.google.gson.JsonObject;
 import com.socks.library.KLog;
 import io.reactivex.Observable;
@@ -199,8 +200,8 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    if (send_editText_to.getText().toString().length() < 30) {  // checksum her
-      DialogFactory.warning_toast(getActivity(), "You need to enter the destination address.")
+    if (!Validation.isValidChecksumAddress(send_editText_to.getText().toString().trim())) {
+      DialogFactory.warning_toast(getActivity(), "You need to enter a valid destination address.")
           .show();
       return;
     }
