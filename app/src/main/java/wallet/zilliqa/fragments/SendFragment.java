@@ -46,6 +46,7 @@ import wallet.zilliqa.qrscanner.QRScannerActivity;
 import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
+import com.firestack.laksaj.utils.Validation;
 
 public class SendFragment extends BaseFragment {
 
@@ -199,8 +200,8 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    if (send_editText_to.getText().toString().length() < 30) {  // checksum her
-      DialogFactory.warning_toast(getActivity(), "You need to enter the destination address.")
+    if (!Validation.isValidChecksumAddress(send_editText_to.getText().toString().trim())) {
+      DialogFactory.warning_toast(getActivity(), "You need to enter a valid destination address.")
           .show();
       return;
     }

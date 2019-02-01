@@ -119,4 +119,6 @@ dependencies {
 
   //------ Address Generation
   implementation 'io.github.novacrypto:BIP39:2018.10.06'
+
+  implementation group: 'org.firestack', name: 'laksaj', version: '0.0.4-SNAPSHOT'
 }
