@@ -34,6 +34,7 @@ import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.local.Wallet;
+import wallet.zilliqa.utils.AndroidKeyTool;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
 
@@ -65,11 +66,9 @@ public class CreateNewAccountActivity extends BaseActivity {
 
     linLayout_new_account_all.setVisibility(View.INVISIBLE);
 
-    progressDialog = DialogFactory.createProgressDialog(mContext, "generating new wallet...");
-    progressDialog.show();
 
     try {
-      ECKeyPair keyPair = KeyTools.generateKeyPair();
+      ECKeyPair keyPair = AndroidKeyTool.generateKeyPair();
       BigInteger privateInteger = keyPair.getPrivateKey();
       BigInteger publicInteger = keyPair.getPublicKey();
 
@@ -81,11 +80,7 @@ public class CreateNewAccountActivity extends BaseActivity {
 
       textView_private_key.setText(privateKey);
       linLayout_new_account_all.setVisibility(View.VISIBLE);
-    } catch (InvalidAlgorithmParameterException e) {
-      e.printStackTrace();
-    } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
-    } catch (NoSuchProviderException e) {
+    } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException e) {
       e.printStackTrace();
     }
   }
