@@ -117,9 +117,6 @@ dependencies {
   //------ Graphs
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
-  //------ Address Generation
-  implementation 'io.github.novacrypto:BIP39:2018.10.06'
-
   // ---- LaksaJ
   implementation group: 'org.firestack', name: 'laksaj', version: '0.0.4-SNAPSHOT'
 }

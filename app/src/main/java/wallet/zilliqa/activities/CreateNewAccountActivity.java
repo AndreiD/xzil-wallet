@@ -3,13 +3,8 @@ package wallet.zilliqa.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.view.View;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -17,22 +12,22 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.firestack.laksaj.crypto.KeyTools;
+import com.firestack.laksaj.utils.ByteUtil;
 import com.socks.library.KLog;
-import io.github.novacrypto.bip39.MnemonicGenerator;
-import io.github.novacrypto.bip39.Words;
-import io.github.novacrypto.bip39.wordlists.English;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import org.web3j.crypto.ECKeyPair;
 import wallet.zilliqa.BaseActivity;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.R;
@@ -44,12 +39,11 @@ import wallet.zilliqa.utils.DialogFactory;
 
 public class CreateNewAccountActivity extends BaseActivity {
 
-  @BindView(R.id.textView_the_seed) TextView textView_the_seed;
+  @BindView(R.id.textView_private_key) TextView textView_private_key;
   @BindView(R.id.checkBox_seed) CheckBox checkBox_seed;
-  @BindView(R.id.btn_seed_clipboard) Button btn_seed_clipboard;
-  @BindView(R.id.btn_seed_continue) Button btn_seed_continue;
+  @BindView(R.id.btn_private_key_clipboard) Button btn_seed_clipboard;
+  @BindView(R.id.btn_continue) Button btn_seed_continue;
   @BindView(R.id.linLayout_new_account_all) LinearLayout linLayout_new_account_all;
-  @BindView(R.id.theWebView) WebView theWebView;
 
   private ProgressDialog progressDialog;
   private CreateNewAccountActivity mContext;
@@ -71,50 +65,43 @@ public class CreateNewAccountActivity extends BaseActivity {
 
     linLayout_new_account_all.setVisibility(View.INVISIBLE);
 
-    theWebView.getSettings().setJavaScriptEnabled(true);
-    theWebView.getSettings().setAppCacheEnabled(false);
-    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-    theWebView.setBackgroundColor(Color.TRANSPARENT);
-    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-
-    theWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
-    theWebView.loadUrl("file:///android_asset/javascript/accounts.html");
-
-    StringBuilder sb = new StringBuilder();
-    byte[] entropy = new byte[Words.TWELVE.byteLength()];
-    new SecureRandom().nextBytes(entropy);
-    new MnemonicGenerator(English.INSTANCE)
-        .createMnemonic(entropy, sb::append);
-    String mnemonic = sb.toString();
-
-    progressDialog = DialogFactory.createProgressDialog(mContext, "working...");
+    progressDialog = DialogFactory.createProgressDialog(mContext, "generating new wallet...");
     progressDialog.show();
 
-    new CountDownTimer(500, 500) {
-      @Override public void onTick(long l) {
-      }
+    try {
+      ECKeyPair keyPair = KeyTools.generateKeyPair();
+      BigInteger privateInteger = keyPair.getPrivateKey();
+      BigInteger publicInteger = keyPair.getPublicKey();
 
-      @Override public void onFinish() {
-        progressDialog.dismiss();
-        textView_the_seed.setText(mnemonic);
-        linLayout_new_account_all.setVisibility(View.VISIBLE);
-        theWebView.loadUrl("javascript:generateAccount(\"" + mnemonic + "\")");
-      }
-    }.start();
+      address = KeyTools.getAddressFromPublicKey(ByteUtil.byteArrayToHexString(publicInteger.toByteArray()));
+      privateKey = ByteUtil.byteArrayToHexString(privateInteger.toByteArray());
+
+      KLog.d("private key is: " + privateKey);
+      KLog.d("address is: " + address);
+
+      textView_private_key.setText(privateKey);
+      linLayout_new_account_all.setVisibility(View.VISIBLE);
+    } catch (InvalidAlgorithmParameterException e) {
+      e.printStackTrace();
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    } catch (NoSuchProviderException e) {
+      e.printStackTrace();
+    }
   }
 
-  @OnClick(R.id.btn_seed_clipboard) public void onClickCopyToClipboard() {
+  @OnClick(R.id.btn_private_key_clipboard) public void onClickCopyToClipboard() {
     android.content.ClipboardManager clipboard =
         (android.content.ClipboardManager) mContext.getSystemService(
             Context.CLIPBOARD_SERVICE);
-    android.content.ClipData clip = android.content.ClipData.newPlainText("", textView_the_seed.getText().toString());
+    android.content.ClipData clip = android.content.ClipData.newPlainText("", textView_private_key.getText().toString());
     if (clipboard != null) {
       clipboard.setPrimaryClip(clip);
       DialogFactory.simple_toast(mContext, "copied to clipboard").show();
     }
   }
 
-  @OnClick(R.id.btn_seed_continue) public void onClickContinue() {
+  @OnClick(R.id.btn_continue) public void onClickContinue() {
     if (!checkBox_seed.isChecked()) {
       checkBox_seed.setTextColor(getResources().getColor(R.color.material_red));
       DialogFactory.error_toast(mContext, "Please check that you stored the seed safely!")
@@ -152,21 +139,6 @@ public class CreateNewAccountActivity extends BaseActivity {
     super.onPause();
     if ((progressDialog != null) && progressDialog.isShowing()) {
       progressDialog.dismiss();
-    }
-  }
-
-  private class WebAppInterface {
-    Context mContext;
-
-    WebAppInterface(Context c) {
-      mContext = c;
-    }
-
-    @JavascriptInterface
-    public void setAccount(String maddress, String mprivateKey) {
-      KLog.d(">>>>>>>>>>>>>>> Address & Private Key Generated >>>>>>>>>>>>>>>");
-      address = maddress;
-      privateKey = mprivateKey;
     }
   }
 }
