@@ -47,6 +47,7 @@ import wallet.zilliqa.qrscanner.QRScannerActivity;
 import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
+import com.firestack.laksaj.utils.Validation;
 
 public class SendFragment extends BaseFragment {
 
