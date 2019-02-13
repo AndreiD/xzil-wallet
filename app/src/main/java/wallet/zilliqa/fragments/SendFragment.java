@@ -1,8 +1,6 @@
 package wallet.zilliqa.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,9 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,7 +42,6 @@ import wallet.zilliqa.qrscanner.QRScannerActivity;
 import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
-import com.firestack.laksaj.utils.Validation;
 
 public class SendFragment extends BaseFragment {
 
@@ -56,7 +50,6 @@ public class SendFragment extends BaseFragment {
   @BindView(R.id.send_button_send) Button send_button_send;
   @BindView(R.id.send_imageButton_scanqr) ImageView send_imageButton_scanqr;
   @BindView(R.id.seekBar_fee) SeekBar seekBar_fee;
-  @BindView(R.id.theWebView) WebView theWebView;
   @BindView(R.id.send_textView_amount) TextView send_textView_amount;
   @BindView(R.id.send_textView_currency) TextView send_textView_currency;
   @BindView(R.id.send_textView_fee) TextView send_textView_fee;
@@ -99,14 +92,6 @@ public class SendFragment extends BaseFragment {
     }
 
     // update the balance
-    theWebView.getSettings().setJavaScriptEnabled(true);
-    theWebView.getSettings().setAppCacheEnabled(false);
-    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-    theWebView.setBackgroundColor(Color.TRANSPARENT);
-    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-
-    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
-    theWebView.loadUrl("file:///android_asset/javascript/balance.html");
 
     seekBar_fee.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -241,7 +226,7 @@ public class SendFragment extends BaseFragment {
   }
 
   private void updateBalances(Long aLong) {
-    theWebView.loadUrl("javascript:getBalance(\"" + preferencesHelper.getDefaulAddress() + "\")");
+    //
   }
 
   @Override public void onPause() {
@@ -252,23 +237,5 @@ public class SendFragment extends BaseFragment {
     }
   }
 
-  private class WebAppInterface {
-    Context mContext;
 
-    WebAppInterface(Context c) {
-      mContext = c;
-    }
-
-    @JavascriptInterface
-    public void balance(String balance) {
-
-      if (balance.contains("undefined")) {
-        balanceZIL = new BigDecimal(0);
-        send_textView_amount.setText("Amount: 0 ZIL");
-      } else {
-        balanceZIL = Convert.fromQa(balance, Convert.Unit.ZIL);
-        send_textView_amount.setText("Amount: " + balanceZIL.toString() + " ZIL");
-      }
-    }
-  }
 }

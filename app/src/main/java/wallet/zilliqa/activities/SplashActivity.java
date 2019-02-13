@@ -1,6 +1,5 @@
 package wallet.zilliqa.activities;
 
-
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;

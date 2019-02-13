@@ -14,6 +14,10 @@ public class Constants {
   public static String newWalletPrivateKey2 = "BD04FFE30016A975B4193468A54A852F58F10E913BE8945C1C33CB5EA0CF5881";
   public static String newWalletSeed = "spike bleak robust note resist typical unfair domain easy cousin similar sister"; //f03ececc92a157aa4c3f26de32069749f7325bac
   public static String newWalletSeed2 = "will grow market harsh elbow divert keep course absorb brass phrase lucky";  //136df6c4ce41113e77e2e858ffc793be9b74ffbd
+
+  //------- another test account -------------
+  public static String newWalletPrivateKeyX = "0x82163Ce6f719fBc5Bf3e4280Bb23C4c413172eE6";
+  // Parola123! -> spike bleak robust note resist typical unfair domain easy cousin similar sister -> 0x82163Ce6f719fBc5Bf3e4280Bb23C4c413172eE6
   //----------------------------------------------------------------------------------------------------------------------
 
   public static String publicAddress = "";

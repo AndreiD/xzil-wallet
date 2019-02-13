@@ -118,7 +118,7 @@ dependencies {
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
   // ---- LaksaJ
-  implementation group: 'org.firestack', name: 'laksaj', version: '0.0.4-SNAPSHOT'
+  implementation group: 'org.firestack', name: 'laksaj', version: '0.0.6-SNAPSHOT'
 
   // Need them ?
   implementation 'com.madgag.spongycastle:core:1.58.0.0'

@@ -1,6 +1,5 @@
 package wallet.zilliqa.activities;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -46,7 +45,6 @@ public class CreateNewAccountActivity extends BaseActivity {
   @BindView(R.id.btn_continue) Button btn_seed_continue;
   @BindView(R.id.linLayout_new_account_all) LinearLayout linLayout_new_account_all;
 
-  private ProgressDialog progressDialog;
   private CreateNewAccountActivity mContext;
   private Cryptography cryptography;
   private PreferencesHelper preferencesHelper;
@@ -65,7 +63,6 @@ public class CreateNewAccountActivity extends BaseActivity {
     preferencesHelper = new PreferencesHelper(mContext);
 
     linLayout_new_account_all.setVisibility(View.INVISIBLE);
-
 
     try {
       ECKeyPair keyPair = AndroidKeyTool.generateKeyPair();
@@ -127,13 +124,6 @@ public class CreateNewAccountActivity extends BaseActivity {
       Intent intent = new Intent(mContext, MainActivity.class);
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
       startActivity(intent);
-    }
-  }
-
-  @Override protected void onPause() {
-    super.onPause();
-    if ((progressDialog != null) && progressDialog.isShowing()) {
-      progressDialog.dismiss();
     }
   }
 }

@@ -2,7 +2,6 @@ package wallet.zilliqa.dialogs;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,16 +9,12 @@ import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,7 +36,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
   public static final String TOADDRESS = "toaddress";
   public static final String AMOUNT = "amount";
   public static final String GAS_PRICE = "gas_price";
-  BigInteger nonce = null;
   private ProgressDialog progressDialog;
   private PreferencesHelper preferencesHelper;
   private AppDatabase db;
@@ -108,17 +102,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
     identicon_to.setAddress(toAddress);
     identicon_from.setAddress(preferencesHelper.getDefaulAddress());
-    WebView theWebView = view.findViewById(R.id.theWebView);
 
-    // update the balance
-    theWebView.getSettings().setJavaScriptEnabled(true);
-    theWebView.getSettings().setAppCacheEnabled(false);
-    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-    theWebView.setBackgroundColor(Color.TRANSPARENT);
-    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-
-    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
-    theWebView.loadUrl("file:///android_asset/javascript/transaction.html");
 
     Button btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
 
@@ -166,7 +150,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
         String amountToSendInQA =  Convert.toQa(amountInZIL,Convert.Unit.ZIL).toString();
         String gasPriceToSendInQA =  Convert.toQa(gasPriceInZIL,Convert.Unit.ZIL).toString();
 
-        theWebView.loadUrl("javascript:sendTransaction('" + toAddress + "','" + amountToSendInQA + "','" + gasPriceToSendInQA + "','" + decryptedPrivateKey + "')");
+        //theWebView.loadUrl("javascript:sendTransaction('" + toAddress + "','" + amountToSendInQA + "','" + gasPriceToSendInQA + "','" + decryptedPrivateKey + "')");
       }, throwable -> {
         KLog.e(throwable);
         try {
@@ -179,34 +163,5 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
   }
 
-  private class WebAppInterface {
-    Context mContext;
 
-    WebAppInterface(Context c) {
-      mContext = c;
-    }
-
-    @JavascriptInterface
-    public void showError(String error) {
-      try {
-        progressDialog.dismiss();
-      } catch (Exception ignored) {
-      }
-      DialogFactory.createGenericErrorDialog(getActivity(), error).show();
-    }
-
-    @JavascriptInterface
-    public void showHash(String hash) {
-      try {
-        progressDialog.dismiss();
-      } catch (Exception ignored) {
-      }
-      // Disable it for now...
-      //FragmentManager fm = getActivity().getSupportFragmentManager();
-      //TxHashDialog txHashDialog =
-      //    TxHashDialog.newInstance(hash);
-      //txHashDialog.show(fm, "tx_hash_dialog");
-      //getActivity().getSupportFragmentManager().popBackStack();
-    }
-  }
 }
