@@ -3,6 +3,7 @@ package wallet.zilliqa.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -11,14 +12,13 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.firestack.laksaj.crypto.KeyTools;
-import com.firestack.laksaj.utils.ByteUtil;
 import com.socks.library.KLog;
 import java.io.IOException;
-import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableEntryException;
@@ -27,13 +27,13 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import org.web3j.crypto.ECKeyPair;
+import org.web3j.crypto.Keys;
 import wallet.zilliqa.BaseActivity;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
-import wallet.zilliqa.data.local.Wallet;
-import wallet.zilliqa.utils.AndroidKeyTool;
+import wallet.zilliqa.utils.ByteUtil;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
 
@@ -51,6 +51,24 @@ public class CreateNewAccountActivity extends BaseActivity {
   private String address;
   private String privateKey;
 
+  public static String getAddressFromPublicKey(String publicKey) {
+    byte[] data = getSha512(ByteUtil.hexStringToByteArray(publicKey));
+    String originAddress = ByteUtil.byteArrayToHexString(data);
+    return originAddress.substring(24);
+  }
+
+  public static byte[] getSha512(byte[] publicKey) {
+    try {
+      MessageDigest md = MessageDigest.getInstance("SHA-256");
+      md.update(publicKey);
+      byte[] digest = md.digest();
+      return Base64.encodeToString(digest, Base64.DEFAULT).getBytes(Charset.forName("UTF-8"));
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -65,12 +83,21 @@ public class CreateNewAccountActivity extends BaseActivity {
     linLayout_new_account_all.setVisibility(View.INVISIBLE);
 
     try {
-      ECKeyPair keyPair = AndroidKeyTool.generateKeyPair();
-      BigInteger privateInteger = keyPair.getPrivateKey();
-      BigInteger publicInteger = keyPair.getPublicKey();
 
-      address = KeyTools.getAddressFromPublicKey(ByteUtil.byteArrayToHexString(publicInteger.toByteArray()));
-      privateKey = ByteUtil.byteArrayToHexString(privateInteger.toByteArray());
+      //ECKeyPair keyPair = Keys.createEcKeyPair();
+      //
+      //KLog.d("Private key: " + keyPair.getPrivateKey().toString(16));
+      //KLog.d("Public key: " + keyPair.getPublicKey().toString(16));
+      //KLog.d("Address -> " + getAddressFromPublicKey(keyPair.getPublicKey().toString(16)));
+
+
+
+      //ECKeyPair keyPair = KeyTools.generateKeyPair();
+      //BigInteger privateInteger = keyPair.getPrivateKey();
+      //BigInteger publicInteger = keyPair.getPublicKey();
+      //
+      //address = KeyTools.getAddressFromPublicKey(ByteUtil.byteArrayToHexString(publicInteger.toByteArray()));
+      //privateKey = ByteUtil.byteArrayToHexString(privateInteger.toByteArray());
 
       KLog.d("private key is: " + privateKey);
       KLog.d("address is: " + address);
@@ -106,7 +133,7 @@ public class CreateNewAccountActivity extends BaseActivity {
         String encryptedPrivateKey = cryptography.encryptData(privateKey);
 
         AppDatabase appDatabase = BaseApplication.getAppDatabase(mContext);
-        appDatabase.walletDao().insertAll(new Wallet(address, encryptedPrivateKey));
+        //appDatabase.walletDao().insertAll(new Wallet(address, encryptedPrivateKey));
 
         //set it as default
         preferencesHelper.setDefaultAddress(address);

@@ -90,6 +90,23 @@ public class Cryptography {
     }
   }
 
+  //
+  //public static String toCheckSumAddress(String address) {
+  //  address = address.toLowerCase().replace("0x", "");
+  //  String hash = ByteUtil.byteArrayToHexString(HashUtil.sha256(ByteUtil.hexStringToByteArray(address)));
+  //  StringBuilder ret = new StringBuilder("0x");
+  //  BigInteger v = new BigInteger(ByteUtil.hexStringToByteArray(hash));
+  //  for (int i = 0; i < address.length(); i++) {
+  //    if ("1234567890".indexOf(address.charAt(i)) != -1) {
+  //      ret.append(address.charAt(i));
+  //    } else {
+  //      BigInteger checker = v.and(BigInteger.valueOf(2l).pow(255 - 6 * i));
+  //      ret.append(checker.compareTo(BigInteger.valueOf(1l)) < 0 ? String.valueOf(address.charAt(i)).toLowerCase() : String.valueOf(address.charAt(i)).toUpperCase());
+  //    }
+  //  }
+  //  return ret.toString();
+  //}
+  //
   private void removeKeys(KeyStore keyStore) throws KeyStoreException {
     keyStore.deleteEntry(KEY_ALIAS);
     removeSavedSharedPreferences();
