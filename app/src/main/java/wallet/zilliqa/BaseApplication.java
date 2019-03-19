@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import com.socks.library.KLog;
+import io.reactivex.plugins.RxJavaPlugins;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
@@ -30,6 +31,8 @@ public class BaseApplication extends Application {
         .setFontAttrId(R.attr.fontPath)
         .build()
     );
+
+    RxJavaPlugins.setErrorHandler(throwable -> KLog.e(throwable));
   }
 
   @Override public void onLowMemory() {

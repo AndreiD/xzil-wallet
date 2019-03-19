@@ -1,6 +1,5 @@
 package wallet.zilliqa.fragments;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,9 +7,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.TextView;
 import butterknife.BindView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -31,6 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
@@ -41,6 +38,8 @@ import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.ExchangeRatesAPI;
+import wallet.zilliqa.data.remote.RpcMethod;
+import wallet.zilliqa.data.remote.ZilliqaRPC;
 import wallet.zilliqa.utils.BlockiesIdenticon;
 import wallet.zilliqa.utils.Convert;
 
@@ -52,7 +51,6 @@ public class HomeFragment extends BaseFragment {
   @BindView(R.id.textView_fragmentHome_date) TextView textView_fragmentHome_date;
   @BindView(R.id.home_line_chart) LineChart home_line_chart;
   @BindView(R.id.identicon_home) BlockiesIdenticon identicon_home;
-  @BindView(R.id.home_webview) WebView theWebView;
   private Disposable disposable;
   private PreferencesHelper preferencesHelper;
 
@@ -78,15 +76,6 @@ public class HomeFragment extends BaseFragment {
     super.onActivityCreated(savedInstanceState);
 
     preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
-
-    theWebView.getSettings().setJavaScriptEnabled(true);
-    theWebView.getSettings().setAppCacheEnabled(false);
-    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-    theWebView.setBackgroundColor(Color.TRANSPARENT);
-    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-
-    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
-    theWebView.loadUrl("file:///android_asset/javascript/balance.html");
 
     textView_fragmentHome_balance_zil.setVisibility(View.GONE);
     textView_fragmentHome_status.setText("Updating...");
@@ -201,7 +190,38 @@ public class HomeFragment extends BaseFragment {
   }
 
   private void updateBalances(Long aLong) {
-    theWebView.loadUrl("javascript:getBalance(\"" + preferencesHelper.getDefaulAddress() + "\")");
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    RpcMethod rpcMethod = new RpcMethod();
+    rpcMethod.setId("1");
+    rpcMethod.setJsonrpc("2.0");
+    rpcMethod.setMethod("GetBalance");
+    List<String> emptyList = new ArrayList<>();
+    emptyList.add(preferencesHelper.getDefaulAddress());
+    rpcMethod.setParams(emptyList);
+    zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
+      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+        if (response.code() == 200) {
+          try {
+            String resp = response.body().getAsJsonObject("result").get("balance").getAsString();
+            BigDecimal balBD = new BigDecimal(resp);
+            BigDecimal balanceZil = Convert.fromQa(balBD, Convert.Unit.ZIL);
+            getActivity().runOnUiThread(() -> {
+              textView_fragmentHome_status.setText("all looks good.");
+              textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
+              textView_fragmentHome_balance_zil.setText(balanceZil.toString() + " ZIL");
+            });
+          } catch (Exception ex) {
+            KLog.e(ex);
+          }
+        } else {
+          KLog.e("getBalance: response code is not 200!");
+        }
+      }
+
+      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+        KLog.e(t);
+      }
+    });
   }
 
   private void showGreeting() {
@@ -220,29 +240,5 @@ public class HomeFragment extends BaseFragment {
 
     DateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.getDefault());
     textView_fragmentHome_date.setText(formatter.format(c.getTime()));
-  }
-
-  private class WebAppInterface {
-    Context mContext;
-
-    WebAppInterface(Context c) {
-      mContext = c;
-    }
-
-    @JavascriptInterface
-    public void balance(String balance) {
-
-      getActivity().runOnUiThread(() -> {
-        textView_fragmentHome_status.setText("all looks good.");
-        textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
-        if(balance.contains("undefined")){
-          textView_fragmentHome_balance_zil.setText("0 ZIL");
-        }else {
-          BigDecimal balanceZil = Convert.fromQa(balance, Convert.Unit.ZIL);
-          textView_fragmentHome_balance_zil.setText(balanceZil.toString() + " ZIL");
-        }
-      });
-
-    }
   }
 }

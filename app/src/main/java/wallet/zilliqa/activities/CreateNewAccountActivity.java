@@ -54,6 +54,7 @@ import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
+import wallet.zilliqa.utils.crypto.ECKey;
 
 public class CreateNewAccountActivity extends BaseActivity {
 
@@ -107,41 +108,34 @@ public class CreateNewAccountActivity extends BaseActivity {
 
     linLayout_new_account_all.setVisibility(View.INVISIBLE);
 
-    try {
 
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC", "SC");
-        keyPairGenerator.initialize(getSecp256k1Spec());
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        BCECPrivateKey privateKey = (BCECPrivateKey)keyPair.getPrivate();
-        BCECPublicKey publicKey = (BCECPublicKey)keyPair.getPublic();
+    ECKey ecKey = new ECKey(new SecureRandom());
+    String pubKey = ecKey.getPublicKeyAsHex();
+    String privKey = ecKey.getPrivateKeyAsHex();
 
-        KLog.d(">>> private key = ", privateKey.toString());
-        KLog.d("Address -> " + KeyTools.getAddressFromPublicKey(keyPair.getPublic().toString()));
+    KLog.d("PubKey = ", pubKey);
+    KLog.d("PrivKey = ", privKey);
 
+    System.out.println("Address is: " + KeyTools.getAddressFromPublicKey(pubKey));
 
-      //ECKeyPair keyPair = Keys.createEcKeyPair();
-      //
-      //KLog.d("Private key: " + keyPair.getPrivateKey().toString(16));
-      //KLog.d("Public key: " + keyPair.getPublicKey().toString(16));
-      //KLog.d("Address -> " + getAddressFromPublicKey(keyPair.getPublicKey().toString(16)));
-
-
-
-      //ECKeyPair keyPair = KeyTools.generateKeyPair();
-      //BigInteger privateInteger = keyPair.getPrivateKey();
-      //BigInteger publicInteger = keyPair.getPublicKey();
-      //
-      //address = KeyTools.getAddressFromPublicKey(ByteUtil.byteArrayToHexString(publicInteger.toByteArray()));
-      //privateKey = ByteUtil.byteArrayToHexString(privateInteger.toByteArray());
-
-      KLog.d("private key is: " + privateKey);
-      KLog.d("address is: " + address);
-
-      //textView_private_key.setText(privateKey);
-      //linLayout_new_account_all.setVisibility(View.VISIBLE);
-    } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException   e) {
-      e.printStackTrace();
-    }
+    //try {
+    //
+    //    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC", "SC");
+    //    keyPairGenerator.initialize(getSecp256k1Spec());
+    //    KeyPair keyPair = keyPairGenerator.generateKeyPair();
+    //    BCECPrivateKey privateKey = (BCECPrivateKey)keyPair.getPrivate();
+    //    BCECPublicKey publicKey = (BCECPublicKey)keyPair.getPublic();
+    //
+    //    KLog.d(">>> private key = ", privateKey.toString());
+    //    KLog.d("Address -> " + KeyTools.getAddressFromPublicKey(keyPair.getPublic().toString()));
+    //
+    //
+    //
+    //  //textView_private_key.setText(privateKey);
+    //  //linLayout_new_account_all.setVisibility(View.VISIBLE);
+    //} catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException   e) {
+    //  e.printStackTrace();
+    //}
   }
 
   private static ECParameterSpec getSecp256k1Spec() {

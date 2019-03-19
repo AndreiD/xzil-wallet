@@ -10,7 +10,7 @@
   <script type="text/javascript" src="long.js"></script>
   <script type="text/javascript">
     const { Zilliqa } = window.ZilliqaJS
-    const zjs = new Zilliqa('https://api.zilliqa.com')
+    const zjs = new Zilliqa('https://dev-api.zilliqa.com')
 
     //private key is for address: 0x573EC96638C8BB1C386394602E1460634F02ADDD
     //sendTransaction('136df6c4ce41113e77e2e858ffc793be9b74ffbd', '15000', '1000000000', '8c33694c8f5d905d1b829e816aa2c6b24b5a54e15701bd583234c3dcba8c49ff');
@@ -32,7 +32,7 @@
         console.log(">>----> To:  " + toaddress + " Amount:  " + amount +"  Gas Price: "+gPrice);
         const tx = await zjs.blockchain.createTransaction(
           zjs.transactions.new({
-            version: 1,
+            version: 3,
             toAddr: toaddress,
             amount: new BN(amount),
             gasPrice: new BN(gPrice),

@@ -15,11 +15,9 @@ import wallet.zilliqa.BuildConfig;
 
 public interface ZilliqaRPC {
 
-  String BASE_URL = "https://api.zilliqa.com";
+  String BASE_URL = "https://dev-api.zilliqa.com";
 
-  @POST("/") Call<JsonObject> getMinimumGasPrice(@Body RpcMethod rpcMethod);
-
-
+  @POST("/") Call<JsonObject> executeRPCCall(@Body RpcMethod rpcMethod);
 
   class Factory {
     private static ZilliqaRPC service;

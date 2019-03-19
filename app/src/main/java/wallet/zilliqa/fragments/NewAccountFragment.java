@@ -13,11 +13,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.firestack.laksaj.account.Wallet;
+import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.BuildConfig;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.activities.CreateNewAccountActivity;
+import wallet.zilliqa.activities.MainActivity;
+import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
@@ -58,7 +62,7 @@ public class NewAccountFragment extends BaseFragment {
     toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
 
     if (BuildConfig.DEBUG) {
-      editText_private_key.setText(Constants.newWalletPrivateKeyX);
+      editText_private_key.setText(Constants.newWalletPrivateKey);
     }
   }
 
@@ -68,19 +72,28 @@ public class NewAccountFragment extends BaseFragment {
 
   @OnClick(R.id.button_new_account_import) public void onClickImportAccount() {
 
+    String privateKey = editText_private_key.getText().toString().trim();
+
+    if (privateKey.length() != 64) {
+      DialogFactory.error_toast(getActivity(), "Invalid Private Key Length (expected 64 characters)").show();
+      return;
+    }
+
     progressDialog =
         DialogFactory.createProgressDialog(getActivity(),
             "Importing wallet...");
     progressDialog.show();
 
-    String privateKey = editText_private_key.getText().toString();
+    Wallet wallet = new Wallet();
+    String address = wallet.addByPrivateKey(privateKey);
+    System.out.println("address is: " + address);
 
-    // --- import it here ----
+    // save it
+    preferencesHelper.setPrivateKey(privateKey); //TODO: encrypt it!
+    preferencesHelper.setDefaultAddress(address.toLowerCase());
 
-    if (privateKey.length() < 66) {
-      DialogFactory.error_toast(getActivity(), "Invalid Private Key").show();
-      return;
-    }
+    AppDatabase appDatabase = BaseApplication.getAppDatabase(getActivity());
+    appDatabase.walletDao().insertAll(new wallet.zilliqa.data.local.Wallet(address, privateKey));
 
     new CountDownTimer(500, 500) {
       @Override public void onTick(long l) {
@@ -88,6 +101,9 @@ public class NewAccountFragment extends BaseFragment {
 
       @Override public void onFinish() {
         progressDialog.dismiss();
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
       }
     }.start();
   }

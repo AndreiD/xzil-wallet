@@ -85,8 +85,7 @@ public class SendFragment extends BaseFragment {
 
     //TODO: remove me
     if (BuildConfig.DEBUG) {
-      send_editText_to.setText(
-          Constants.newWalletPublicAddress2);
+      send_editText_to.setText(Constants.secondWalletAddress);
       send_editText_amount.setText("50");
     }
 
@@ -129,7 +128,6 @@ public class SendFragment extends BaseFragment {
   }
 
   private void getMinimumGasPrice() {
-    KLog.d(">> GETTING MINIMUM GAS PRICE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
     RpcMethod rpcMethod = new RpcMethod();
     rpcMethod.setId("1");
@@ -138,13 +136,11 @@ public class SendFragment extends BaseFragment {
     List<String> emptyList = new ArrayList<>();
     emptyList.add("");
     rpcMethod.setParams(emptyList);
-    zilliqaRPC.getMinimumGasPrice(rpcMethod).enqueue(new Callback<JsonObject>() {
+    zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
       @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
         if (response.code() == 200) {
           String resp = response.body().get("result").getAsString();
           minimumGasPrice = new BigDecimal(resp); // update min gas price
-          KLog.d("got min gas price from api: " + minimumGasPrice);
-
           //set default gas price (10% more)
           gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
           send_textView_fee.setText(
@@ -191,12 +187,13 @@ public class SendFragment extends BaseFragment {
     //  return;
     //}
 
-    if (balanceZIL.compareTo(amount_to_send) < 0) {
-      DialogFactory.warning_toast(getActivity(),
-          "Seems you don't have enough ZIL for this transaction.").show();
-      send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
-      return;
-    }
+    //TODO: CODE THIS CHECK!
+    //if (balanceZIL.compareTo(amount_to_send) < 0) {
+    //  DialogFactory.warning_toast(getActivity(),
+    //      "Seems you don't have enough ZIL for this transaction.").show();
+    //  send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
+    //  return;
+    //}
 
     askForPINDialog(amount_to_send);
 
