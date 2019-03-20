@@ -13,7 +13,7 @@ public class Constants {
 
   // 2nd wallet
   public static String secondWalletPrivateKey = "2a6f409db55e6b8c33a833bd747f3b523164300d32960c6af41bfa747ecbb042";
-  public static String secondWalletAddress = "0xa92d7ce2b3f6c217c74b48dd7275d565fa2cf2c2";
+  public static String secondWalletAddress = "a92d7ce2b3f6c217c74b48dd7275d565fa2cf2c2";
 
   public static String lastScanAddress = "";
 

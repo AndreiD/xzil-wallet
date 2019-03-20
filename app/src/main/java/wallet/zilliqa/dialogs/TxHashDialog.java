@@ -17,12 +17,12 @@ import wallet.zilliqa.R;
 
 public class TxHashDialog extends DialogFragment {
 
-  public static final String TXHASH = "txhash";
+  public static final String TXID = "txid";
 
-  public static TxHashDialog newInstance(String txHash) {
+  public static TxHashDialog newInstance(String txID) {
     TxHashDialog frag = new TxHashDialog();
     Bundle args = new Bundle();
-    args.putString(TXHASH, txHash);
+    args.putString(TXID, txID);
     frag.setArguments(args);
     return frag;
   }
@@ -40,17 +40,17 @@ public class TxHashDialog extends DialogFragment {
 
     getDialog().getWindow().setSoftInputMode(
         WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    String txHash = getArguments().getString(TXHASH, "");
+    String txHash = getArguments().getString(TXID, "");
 
     TextView textView_dlg_txHash = view.findViewById(R.id.textView_dlg_txHash);
-    textView_dlg_txHash.setText("Hash: " + txHash);
+    textView_dlg_txHash.setText("Transaction ID: " + txHash);
 
     Button btn_dlg_hash_etherscan = view.findViewById(R.id.btn_dlg_hash_etherscan);
     Button btn_dlg_hash_close = view.findViewById(R.id.btn_dlg_hash_close);
 
     btn_dlg_hash_etherscan.setOnClickListener(view1 -> {
 
-      String url = Constants.EXPLORER_URL + txHash + "?network=testnet-scilla";
+      String url = Constants.EXPLORER_URL + txHash ;
       Intent i = new Intent(Intent.ACTION_VIEW);
       i.setData(Uri.parse(url));
       startActivity(i);
@@ -58,6 +58,9 @@ public class TxHashDialog extends DialogFragment {
       dismiss();
     });
 
-    btn_dlg_hash_close.setOnClickListener(view12 -> dismiss());
+    btn_dlg_hash_close.setOnClickListener(view12 -> {
+      dismiss();
+      getActivity().onBackPressed();
+    });
   }
 }
