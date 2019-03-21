@@ -15,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.firestack.laksaj.utils.Validation;
 import com.google.gson.JsonObject;
 import com.socks.library.KLog;
 import io.reactivex.Observable;
@@ -99,10 +100,12 @@ public class SendFragment extends BaseFragment {
             gasPriceInZil = Convert.fromQa(minimumGasPrice, Convert.Unit.ZIL); //10% more
             break;
           case 1:
-            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL); //10% more
+            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")),
+                Convert.Unit.ZIL); //10% more
             break;
           case 2:
-            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("2")), Convert.Unit.ZIL); //100% more
+            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("2")),
+                Convert.Unit.ZIL); //100% more
             break;
           default:
             KLog.w("unknown seekbar value!");
@@ -122,7 +125,8 @@ public class SendFragment extends BaseFragment {
     getMinimumGasPrice();
 
     //set default gas price (10% more)
-    gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
+    gasPriceInZil =
+        Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
     send_textView_fee.setText(
         String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
   }
@@ -142,7 +146,8 @@ public class SendFragment extends BaseFragment {
           String resp = response.body().get("result").getAsString();
           minimumGasPrice = new BigDecimal(resp); // update min gas price
           //set default gas price (10% more)
-          gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
+          gasPriceInZil =
+              Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
           send_textView_fee.setText(
               String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
         } else {
@@ -181,23 +186,20 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    //if (!Validation.isValidChecksumAddress(send_editText_to.getText().toString().trim())) {
-    //  DialogFactory.warning_toast(getActivity(), "You need to enter a valid destination address.")
-    //      .show();
-    //  return;
-    //}
+    if(!Validation.isAddress(send_editText_to.getText().toString().trim())){
+      DialogFactory.warning_toast(getActivity(), "The destination address is not valid.")
+          .show();
+      return;
+    }
 
-    //TODO: CODE THIS CHECK!
-    //if (balanceZIL.compareTo(amount_to_send) < 0) {
-    //  DialogFactory.warning_toast(getActivity(),
-    //      "Seems you don't have enough ZIL for this transaction.").show();
-    //  send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
-    //  return;
-    //}
+    if (balanceZIL.compareTo(amount_to_send) < 0) {
+      DialogFactory.warning_toast(getActivity(),
+          "Seems you don't have enough ZIL for this transaction.").show();
+      send_textView_amount.setTextColor(getResources().getColor(R.color.material_red));
+      return;
+    }
 
     askForPINDialog(amount_to_send);
-
-
   }
 
   private void askForPINDialog(BigDecimal amount_to_send) {
@@ -207,7 +209,8 @@ public class SendFragment extends BaseFragment {
     sendTheMoney(send_editText_to.getText().toString().trim(), amount_to_send, gasPriceInZil);
   }
 
-  private void sendTheMoney(String destinationAddress, BigDecimal amount, BigDecimal gasPriceInZil) {
+  private void sendTheMoney(String destinationAddress, BigDecimal amount,
+      BigDecimal gasPriceInZil) {
     DUtils.hideKeyboard(getActivity());
     FragmentManager fm = getActivity().getSupportFragmentManager();
     ConfirmPaymentDialog confirmPaymentDialog =
@@ -222,7 +225,42 @@ public class SendFragment extends BaseFragment {
   }
 
   private void updateBalances(Long aLong) {
-    //
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    RpcMethod rpcMethod = new RpcMethod();
+    rpcMethod.setId("1");
+    rpcMethod.setJsonrpc("2.0");
+    rpcMethod.setMethod("GetBalance");
+    List<String> emptyList = new ArrayList<>();
+    emptyList.add(preferencesHelper.getDefaulAddress());
+    rpcMethod.setParams(emptyList);
+    zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
+      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+        if (response.code() == 200) {
+          try {
+            JsonObject body = response.body();
+            String resp;
+            if (body != null) {
+              resp = body.getAsJsonObject("result").get("balance").getAsString();
+              BigDecimal balBD = new BigDecimal(resp);
+              balanceZIL = Convert.fromQa(balBD, Convert.Unit.ZIL);
+              getActivity().runOnUiThread(() -> {
+                send_textView_amount.setText("Amount: " + balanceZIL.toString() + " ZIL");
+              });
+            }
+          } catch (Exception ex) {
+            KLog.e(ex);
+            send_textView_amount.setText("Amount: 0 ZIL");
+          }
+        } else {
+          KLog.e("getBalance: response code is not 200!");
+          send_textView_amount.setText("Amount: ??? ZIL");
+        }
+      }
+
+      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+        KLog.e(t);
+      }
+    });
   }
 
   @Override public void onPause() {
@@ -232,6 +270,4 @@ public class SendFragment extends BaseFragment {
     } catch (Exception ignored) {
     }
   }
-
-
 }

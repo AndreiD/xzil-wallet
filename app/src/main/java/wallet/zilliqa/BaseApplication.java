@@ -32,7 +32,7 @@ public class BaseApplication extends Application {
         .build()
     );
 
-    RxJavaPlugins.setErrorHandler(throwable -> KLog.e(throwable));
+    RxJavaPlugins.setErrorHandler(KLog::e);
   }
 
   @Override public void onLowMemory() {

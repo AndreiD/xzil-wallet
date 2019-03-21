@@ -144,6 +144,7 @@ public class SplashActivity extends BaseActivity implements EasyPermissions.Perm
           .setTitle("Terms & Conditions")
           .setPositiveButton("I Agree", (dialog, which) -> {
             preferencesHelper.setConfirmedTos(true);
+            dialog.dismiss();
             check_pin_present();
           })
           .setNegativeButton("Cancel", (dialogInterface, i) -> {

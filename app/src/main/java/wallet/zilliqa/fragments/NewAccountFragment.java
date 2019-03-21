@@ -14,6 +14,18 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.firestack.laksaj.account.Wallet;
+import com.socks.library.KLog;
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.BuildConfig;
@@ -88,12 +100,28 @@ public class NewAccountFragment extends BaseFragment {
     String address = wallet.addByPrivateKey(privateKey);
     System.out.println("address is: " + address);
 
-    // save it
-    preferencesHelper.setPrivateKey(privateKey); //TODO: encrypt it!
-    preferencesHelper.setDefaultAddress(address.toLowerCase());
 
-    AppDatabase appDatabase = BaseApplication.getAppDatabase(getActivity());
-    appDatabase.walletDao().insertAll(new wallet.zilliqa.data.local.Wallet(address, privateKey));
+    // encrypt the private key &  stores it encrypted
+    Cryptography cryptography = new Cryptography(getActivity());
+    try {
+      String encryptedPrivateKey = cryptography.encryptData(privateKey);
+
+      AppDatabase appDatabase = BaseApplication.getAppDatabase(getActivity());
+      appDatabase.walletDao().insertAll(new wallet.zilliqa.data.local.Wallet(address, encryptedPrivateKey));
+
+      //set it as default
+      preferencesHelper.setDefaultAddress(address);
+
+      KLog.d(">>> new wallet with address " + address + " stored in the db");
+    } catch (NoSuchPaddingException | NoSuchAlgorithmException |
+        UnrecoverableEntryException | CertificateException | KeyStoreException |
+        IOException | InvalidAlgorithmParameterException | InvalidKeyException |
+        NoSuchProviderException | BadPaddingException | IllegalBlockSizeException e) {
+      e.printStackTrace();
+      DialogFactory.error_toast(getActivity(), e.getLocalizedMessage()).show();
+      return;
+    }
+
 
     new CountDownTimer(500, 500) {
       @Override public void onTick(long l) {

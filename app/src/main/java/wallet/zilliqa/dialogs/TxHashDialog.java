@@ -50,7 +50,7 @@ public class TxHashDialog extends DialogFragment {
 
     btn_dlg_hash_etherscan.setOnClickListener(view1 -> {
 
-      String url = Constants.EXPLORER_URL + txHash ;
+      String url = Constants.EXPLORER_URL + txHash + "?network=testnet";
       Intent i = new Intent(Intent.ACTION_VIEW);
       i.setData(Uri.parse(url));
       startActivity(i);
@@ -60,7 +60,6 @@ public class TxHashDialog extends DialogFragment {
 
     btn_dlg_hash_close.setOnClickListener(view12 -> {
       dismiss();
-      getActivity().onBackPressed();
     });
   }
 }

@@ -202,24 +202,37 @@ public class HomeFragment extends BaseFragment {
       @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
         if (response.code() == 200) {
           try {
-            String resp = response.body().getAsJsonObject("result").get("balance").getAsString();
-            BigDecimal balBD = new BigDecimal(resp);
-            BigDecimal balanceZil = Convert.fromQa(balBD, Convert.Unit.ZIL);
-            getActivity().runOnUiThread(() -> {
-              textView_fragmentHome_status.setText("all looks good.");
-              textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
-              textView_fragmentHome_balance_zil.setText(balanceZil.toString() + " ZIL");
-            });
+            JsonObject body = response.body();
+            String resp;
+            if (body != null) {
+              resp = body.getAsJsonObject("result").get("balance").getAsString();
+              BigDecimal balBD = new BigDecimal(resp);
+              BigDecimal balanceZil = Convert.fromQa(balBD, Convert.Unit.ZIL);
+              getActivity().runOnUiThread(() -> {
+                textView_fragmentHome_status.setText("all looks good.");
+                textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
+                textView_fragmentHome_balance_zil.setText(balanceZil.toString() + " ZIL");
+              });
+            }
           } catch (Exception ex) {
             KLog.e(ex);
+            textView_fragmentHome_status.setText("all looks good.");
+            textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
+            textView_fragmentHome_balance_zil.setText("0 ZIL");
           }
         } else {
           KLog.e("getBalance: response code is not 200!");
+          textView_fragmentHome_status.setText("all looks good.");
+          textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
+          textView_fragmentHome_balance_zil.setText("0 ZIL");
         }
       }
 
       @Override public void onFailure(Call<JsonObject> call, Throwable t) {
         KLog.e(t);
+        textView_fragmentHome_status.setText("failed to retrieve the balance.");
+        textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
+        textView_fragmentHome_balance_zil.setText("??? ZIL");
       }
     });
   }
