@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -235,7 +236,15 @@ public class ConfirmPaymentDialog extends DialogFragment {
           FragmentManager fm = getActivity().getSupportFragmentManager();
           TxHashDialog txHashDialog =
               TxHashDialog.newInstance(result.getTranID());
-          txHashDialog.show(fm, "tx_id_dialog");
+
+          new CountDownTimer(60000,6000){
+            @Override public void onTick(long millisUntilFinished) {
+            }
+            @Override public void onFinish() {
+              txHashDialog.show(fm, "tx_id_dialog");
+            }
+          }.start();
+
 
           //getActivity().getSupportFragmentManager().beginTransaction().
           //    remove(getActivity().getSupportFragmentManager().findFragmentByTag("confirm_dialog_fragment")).commit();
