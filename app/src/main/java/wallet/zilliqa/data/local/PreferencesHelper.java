@@ -15,6 +15,7 @@ public class PreferencesHelper {
   private static final String KEY_PASSWORD = "KEY_PASSWORD";
   private static final String KEY_PIN = "KEY_PIN";
   private static final String KEY_CONFIRMED_TOS = "KEY_CONFIRMED_TOS";
+  private static final String KEY_PRIVATE_KEY = "KEY_PRIVATE_KEY";
   private static final String KEY_INVALID_PINS = "KEY_INVALID_PINS";
   private static final String KEY_DEFAULT_ADDRESS = "KEY_DEFAULT_ADDRESS";
   private static SharedPreferences mPref;
@@ -75,6 +76,14 @@ public class PreferencesHelper {
 
   public void setDefaultAddress(String address) {
     mPref.edit().putString(KEY_DEFAULT_ADDRESS, address).commit();
+  }
+
+  public String getPrivateKey() {
+    return mPref.getString(KEY_PRIVATE_KEY, null);
+  }
+
+  public void setPrivateKey(String privateKey) {
+    mPref.edit().putString(KEY_PRIVATE_KEY, privateKey).commit();
   }
 }
 

@@ -43,7 +43,7 @@
 
   <style name="TextAppearance.Title" parent="android:TextAppearance">
     <item name="android:textSize">18sp</item>
-    <item name="fontPath">fonts/old.ttf</item>
+    <item name="fontPath">fonts/bold.ttf</item>
   </style>
 
   <style name="AppTheme.RadioButtonStyle">

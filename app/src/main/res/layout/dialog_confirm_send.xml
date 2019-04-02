@@ -187,14 +187,7 @@
           android:textSize="20sp"
           />
     </FrameLayout>
-
-
   </LinearLayout>
-  <WebView
-      android:id="@+id/theWebView"
-      android:layout_width="match_parent"
-      android:layout_height="10dp"
-      />
 </android.support.design.widget.CoordinatorLayout>
 
 

@@ -7,7 +7,7 @@ android {
     minSdkVersion 26
     targetSdkVersion 27
     versionCode 11
-    versionName "1.46"
+    versionName "2.01"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
 
@@ -117,8 +117,13 @@ dependencies {
   //------ Graphs
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
-  //------ Address Generation
-  implementation 'io.github.novacrypto:BIP39:2018.10.06'
+  compile group: 'org.firestack', name: 'laksaj', version: '0.0.6-SNAPSHOT'
 
-  implementation group: 'org.firestack', name: 'laksaj', version: '0.0.4-SNAPSHOT'
+
+
+  // Need them ?
+  implementation 'com.madgag.spongycastle:core:1.58.0.0'
+  implementation 'com.madgag.spongycastle:prov:1.58.0.0'
+  implementation 'com.madgag.spongycastle:bcpkix-jdk15on:1.58.0.0'
+  implementation 'com.madgag.spongycastle:bcpg-jdk15on:1.58.0.0'
 }

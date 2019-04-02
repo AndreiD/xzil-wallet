@@ -13,6 +13,7 @@ import io.reactivex.Completable;
 import java.util.List;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.R;
+import wallet.zilliqa.activities.MainActivity;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.local.Wallet;
@@ -62,6 +63,7 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
           preferencesHelper.setDefaultAddress(address);
           DialogFactory.success_toast(ctx, "address set as default").show();
           dialog.dismiss();
+          ((MainActivity) ctx).getSupportFragmentManager().popBackStack();
         });
       }
 

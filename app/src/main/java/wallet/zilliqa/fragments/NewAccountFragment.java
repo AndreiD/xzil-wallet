@@ -1,9 +1,7 @@
 package wallet.zilliqa.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -11,13 +9,11 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.firestack.laksaj.account.Wallet;
 import com.socks.library.KLog;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -39,7 +35,6 @@ import wallet.zilliqa.activities.CreateNewAccountActivity;
 import wallet.zilliqa.activities.MainActivity;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
-import wallet.zilliqa.data.local.Wallet;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
 
@@ -47,9 +42,8 @@ public class NewAccountFragment extends BaseFragment {
 
   @BindView(R.id.button_new_account) Button button_new_account;
   @BindView(R.id.button_new_account_import) Button button_new_account_import;
-  @BindView(R.id.editText_seed) EditText editText_seed;
+  @BindView(R.id.editText_private_key) EditText editText_private_key;
   @BindView(R.id.toolbar) android.support.v7.widget.Toolbar toolbar;
-  @BindView(R.id.theWebView) WebView theWebView;
   private String address;
   private String privateKey;
   private ProgressDialog progressDialog;
@@ -76,20 +70,11 @@ public class NewAccountFragment extends BaseFragment {
     preferencesHelper = new PreferencesHelper(getActivity());
     cryptography = new Cryptography(getActivity());
 
-    theWebView.getSettings().setJavaScriptEnabled(true);
-    theWebView.getSettings().setAppCacheEnabled(false);
-    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-    theWebView.setBackgroundColor(Color.TRANSPARENT);
-    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-
-    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
-    theWebView.loadUrl("file:///android_asset/javascript/accounts.html");
-
     toolbar.setTitle(getString(R.string.wallet_creation));
     toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
 
-    if(BuildConfig.DEBUG){
-      editText_seed.setText(Constants.newWalletSeed);
+    if (BuildConfig.DEBUG) {
+      editText_private_key.setText(Constants.newWalletPrivateKey);
     }
   }
 
@@ -99,17 +84,44 @@ public class NewAccountFragment extends BaseFragment {
 
   @OnClick(R.id.button_new_account_import) public void onClickImportAccount() {
 
+    String privateKey = editText_private_key.getText().toString().trim();
+
+    if (privateKey.length() != 64) {
+      DialogFactory.error_toast(getActivity(), "Invalid Private Key Length (expected 64 characters)").show();
+      return;
+    }
+
     progressDialog =
         DialogFactory.createProgressDialog(getActivity(),
             "Importing wallet...");
     progressDialog.show();
 
-    String mnemonic = editText_seed.getText().toString();
+    Wallet wallet = new Wallet();
+    String address = wallet.addByPrivateKey(privateKey);
+    System.out.println("address is: " + address);
 
-    if(mnemonic.length()<10){
-      DialogFactory.error_toast(getActivity(),"Invalid Mnemonic").show();
+
+    // encrypt the private key &  stores it encrypted
+    Cryptography cryptography = new Cryptography(getActivity());
+    try {
+      String encryptedPrivateKey = cryptography.encryptData(privateKey);
+
+      AppDatabase appDatabase = BaseApplication.getAppDatabase(getActivity());
+      appDatabase.walletDao().insertAll(new wallet.zilliqa.data.local.Wallet(address, encryptedPrivateKey));
+
+      //set it as default
+      preferencesHelper.setDefaultAddress(address);
+
+      KLog.d(">>> new wallet with address " + address + " stored in the db");
+    } catch (NoSuchPaddingException | NoSuchAlgorithmException |
+        UnrecoverableEntryException | CertificateException | KeyStoreException |
+        IOException | InvalidAlgorithmParameterException | InvalidKeyException |
+        NoSuchProviderException | BadPaddingException | IllegalBlockSizeException e) {
+      e.printStackTrace();
+      DialogFactory.error_toast(getActivity(), e.getLocalizedMessage()).show();
       return;
     }
+
 
     new CountDownTimer(500, 500) {
       @Override public void onTick(long l) {
@@ -117,57 +129,17 @@ public class NewAccountFragment extends BaseFragment {
 
       @Override public void onFinish() {
         progressDialog.dismiss();
-        theWebView.loadUrl("javascript:generateAccount(\"" + mnemonic + "\")");
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
       }
     }.start();
-
   }
 
   @Override public void onPause() {
     super.onPause();
-    if ((progressDialog != null) && progressDialog.isShowing()) {
+    if (progressDialog != null) {
       progressDialog.dismiss();
-    }
-  }
-
-  private class WebAppInterface {
-    Context mContext;
-
-    WebAppInterface(Context c) {
-      mContext = c;
-    }
-
-    @JavascriptInterface
-    public void setAccount(String maddress, String mprivateKey) {
-      KLog.d(">>>>>>>>>>>>>>> Address & Private Key Generated >>>>>>>>>>>>>>>");
-      address = maddress;
-      privateKey = mprivateKey;
-
-
-      // encrypt the private key &  stores it encrypted
-      Cryptography cryptography = new Cryptography(getActivity());
-      try {
-        String encryptedPrivateKey = cryptography.encryptData(privateKey);
-
-        AppDatabase appDatabase = BaseApplication.getAppDatabase(mContext);
-        appDatabase.walletDao().insertAll(new Wallet(address, encryptedPrivateKey));
-
-        //set it as default
-        preferencesHelper.setDefaultAddress(address);
-
-        KLog.d(">>> new wallet with address " + address + " stored in the db");
-      } catch (NoSuchPaddingException | NoSuchAlgorithmException |
-          UnrecoverableEntryException | CertificateException | KeyStoreException |
-          IOException | InvalidAlgorithmParameterException | InvalidKeyException |
-          NoSuchProviderException | BadPaddingException | IllegalBlockSizeException e) {
-        e.printStackTrace();
-        DialogFactory.error_toast(mContext, e.getLocalizedMessage()).show();
-        return;
-      }
-
-      Intent intent = new Intent(mContext, MainActivity.class);
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      startActivity(intent);
     }
   }
 }

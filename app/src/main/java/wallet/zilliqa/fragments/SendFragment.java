@@ -1,8 +1,6 @@
 package wallet.zilliqa.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,9 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,7 +42,6 @@ import wallet.zilliqa.qrscanner.QRScannerActivity;
 import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
-import com.firestack.laksaj.utils.Validation;
 
 public class SendFragment extends BaseFragment {
 
@@ -56,7 +50,6 @@ public class SendFragment extends BaseFragment {
   @BindView(R.id.send_button_send) Button send_button_send;
   @BindView(R.id.send_imageButton_scanqr) ImageView send_imageButton_scanqr;
   @BindView(R.id.seekBar_fee) SeekBar seekBar_fee;
-  @BindView(R.id.theWebView) WebView theWebView;
   @BindView(R.id.send_textView_amount) TextView send_textView_amount;
   @BindView(R.id.send_textView_currency) TextView send_textView_currency;
   @BindView(R.id.send_textView_fee) TextView send_textView_fee;
@@ -93,20 +86,11 @@ public class SendFragment extends BaseFragment {
 
     //TODO: remove me
     if (BuildConfig.DEBUG) {
-      send_editText_to.setText(
-          Constants.newWalletPublicAddress2);
+      send_editText_to.setText(Constants.secondWalletAddress);
       send_editText_amount.setText("50");
     }
 
     // update the balance
-    theWebView.getSettings().setJavaScriptEnabled(true);
-    theWebView.getSettings().setAppCacheEnabled(false);
-    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-    theWebView.setBackgroundColor(Color.TRANSPARENT);
-    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-
-    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
-    theWebView.loadUrl("file:///android_asset/javascript/balance.html");
 
     seekBar_fee.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -116,10 +100,12 @@ public class SendFragment extends BaseFragment {
             gasPriceInZil = Convert.fromQa(minimumGasPrice, Convert.Unit.ZIL); //10% more
             break;
           case 1:
-            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL); //10% more
+            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")),
+                Convert.Unit.ZIL); //10% more
             break;
           case 2:
-            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("2")), Convert.Unit.ZIL); //100% more
+            gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("2")),
+                Convert.Unit.ZIL); //100% more
             break;
           default:
             KLog.w("unknown seekbar value!");
@@ -139,13 +125,13 @@ public class SendFragment extends BaseFragment {
     getMinimumGasPrice();
 
     //set default gas price (10% more)
-    gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
+    gasPriceInZil =
+        Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
     send_textView_fee.setText(
         String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
   }
 
   private void getMinimumGasPrice() {
-    KLog.d(">> GETTING MINIMUM GAS PRICE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
     RpcMethod rpcMethod = new RpcMethod();
     rpcMethod.setId("1");
@@ -154,15 +140,14 @@ public class SendFragment extends BaseFragment {
     List<String> emptyList = new ArrayList<>();
     emptyList.add("");
     rpcMethod.setParams(emptyList);
-    zilliqaRPC.getMinimumGasPrice(rpcMethod).enqueue(new Callback<JsonObject>() {
+    zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
       @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
         if (response.code() == 200) {
           String resp = response.body().get("result").getAsString();
           minimumGasPrice = new BigDecimal(resp); // update min gas price
-          KLog.d("got min gas price from api: " + minimumGasPrice);
-
           //set default gas price (10% more)
-          gasPriceInZil = Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
+          gasPriceInZil =
+              Convert.fromQa(minimumGasPrice.multiply(new BigDecimal("1.1")), Convert.Unit.ZIL);
           send_textView_fee.setText(
               String.format("Gas Price: %s ZIL", gasPriceInZil.toString()));
         } else {
@@ -201,8 +186,8 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    if (!Validation.isValidChecksumAddress(send_editText_to.getText().toString().trim())) {
-      DialogFactory.warning_toast(getActivity(), "You need to enter a valid destination address.")
+    if(!Validation.isAddress(send_editText_to.getText().toString().trim())){
+      DialogFactory.warning_toast(getActivity(), "The destination address is not valid.")
           .show();
       return;
     }
@@ -215,8 +200,6 @@ public class SendFragment extends BaseFragment {
     }
 
     askForPINDialog(amount_to_send);
-
-
   }
 
   private void askForPINDialog(BigDecimal amount_to_send) {
@@ -226,7 +209,8 @@ public class SendFragment extends BaseFragment {
     sendTheMoney(send_editText_to.getText().toString().trim(), amount_to_send, gasPriceInZil);
   }
 
-  private void sendTheMoney(String destinationAddress, BigDecimal amount, BigDecimal gasPriceInZil) {
+  private void sendTheMoney(String destinationAddress, BigDecimal amount,
+      BigDecimal gasPriceInZil) {
     DUtils.hideKeyboard(getActivity());
     FragmentManager fm = getActivity().getSupportFragmentManager();
     ConfirmPaymentDialog confirmPaymentDialog =
@@ -241,7 +225,42 @@ public class SendFragment extends BaseFragment {
   }
 
   private void updateBalances(Long aLong) {
-    theWebView.loadUrl("javascript:getBalance(\"" + preferencesHelper.getDefaulAddress() + "\")");
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    RpcMethod rpcMethod = new RpcMethod();
+    rpcMethod.setId("1");
+    rpcMethod.setJsonrpc("2.0");
+    rpcMethod.setMethod("GetBalance");
+    List<String> emptyList = new ArrayList<>();
+    emptyList.add(preferencesHelper.getDefaulAddress());
+    rpcMethod.setParams(emptyList);
+    zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
+      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+        if (response.code() == 200) {
+          try {
+            JsonObject body = response.body();
+            String resp;
+            if (body != null) {
+              resp = body.getAsJsonObject("result").get("balance").getAsString();
+              BigDecimal balBD = new BigDecimal(resp);
+              balanceZIL = Convert.fromQa(balBD, Convert.Unit.ZIL);
+              getActivity().runOnUiThread(() -> {
+                send_textView_amount.setText("Amount: " + balanceZIL.toString() + " ZIL");
+              });
+            }
+          } catch (Exception ex) {
+            KLog.e(ex);
+            send_textView_amount.setText("Amount: 0 ZIL");
+          }
+        } else {
+          KLog.e("getBalance: response code is not 200!");
+          send_textView_amount.setText("Amount: ??? ZIL");
+        }
+      }
+
+      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+        KLog.e(t);
+      }
+    });
   }
 
   @Override public void onPause() {
@@ -249,26 +268,6 @@ public class SendFragment extends BaseFragment {
     try {
       disposable.dispose();
     } catch (Exception ignored) {
-    }
-  }
-
-  private class WebAppInterface {
-    Context mContext;
-
-    WebAppInterface(Context c) {
-      mContext = c;
-    }
-
-    @JavascriptInterface
-    public void balance(String balance) {
-
-      if (balance.contains("undefined")) {
-        balanceZIL = new BigDecimal(0);
-        send_textView_amount.setText("Amount: 0 ZIL");
-      } else {
-        balanceZIL = Convert.fromQa(balance, Convert.Unit.ZIL);
-        send_textView_amount.setText("Amount: " + balanceZIL.toString() + " ZIL");
-      }
     }
   }
 }

@@ -2,7 +2,6 @@ package wallet.zilliqa.dialogs;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -17,34 +16,52 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.firestack.laksaj.account.Account;
+import com.firestack.laksaj.account.Wallet;
+import com.firestack.laksaj.crypto.KeyTools;
+import com.firestack.laksaj.jsonrpc.HttpProvider;
+import com.firestack.laksaj.transaction.Transaction;
+import com.firestack.laksaj.transaction.TransactionFactory;
+import com.google.gson.JsonObject;
 import com.socks.library.KLog;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
+import wallet.zilliqa.data.remote.RpcMethod;
+import wallet.zilliqa.data.remote.ZilliqaRPC;
 import wallet.zilliqa.utils.BlockiesIdenticon;
 import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
 
+import static com.firestack.laksaj.account.Wallet.pack;
+
 public class ConfirmPaymentDialog extends DialogFragment {
 
   public static final String TOADDRESS = "toaddress";
   public static final String AMOUNT = "amount";
   public static final String GAS_PRICE = "gas_price";
-  BigInteger nonce = null;
   private ProgressDialog progressDialog;
   private PreferencesHelper preferencesHelper;
   private AppDatabase db;
+  private String amountToSendInQA;
+  private String gasPriceToSendInQA;
+  private String toAddress;
+  private String nonce = "1";
+  private Button btn_dlg_confirm_send;
+  private String decryptedPrivateKey;
 
   public static ConfirmPaymentDialog newInstance(String toAddress, BigDecimal amount, BigDecimal gasPriceInZil) {
     ConfirmPaymentDialog frag = new ConfirmPaymentDialog();
@@ -92,7 +109,8 @@ public class ConfirmPaymentDialog extends DialogFragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
-    String toAddress = getArguments().getString(TOADDRESS, "");
+    toAddress = getArguments().getString(TOADDRESS, "");
+
     BigDecimal amountInZIL = new BigDecimal(getArguments().getString(AMOUNT, "0"));
     BigDecimal gasPriceInZIL = new BigDecimal(getArguments().getString(GAS_PRICE, "0"));
 
@@ -108,22 +126,10 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
     identicon_to.setAddress(toAddress);
     identicon_from.setAddress(preferencesHelper.getDefaulAddress());
-    WebView theWebView = view.findViewById(R.id.theWebView);
 
-    // update the balance
-    theWebView.getSettings().setJavaScriptEnabled(true);
-    theWebView.getSettings().setAppCacheEnabled(false);
-    theWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-    theWebView.setBackgroundColor(Color.TRANSPARENT);
-    theWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-
-    theWebView.addJavascriptInterface(new WebAppInterface(getActivity()), "Android");
-    theWebView.loadUrl("file:///android_asset/javascript/transaction.html");
-
-    Button btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
+    btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
 
     txt_dlg_confirm_to.setText(toAddress);
-
 
     db = BaseApplication.getAppDatabase(getActivity());
 
@@ -149,24 +155,43 @@ public class ConfirmPaymentDialog extends DialogFragment {
           "Sending " + txt_dlg_confirm_total.getText().toString() + ". Please wait...");
       progressDialog.show();
 
-      //TODO: remove me after...
-      new CountDownTimer(329000,329000){
-        @Override public void onTick(long millisUntilFinished) {
-        }
-        @Override public void onFinish() {
-          progressDialog.dismiss();
-          DialogFactory.warning_toast(getActivity(),"transaction should be sent by now. On the next app update I'll try to display the tx id.").show();
-        }
-      }.start();
-
       db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 
         Cryptography cryptography = new Cryptography(getActivity());
-        String decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
-        String amountToSendInQA =  Convert.toQa(amountInZIL,Convert.Unit.ZIL).toString();
-        String gasPriceToSendInQA =  Convert.toQa(gasPriceInZIL,Convert.Unit.ZIL).toString();
+         decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
 
-        theWebView.loadUrl("javascript:sendTransaction('" + toAddress + "','" + amountToSendInQA + "','" + gasPriceToSendInQA + "','" + decryptedPrivateKey + "')");
+        amountToSendInQA = Convert.toQa(amountInZIL, Convert.Unit.ZIL).toString();
+        gasPriceToSendInQA = Convert.toQa(gasPriceInZIL, Convert.Unit.ZIL).toString();
+
+        ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+        RpcMethod rpcMethod = new RpcMethod();
+        rpcMethod.setId("1");
+        rpcMethod.setJsonrpc("2.0");
+        rpcMethod.setMethod("GetBalance");
+        List<String> emptyList = new ArrayList<>();
+        emptyList.add(preferencesHelper.getDefaulAddress());
+        rpcMethod.setParams(emptyList);
+        zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
+          @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            if (response.code() == 200) {
+              try {
+                String nonceResp = response.body().getAsJsonObject("result").get("nonce").getAsString();
+                KLog.d("got nonce = ", nonceResp);
+                nonce = String.valueOf(Integer.valueOf(nonceResp) + 1);
+
+                new SendTxAsyncTask().execute();
+              } catch (Exception ex) {
+                KLog.e(ex);
+              }
+            } else {
+              KLog.e("getBalance: response code is not 200!");
+            }
+          }
+
+          @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+            KLog.e(t);
+          }
+        });
       }, throwable -> {
         KLog.e(throwable);
         try {
@@ -175,38 +200,72 @@ public class ConfirmPaymentDialog extends DialogFragment {
         }
       });
     });
-    //gets the private key
-
   }
 
-  private class WebAppInterface {
-    Context mContext;
+  class SendTxAsyncTask extends android.os.AsyncTask {
+    @Override
+    protected Object doInBackground(Object[] objects) {
 
-    WebAppInterface(Context c) {
-      mContext = c;
+
+
+      String pubKey = KeyTools.getPublicKeyFromPrivateKey(decryptedPrivateKey, false);
+      KLog.d("got pubKey from private..");
+
+      Transaction transaction = Transaction.builder()
+          .version(String.valueOf(pack(333, 8)))
+          .toAddr(toAddress.toLowerCase())
+          .senderPubKey(pubKey)
+          .amount(amountToSendInQA)
+          .gasPrice(gasPriceToSendInQA)
+          .gasLimit("1")
+          .code("")
+          .nonce(nonce)
+          .data("")
+          .provider(new HttpProvider("https://dev-api.zilliqa.com"))
+          .build();
+
+      Wallet wallet = new Wallet();
+      wallet.setProvider(new HttpProvider("https://dev-api.zilliqa.com"));
+      wallet.addByPrivateKey(decryptedPrivateKey);
+
+      Transaction signedTransaction = wallet.signWith(transaction, new Account(decryptedPrivateKey));
+
+      try {
+        HttpProvider.CreateTxResult result = TransactionFactory.createTransaction(signedTransaction);
+        if (result != null && result.getTranID() != null) {
+          FragmentManager fm = getActivity().getSupportFragmentManager();
+          TxHashDialog txHashDialog =
+              TxHashDialog.newInstance(result.getTranID());
+
+          new CountDownTimer(60000,6000){
+            @Override public void onTick(long millisUntilFinished) {
+            }
+            @Override public void onFinish() {
+              txHashDialog.show(fm, "tx_id_dialog");
+            }
+          }.start();
+
+
+          //getActivity().getSupportFragmentManager().beginTransaction().
+          //    remove(getActivity().getSupportFragmentManager().findFragmentByTag("confirm_dialog_fragment")).commit();
+
+        } else {
+          getActivity().runOnUiThread(() -> DialogFactory.warning_toast(getActivity(), "Please try again").show());
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      return null;
     }
 
-    @JavascriptInterface
-    public void showError(String error) {
+    @Override protected void onPostExecute(Object o) {
+      super.onPostExecute(o);
       try {
         progressDialog.dismiss();
       } catch (Exception ignored) {
       }
-      DialogFactory.createGenericErrorDialog(getActivity(), error).show();
-    }
-
-    @JavascriptInterface
-    public void showHash(String hash) {
-      try {
-        progressDialog.dismiss();
-      } catch (Exception ignored) {
-      }
-      // Disable it for now...
-      //FragmentManager fm = getActivity().getSupportFragmentManager();
-      //TxHashDialog txHashDialog =
-      //    TxHashDialog.newInstance(hash);
-      //txHashDialog.show(fm, "tx_hash_dialog");
-      //getActivity().getSupportFragmentManager().popBackStack();
     }
   }
+
 }

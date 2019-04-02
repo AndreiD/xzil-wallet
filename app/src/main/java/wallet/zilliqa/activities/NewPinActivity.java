@@ -19,6 +19,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import wallet.zilliqa.BaseActivity;
+import wallet.zilliqa.BuildConfig;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.fragments.NewAccountFragment;
@@ -39,6 +40,13 @@ public class NewPinActivity extends BaseActivity {
 
     setContentView(R.layout.activity_create_pin);
     ButterKnife.bind(this);
+
+
+    if (BuildConfig.DEBUG) {
+      editText_pin1.setText("123123");
+      editText_pin2.setText("123123");
+      btn_save_new_pin.performClick();
+    }
   }
 
   @OnClick(R.id.btn_save_new_pin) public void onClickSaveNewPin() {
