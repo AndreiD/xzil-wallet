@@ -29,21 +29,21 @@
 
 
   <style name="Borderless" parent="android:Widget.Material.Button.Borderless">
-    <item name="fontPath">fonts/regular.ttf</item>
+    <item name="fontPath">fonts/regular.otf</item>
     <item name="android:textSize">14sp</item>
 
   </style>
 
 
   <style name="TextAppearance.Body" parent="android:TextAppearance">
-    <item name="fontPath">fonts/regular.ttf</item>
+    <item name="fontPath">fonts/regular.otf</item>
     <item name="android:textSize">14sp</item>
   </style>
 
 
   <style name="TextAppearance.Title" parent="android:TextAppearance">
     <item name="android:textSize">18sp</item>
-    <item name="fontPath">fonts/bold.ttf</item>
+    <item name="fontPath">fonts/bold.otf</item>
   </style>
 
   <style name="AppTheme.RadioButtonStyle">

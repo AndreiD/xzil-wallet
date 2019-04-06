@@ -52,15 +52,14 @@
           android:layout_margin="8dp"
           android:gravity="center"
           android:text="New ZIL Wallet ?"
-          android:textColor="@color/zen_color"
+          android:textColor="@color/grey_h"
+          android:textSize="16sp"
           />
       <Button
           android:id="@+id/button_new_account"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginBottom="16dp"
-          android:layout_marginLeft="8dp"
-          android:layout_marginRight="8dp"
+          android:layout_margin="16dp"
           android:background="@drawable/button_send"
           android:text="GENERATE NEW WALLET"
           android:textAppearance="@style/TextAppearance.Title"
@@ -83,7 +82,8 @@
           android:layout_margin="16dp"
           android:gravity="center"
           android:text="already have one ?"
-          android:textColor="@color/zen_color"
+          android:textColor="@color/grey_h"
+          android:textSize="16sp"
           />
 
       <android.support.design.widget.TextInputLayout
@@ -111,7 +111,7 @@
           android:id="@+id/button_new_account_import"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_margin="8dp"
+          android:layout_margin="16dp"
           android:background="@drawable/button_send"
           android:text="IMPORT WALLET"
           android:textAppearance="@style/TextAppearance.Title"

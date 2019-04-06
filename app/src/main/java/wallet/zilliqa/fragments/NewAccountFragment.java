@@ -44,8 +44,6 @@ public class NewAccountFragment extends BaseFragment {
   @BindView(R.id.button_new_account_import) Button button_new_account_import;
   @BindView(R.id.editText_private_key) EditText editText_private_key;
   @BindView(R.id.toolbar) android.support.v7.widget.Toolbar toolbar;
-  private String address;
-  private String privateKey;
   private ProgressDialog progressDialog;
   private PreferencesHelper preferencesHelper;
   private Cryptography cryptography;
@@ -100,7 +98,6 @@ public class NewAccountFragment extends BaseFragment {
     String address = wallet.addByPrivateKey(privateKey);
     System.out.println("address is: " + address);
 
-
     // encrypt the private key &  stores it encrypted
     Cryptography cryptography = new Cryptography(getActivity());
     try {
@@ -108,10 +105,16 @@ public class NewAccountFragment extends BaseFragment {
 
       AppDatabase appDatabase = BaseApplication.getAppDatabase(getActivity());
 
-      try{
-      appDatabase.walletDao().insertAll(new wallet.zilliqa.data.local.Wallet(address, encryptedPrivateKey));
+      try {
+        appDatabase.walletDao().insertAll(new wallet.zilliqa.data.local.Wallet(address, encryptedPrivateKey));
       } catch (Exception ex) {
-        DialogFactory.error_toast(getActivity(), "invalid private key or this wallet already exists.").show();
+        KLog.e(ex);
+        if (ex.getLocalizedMessage().toLowerCase().contains("unique")) {
+          DialogFactory.error_toast(getActivity(), "this wallet already exists.").show();
+        } else {
+          DialogFactory.error_toast(getActivity(), "invalid private key.").show();
+        }
+        return;
       }
       //set it as default
       preferencesHelper.setDefaultAddress(address);
@@ -125,7 +128,6 @@ public class NewAccountFragment extends BaseFragment {
       DialogFactory.error_toast(getActivity(), e.getLocalizedMessage()).show();
       return;
     }
-
 
     new CountDownTimer(500, 500) {
       @Override public void onTick(long l) {

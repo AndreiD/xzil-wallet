@@ -50,13 +50,12 @@
     android.support.design.widget.AppBarLayout$ScrollingViewBehavior
   </string>
   <string name="tos_terms">
-    If you continue, you agree to proceed to xZIL, a third party service. We use a direct javascript library without any server for
-    all the Blockchain interaction.
+    If you continue, you agree to proceed to xZIL, a third party service. We use https://dev-api.zilliqa.com" for
+    all the Blockchain interaction. This also can be viewed if you disassemble the application as no obfuscation is done.
     Your wallet is stored on your device. We DO NOT have access to your public address, private
     keys, pin code. All your
     interactions with xZIL are outside of xZIL\'s control and are subject to
-    xZIL\'s Terms of Service. MyTokenApp will not provide any personal information to
-    xZIL. All information that you may provide to xZIL App will be subject to
+    xZIL\'s Terms of Service. All information that you may provide to xZIL App will be subject to
     xZIL\'s Privacy Policy and will not be collected, stored, or used by
     xZIL.\n\nxZIL ACCEPTS NO RESPONSIBILITY AND WILL NOT BE LIABLE FOR ANY LOSS OR
     DAMAGE WHATSOEVER
