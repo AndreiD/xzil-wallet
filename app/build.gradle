@@ -117,7 +117,7 @@ dependencies {
   //------ Graphs
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
-  compile group: 'org.firestack', name: 'laksaj', version: '0.0.6-SNAPSHOT'
+  implementation group: 'org.firestack', name: 'laksaj', version: '0.0.6-SNAPSHOT'
 
 
 
