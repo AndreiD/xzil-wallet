@@ -107,8 +107,12 @@ public class NewAccountFragment extends BaseFragment {
       String encryptedPrivateKey = cryptography.encryptData(privateKey);
 
       AppDatabase appDatabase = BaseApplication.getAppDatabase(getActivity());
-      appDatabase.walletDao().insertAll(new wallet.zilliqa.data.local.Wallet(address, encryptedPrivateKey));
 
+      try{
+      appDatabase.walletDao().insertAll(new wallet.zilliqa.data.local.Wallet(address, encryptedPrivateKey));
+      } catch (Exception ex) {
+        DialogFactory.error_toast(getActivity(), "invalid private key or this wallet already exists.").show();
+      }
       //set it as default
       preferencesHelper.setDefaultAddress(address);
 
