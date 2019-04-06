@@ -6,8 +6,8 @@ android {
     applicationId "wallet.zilliqa"
     minSdkVersion 26
     targetSdkVersion 27
-    versionCode 13
-    versionName "2.03"
+    versionCode 14
+    versionName "2.04"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
 
@@ -117,7 +117,7 @@ dependencies {
   //------ Graphs
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
-  compile group: 'org.firestack', name: 'laksaj', version: '0.0.6-SNAPSHOT'
+  implementation group: 'org.firestack', name: 'laksaj', version: '0.0.6-SNAPSHOT'
 
 
 
