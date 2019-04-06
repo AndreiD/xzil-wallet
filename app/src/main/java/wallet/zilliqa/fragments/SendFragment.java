@@ -268,6 +268,10 @@ public class SendFragment extends BaseFragment {
 
           //Check the pin
           DUtils.hideKeyboard(getActivity());
+          InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+          imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
+          imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
+
           String encryptedPIN = preferencesHelper.getPIN();
 
           try {
