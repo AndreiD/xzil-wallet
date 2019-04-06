@@ -24,20 +24,6 @@
 2. clone it
 3. run it in android studio
 
-## The TODO:
-
- - Checksum
- - PIN on sent (compulsory)
- - ~~UI/UX 30 nov~~
- - ~~Wallet logic for sending/receiving ZILs on testnet 30 dec~~
- - ~~Import & Create multiple wallets~~
- - ~~BIP39~~
- - ~~Identicons~~
- - ~~Transaction status & history~~
- - ~~Gas fees slider~~
- - ~~QR Code~~
- - ~~google store release 31 jan~~
- - unit testing 20 jan
 
 ## Contributing
 
