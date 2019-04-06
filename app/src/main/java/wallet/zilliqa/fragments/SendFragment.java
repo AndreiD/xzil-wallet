@@ -1,5 +1,6 @@
 package wallet.zilliqa.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -175,6 +177,12 @@ public class SendFragment extends BaseFragment {
   }
 
   @OnClick(R.id.send_button_send) public void onClickSend() {
+
+    // hides the keyboard
+    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(send_editText_amount.getWindowToken(), 0);
+    imm.hideSoftInputFromWindow(send_editText_to.getWindowToken(), 0);
+
     BigDecimal amount_to_send = new BigDecimal(0);
     if (send_editText_amount.getText().toString().trim().length() > 0) {
       try {

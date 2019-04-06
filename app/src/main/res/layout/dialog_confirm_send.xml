@@ -154,18 +154,25 @@
         android:layout_height="match_parent" android:layout_margin="8dp"
         android:background="@drawable/border_round_red">
       <TextView
+          android:id="@+id/textView8"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:gravity="center"
           android:text="Total"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content" android:id="@+id/textView8" android:textSize="20sp"
-          android:gravity="center" android:textColor="@color/White"
-          android:layout_marginTop="4dp"/>
+          android:textColor="@color/White"
+          android:textSize="20sp"
+          />
       <TextView
-          android:text="0.23321 CTV"
+          android:id="@+id/txt_dlg_confirm_total"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content" android:id="@+id/txt_dlg_confirm_total"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="8dp"
+          android:gravity="center"
+          android:text="0.23321 CTV"
+          android:textColor="@color/White"
           android:textSize="25sp"
-          android:gravity="center" android:textColor="@color/White"
-          android:layout_marginBottom="4dp"/>
+          />
     </LinearLayout>
     <FrameLayout
         android:layout_width="match_parent"
