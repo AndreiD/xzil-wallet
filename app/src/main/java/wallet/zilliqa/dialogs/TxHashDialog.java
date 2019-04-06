@@ -11,13 +11,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.google.gson.JsonObject;
+import com.socks.library.KLog;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
+import wallet.zilliqa.data.local.PreferencesHelper;
+import wallet.zilliqa.data.remote.RpcMethod;
+import wallet.zilliqa.data.remote.ZilliqaRPC;
 
 public class TxHashDialog extends DialogFragment {
 
   public static final String TXID = "txid";
+  private Disposable disposable;
+  private Button btn_dlg_hash_etherscan;
+  private TextView textView_dlg_status;
+  private String txID;
+  private ProgressBar progressBar_dlg_hash;
+  private PreferencesHelper preferencesHelper;
 
   public static TxHashDialog newInstance(String txID) {
     TxHashDialog frag = new TxHashDialog();
@@ -31,7 +53,64 @@ public class TxHashDialog extends DialogFragment {
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
+
+    preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
+
     return inflater.inflate(R.layout.dialog_tx_hash, container, false);
+  }
+
+  @Override public void onResume() {
+    super.onResume();
+    disposable = Observable.interval(5000, 3000,
+        TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::checkConfirmedTransaction);
+    progressBar_dlg_hash.setVisibility(View.VISIBLE);
+  }
+
+  private void checkConfirmedTransaction(Long aLong) {
+
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    RpcMethod rpcMethod = new RpcMethod();
+    rpcMethod.setId("1");
+    rpcMethod.setJsonrpc("2.0");
+    rpcMethod.setMethod("GetTransaction");
+    List<String> emptyList = new ArrayList<>();
+    emptyList.add(txID);
+    rpcMethod.setParams(emptyList);
+    zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
+      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+        if (response.body().toString().toLowerCase().contains("txn hash not present")) {
+          return;
+        }
+        if (response.code() == 200) {
+          try {
+            boolean isSuccess = response.body().getAsJsonObject("result").getAsJsonObject("receipt").get("success").getAsBoolean();
+            if (isSuccess) {
+              disposable.dispose();
+              textView_dlg_status.setText("Status: Success");
+              progressBar_dlg_hash.setVisibility(View.GONE);
+            }
+          } catch (Exception ex) {
+            KLog.e(ex);
+          }
+        } else {
+          KLog.e("GetTransaction: response code is not 200!");
+        }
+      }
+
+      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+        KLog.e(t);
+      }
+    });
+  }
+
+  @Override public void onPause() {
+    super.onPause();
+    try {
+      disposable.dispose();
+    } catch (Exception ignored) {
+    }
   }
 
   @Override
@@ -40,17 +119,18 @@ public class TxHashDialog extends DialogFragment {
 
     getDialog().getWindow().setSoftInputMode(
         WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    String txHash = getArguments().getString(TXID, "");
+    txID = getArguments().getString(TXID, "");
 
     TextView textView_dlg_txHash = view.findViewById(R.id.textView_dlg_txHash);
-    textView_dlg_txHash.setText("Transaction ID: " + txHash);
-
-    Button btn_dlg_hash_etherscan = view.findViewById(R.id.btn_dlg_hash_etherscan);
+    textView_dlg_txHash.setText("Transaction ID: " + txID);
+    progressBar_dlg_hash = view.findViewById(R.id.progressBar_dlg_hash);
+    textView_dlg_status = view.findViewById(R.id.textView_dlg_status);
+    btn_dlg_hash_etherscan = view.findViewById(R.id.btn_dlg_hash_etherscan);
     Button btn_dlg_hash_close = view.findViewById(R.id.btn_dlg_hash_close);
 
     btn_dlg_hash_etherscan.setOnClickListener(view1 -> {
 
-      String url = Constants.EXPLORER_URL + txHash + "?network=testnet";
+      String url = Constants.EXPLORER_URL + txID + "?network=testnet";
       Intent i = new Intent(Intent.ACTION_VIEW);
       i.setData(Uri.parse(url));
       startActivity(i);
