@@ -174,6 +174,8 @@ public class HomeFragment extends BaseFragment {
   @Override public void onResume() {
     super.onResume();
 
+
+
     identicon_home.setAddress(preferencesHelper.getDefaulAddress());
     disposable = Observable.interval(500, 10000,
         TimeUnit.MILLISECONDS)

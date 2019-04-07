@@ -70,6 +70,9 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:label="@string/confirm_seed"/>
 
-    </application>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="11d7733565b9aab0767611822817c43ff5b071ca" />
+        </application>
 
 </manifest>

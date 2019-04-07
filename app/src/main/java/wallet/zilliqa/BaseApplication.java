@@ -3,7 +3,11 @@ package wallet.zilliqa;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.view.WindowManager;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.socks.library.KLog;
+import io.fabric.sdk.android.Fabric;
 import io.reactivex.plugins.RxJavaPlugins;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import wallet.zilliqa.data.local.AppDatabase;
@@ -17,12 +21,15 @@ public class BaseApplication extends Application {
   @Override public void onCreate() {
     super.onCreate();
 
+    Fabric.with(this, new Crashlytics.Builder().core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build());
+
     boolean isDebuggable = (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     if (isDebuggable) {
       KLog.init(true);
     } else {
       KLog.init(false);
     }
+
 
 
     //fonts init
