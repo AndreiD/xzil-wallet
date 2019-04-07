@@ -1,7 +1,9 @@
 package wallet.zilliqa.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +38,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.R;
+import wallet.zilliqa.activities.MainActivity;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.RpcMethod;
@@ -95,6 +99,11 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
     super.onCreateView(inflater, container, savedInstanceState);
     View view = inflater.inflate(R.layout.dialog_confirm_send, container, false);
+
+    DUtils.hideKeyboard(getActivity());
+    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
     Toolbar toolbar = view.findViewById(R.id.toolbar);
     toolbar.setNavigationIcon(R.drawable.ic_close_white_24dp);
@@ -157,7 +166,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
       db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 
         Cryptography cryptography = new Cryptography(getActivity());
-         decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
+        decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
 
         amountToSendInQA = Convert.toQa(amountInZIL, Convert.Unit.ZIL).toString();
         gasPriceToSendInQA = Convert.toQa(gasPriceInZIL, Convert.Unit.ZIL).toString();
@@ -205,8 +214,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
     @Override
     protected Object doInBackground(Object[] objects) {
 
-
-
       String pubKey = KeyTools.getPublicKeyFromPrivateKey(decryptedPrivateKey, false);
       KLog.d("got pubKey from private..");
 
@@ -236,6 +243,11 @@ public class ConfirmPaymentDialog extends DialogFragment {
           TxHashDialog txHashDialog =
               TxHashDialog.newInstance(result.getTranID());
           txHashDialog.show(fm, "tx_id_dialog");
+          txHashDialog.setOnDismissListener(dialogInterface -> {
+            KLog.d(">>> on dismiss listener called");
+            getDialog().dismiss();
+            ((MainActivity) getActivity()).selectHome();
+          });
 
           //getActivity().getSupportFragmentManager().beginTransaction().
           //    remove(getActivity().getSupportFragmentManager().findFragmentByTag("confirm_dialog_fragment")).commit();
@@ -258,5 +270,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
       }
     }
   }
+
 
 }

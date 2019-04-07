@@ -1,5 +1,6 @@
 package wallet.zilliqa.dialogs;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ public class TxHashDialog extends DialogFragment {
   private String txID;
   private ProgressBar progressBar_dlg_hash;
   private PreferencesHelper preferencesHelper;
+  private DialogInterface.OnDismissListener onDismissListener;
 
   public static TxHashDialog newInstance(String txID) {
     TxHashDialog frag = new TxHashDialog();
@@ -47,6 +49,10 @@ public class TxHashDialog extends DialogFragment {
     args.putString(TXID, txID);
     frag.setArguments(args);
     return frag;
+  }
+
+  public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
+    this.onDismissListener = onDismissListener;
   }
 
   @Override
@@ -141,5 +147,13 @@ public class TxHashDialog extends DialogFragment {
     btn_dlg_hash_close.setOnClickListener(view12 -> {
       dismiss();
     });
+  }
+
+  @Override
+  public void onDismiss(DialogInterface dialog) {
+    super.onDismiss(dialog);
+    if (onDismissListener != null) {
+      onDismissListener.onDismiss(dialog);
+    }
   }
 }

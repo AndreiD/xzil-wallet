@@ -75,7 +75,6 @@ public class MainActivity extends BaseActivity {
     });
 
 
-
     // disabled until it makes sense
     //rate_this_app_logic();
   }
@@ -89,6 +88,12 @@ public class MainActivity extends BaseActivity {
         .setDebug(false)
         .monitor();
     AppRate.showRateDialogIfMeetsConditions(this);
+  }
+
+  public void selectHome(){
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    bottomBar.selectTabAtPosition(1);
   }
 
   @Override

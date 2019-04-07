@@ -103,7 +103,7 @@ public class SendFragment extends BaseFragment {
     //TODO: remove me
     if (BuildConfig.DEBUG) {
       send_editText_to.setText(Constants.secondWalletAddress);
-      send_editText_amount.setText("50");
+      send_editText_amount.setText("0.1");
     }
 
     // update the balance
