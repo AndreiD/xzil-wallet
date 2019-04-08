@@ -13,7 +13,6 @@ import com.google.zxing.Result;
 import com.socks.library.KLog;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
-import wallet.zilliqa.BaseActivity;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.utils.DialogFactory;

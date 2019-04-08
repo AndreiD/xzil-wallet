@@ -3,7 +3,6 @@ package wallet.zilliqa;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.view.WindowManager;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.socks.library.KLog;

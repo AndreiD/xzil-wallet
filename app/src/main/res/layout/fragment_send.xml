@@ -43,7 +43,7 @@
           >
         <EditText
             android:id="@+id/send_editText_to"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="4dp"
             android:layout_weight="1"
@@ -66,6 +66,7 @@
             android:background="@drawable/radiobuttonselector"
             android:padding="8dp"
             app:srcCompat="@android:drawable/ic_menu_camera"
+            android:contentDescription="TODO"
             />
       </LinearLayout>
 

@@ -14,6 +14,7 @@
       android:foreground="?android:attr/selectableItemBackground"
       card_view:cardCornerRadius="4dp"
       card_view:cardUseCompatPadding="true"
+      android:focusable="true"
       >
 
     <LinearLayout
@@ -34,7 +35,7 @@
 
       <TextView
           android:id="@+id/wallet_address"
-          android:layout_width="match_parent"
+          android:layout_width="0dp"
           android:layout_height="match_parent"
           android:layout_alignParentTop="true"
           android:layout_gravity="center_vertical"

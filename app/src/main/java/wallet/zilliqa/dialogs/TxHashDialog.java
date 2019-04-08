@@ -25,10 +25,8 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
-import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.RpcMethod;
 import wallet.zilliqa.data.remote.ZilliqaRPC;
 
@@ -40,8 +38,8 @@ public class TxHashDialog extends DialogFragment {
   private TextView textView_dlg_status;
   private String txID;
   private ProgressBar progressBar_dlg_hash;
-  private PreferencesHelper preferencesHelper;
   private DialogInterface.OnDismissListener onDismissListener;
+  private int totalTries = 200;
 
   public static TxHashDialog newInstance(String txID) {
     TxHashDialog frag = new TxHashDialog();
@@ -59,8 +57,6 @@ public class TxHashDialog extends DialogFragment {
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
-
-    preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
 
     return inflater.inflate(R.layout.dialog_tx_hash, container, false);
   }
@@ -86,6 +82,13 @@ public class TxHashDialog extends DialogFragment {
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
       @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+        totalTries -= 1;
+        if (totalTries == 0) {
+          disposable.dispose();
+          textView_dlg_status.setText("Status: Unknown!");
+          progressBar_dlg_hash.setVisibility(View.GONE);
+          return;
+        }
         if (response.body().toString().toLowerCase().contains("txn hash not present")) {
           return;
         }

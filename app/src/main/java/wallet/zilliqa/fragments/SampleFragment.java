@@ -6,18 +6,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
-import wallet.zilliqa.BuildConfig;
-import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
-import wallet.zilliqa.data.local.AppDatabase;
-import wallet.zilliqa.data.local.Wallet;
-import wallet.zilliqa.data.local.PreferencesHelper;
-import wallet.zilliqa.utils.Cryptography;
-import wallet.zilliqa.utils.DUtils;
-import wallet.zilliqa.utils.DialogFactory;
-import wallet.zilliqa.utils.MyClipboardManager;
 
 public class SampleFragment extends BaseFragment {
 

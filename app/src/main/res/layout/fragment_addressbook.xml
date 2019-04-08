@@ -15,7 +15,7 @@
       <TextView
           android:id="@+id/textView6"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
+          android:layout_height="0dp"
           android:layout_marginLeft="16dp"
           android:layout_marginRight="16dp"
           android:layout_marginTop="8dp"
@@ -34,7 +34,7 @@
           >
         <EditText
             android:id="@+id/editText_add_new_contact_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/transparent"
@@ -55,6 +55,7 @@
             android:background="@drawable/border_round_orange_border_btn"
             android:padding="8dp"
             app:srcCompat="@android:drawable/ic_menu_camera"
+            android:contentDescription="TODO"
             />
         <ImageButton
             android:id="@+id/send_imageButton_save_addressbook"
@@ -64,6 +65,7 @@
             android:background="@drawable/border_round_orange_border_btn"
             android:padding="8dp"
             app:srcCompat="@android:drawable/ic_menu_save"
+            android:contentDescription="TODO"
             />
 
       </LinearLayout>
@@ -79,7 +81,7 @@
 
         <EditText
             android:id="@+id/edittext_add_new_contact_address"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="65dp"
             android:layout_marginRight="4dp"
             android:layout_weight="1"

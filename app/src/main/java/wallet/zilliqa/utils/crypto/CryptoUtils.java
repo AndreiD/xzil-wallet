@@ -3,13 +3,13 @@ package wallet.zilliqa.utils.crypto;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.BaseEncoding;
-import org.spongycastle.crypto.digests.RIPEMD160Digest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.Date;
+import org.spongycastle.crypto.digests.RIPEMD160Digest;
 
 /**
  * @author fanyongpeng
