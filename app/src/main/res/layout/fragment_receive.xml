@@ -19,6 +19,7 @@
       android:layout_weight="2"
       android:gravity="center"
       app:srcCompat="@drawable/ic_launcher"
+      android:contentDescription="TODO"
       />
 
   <TextView

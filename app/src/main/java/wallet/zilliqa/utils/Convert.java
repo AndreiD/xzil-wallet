@@ -30,8 +30,8 @@ public final class Convert {
     Li("li", 6),
     ZIL("zil", 12);
 
-    private String name;
-    private BigDecimal qaFactor;
+    private final String name;
+    private final BigDecimal qaFactor;
 
     Unit(String name, int factor) {
       this.name = name;

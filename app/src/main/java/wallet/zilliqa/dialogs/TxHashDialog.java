@@ -1,5 +1,6 @@
 package wallet.zilliqa.dialogs;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,10 +25,8 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
-import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.RpcMethod;
 import wallet.zilliqa.data.remote.ZilliqaRPC;
 
@@ -35,11 +34,11 @@ public class TxHashDialog extends DialogFragment {
 
   public static final String TXID = "txid";
   private Disposable disposable;
-  private Button btn_dlg_hash_etherscan;
   private TextView textView_dlg_status;
   private String txID;
   private ProgressBar progressBar_dlg_hash;
-  private PreferencesHelper preferencesHelper;
+  private DialogInterface.OnDismissListener onDismissListener;
+  private int totalTries = 200;
 
   public static TxHashDialog newInstance(String txID) {
     TxHashDialog frag = new TxHashDialog();
@@ -49,12 +48,14 @@ public class TxHashDialog extends DialogFragment {
     return frag;
   }
 
+  public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
+    this.onDismissListener = onDismissListener;
+  }
+
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
-
-    preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
 
     return inflater.inflate(R.layout.dialog_tx_hash, container, false);
   }
@@ -79,8 +80,15 @@ public class TxHashDialog extends DialogFragment {
     emptyList.add(txID);
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-        if (response.body().toString().toLowerCase().contains("txn hash not present")) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+        totalTries -= 1;
+        if (totalTries == 0) {
+          disposable.dispose();
+          textView_dlg_status.setText("Status: Unknown!");
+          progressBar_dlg_hash.setVisibility(View.GONE);
+          return;
+        }
+        if (response.body() != null ? response.body().toString().toLowerCase().contains("txn hash not present") : false) {
           return;
         }
         if (response.code() == 200) {
@@ -99,7 +107,7 @@ public class TxHashDialog extends DialogFragment {
         }
       }
 
-      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+      @Override public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
         KLog.e(t);
       }
     });
@@ -119,13 +127,13 @@ public class TxHashDialog extends DialogFragment {
 
     getDialog().getWindow().setSoftInputMode(
         WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    txID = getArguments().getString(TXID, "");
+    txID = getArguments() != null ? getArguments().getString(TXID, "") : null;
 
     TextView textView_dlg_txHash = view.findViewById(R.id.textView_dlg_txHash);
     textView_dlg_txHash.setText("Transaction ID: " + txID);
     progressBar_dlg_hash = view.findViewById(R.id.progressBar_dlg_hash);
     textView_dlg_status = view.findViewById(R.id.textView_dlg_status);
-    btn_dlg_hash_etherscan = view.findViewById(R.id.btn_dlg_hash_etherscan);
+    Button btn_dlg_hash_etherscan = view.findViewById(R.id.btn_dlg_hash_etherscan);
     Button btn_dlg_hash_close = view.findViewById(R.id.btn_dlg_hash_close);
 
     btn_dlg_hash_etherscan.setOnClickListener(view1 -> {
@@ -141,5 +149,13 @@ public class TxHashDialog extends DialogFragment {
     btn_dlg_hash_close.setOnClickListener(view12 -> {
       dismiss();
     });
+  }
+
+  @Override
+  public void onDismiss(DialogInterface dialog) {
+    super.onDismiss(dialog);
+    if (onDismissListener != null) {
+      onDismissListener.onDismiss(dialog);
+    }
   }
 }

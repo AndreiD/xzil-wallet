@@ -1,6 +1,7 @@
 package wallet.zilliqa.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -22,28 +23,27 @@ import wallet.zilliqa.utils.DialogFactory;
 
 public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdapter.TokenViewHolder> {
 
-  private List<Wallet> walletList;
-  private Context ctx;
+  private final List<Wallet> walletList;
+  private final Context ctx;
   private PreferencesHelper preferencesHelper;
-  private String defaultAddress;
 
   public ManageWalletsAdapter(Context ctx, List<Wallet> walletList) {
     this.walletList = walletList;
     this.ctx = ctx;
   }
 
-  @Override
-  public TokenViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+  @NonNull @Override
+  public TokenViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     View itemView = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.row_wallet_list, parent, false);
 
     preferencesHelper = new PreferencesHelper(ctx);
-    defaultAddress = preferencesHelper.getDefaulAddress();
+    String defaultAddress = preferencesHelper.getDefaulAddress();
     return new TokenViewHolder(itemView);
   }
 
   @Override
-  public void onBindViewHolder(TokenViewHolder holder, int position) {
+  public void onBindViewHolder(@NonNull TokenViewHolder holder, int position) {
 
     Wallet wallet = walletList.get(position);
     String address = wallet.getAddress();
@@ -105,9 +105,9 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
   }
 
   public class TokenViewHolder extends RecyclerView.ViewHolder {
-    public TextView wallet_address;
-    public CardView cardView_wallet;
-    public BlockiesIdenticon identicon;
+    public final TextView wallet_address;
+    public final CardView cardView_wallet;
+    public final BlockiesIdenticon identicon;
 
     public TokenViewHolder(View view) {
       super(view);

@@ -1,5 +1,6 @@
 package wallet.zilliqa.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +37,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.R;
+import wallet.zilliqa.activities.MainActivity;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.RpcMethod;
@@ -59,7 +62,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
   private String gasPriceToSendInQA;
   private String toAddress;
   private String nonce = "1";
-  private Button btn_dlg_confirm_send;
   private String decryptedPrivateKey;
 
   public static ConfirmPaymentDialog newInstance(String toAddress, BigDecimal amount, BigDecimal gasPriceInZil) {
@@ -96,6 +98,11 @@ public class ConfirmPaymentDialog extends DialogFragment {
     super.onCreateView(inflater, container, savedInstanceState);
     View view = inflater.inflate(R.layout.dialog_confirm_send, container, false);
 
+    DUtils.hideKeyboard(getActivity());
+    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
     Toolbar toolbar = view.findViewById(R.id.toolbar);
     toolbar.setNavigationIcon(R.drawable.ic_close_white_24dp);
     toolbar.setNavigationOnClickListener(view1 -> dismiss());
@@ -108,7 +115,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
-    toAddress = getArguments().getString(TOADDRESS, "");
+    toAddress = getArguments() != null ? getArguments().getString(TOADDRESS, "") : null;
 
     BigDecimal amountInZIL = new BigDecimal(getArguments().getString(AMOUNT, "0"));
     BigDecimal gasPriceInZIL = new BigDecimal(getArguments().getString(GAS_PRICE, "0"));
@@ -126,7 +133,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
     identicon_to.setAddress(toAddress);
     identicon_from.setAddress(preferencesHelper.getDefaulAddress());
 
-    btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
+    Button btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
 
     txt_dlg_confirm_to.setText(toAddress);
 
@@ -157,7 +164,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
       db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
 
         Cryptography cryptography = new Cryptography(getActivity());
-         decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
+        decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
 
         amountToSendInQA = Convert.toQa(amountInZIL, Convert.Unit.ZIL).toString();
         gasPriceToSendInQA = Convert.toQa(gasPriceInZIL, Convert.Unit.ZIL).toString();
@@ -171,10 +178,10 @@ public class ConfirmPaymentDialog extends DialogFragment {
         emptyList.add(preferencesHelper.getDefaulAddress());
         rpcMethod.setParams(emptyList);
         zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-          @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+          @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
             if (response.code() == 200) {
               try {
-                String nonceResp = response.body().getAsJsonObject("result").get("nonce").getAsString();
+                String nonceResp = response.body() != null ? response.body().getAsJsonObject("result").get("nonce").getAsString() : null;
                 KLog.d("got nonce = ", nonceResp);
                 nonce = String.valueOf(Integer.valueOf(nonceResp) + 1);
 
@@ -187,7 +194,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
             }
           }
 
-          @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+          @Override public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
             KLog.e(t);
           }
         });
@@ -204,8 +211,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
   class SendTxAsyncTask extends android.os.AsyncTask {
     @Override
     protected Object doInBackground(Object[] objects) {
-
-
 
       String pubKey = KeyTools.getPublicKeyFromPrivateKey(decryptedPrivateKey, false);
       KLog.d("got pubKey from private..");
@@ -236,6 +241,13 @@ public class ConfirmPaymentDialog extends DialogFragment {
           TxHashDialog txHashDialog =
               TxHashDialog.newInstance(result.getTranID());
           txHashDialog.show(fm, "tx_id_dialog");
+          txHashDialog.setOnDismissListener(dialogInterface -> {
+            KLog.d(">>> on dismiss listener called");
+            try {
+              getDialog().dismiss();
+              ((MainActivity) getActivity()).selectHome();
+            }catch (Exception ignored){}
+          });
 
           //getActivity().getSupportFragmentManager().beginTransaction().
           //    remove(getActivity().getSupportFragmentManager().findFragmentByTag("confirm_dialog_fragment")).commit();
@@ -258,5 +270,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
       }
     }
   }
+
 
 }

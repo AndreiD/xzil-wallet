@@ -8,7 +8,7 @@ import android.content.Context;
 @Database(entities = {Contact.class, Wallet.class}, version = 7)
 public abstract class AppDatabase extends RoomDatabase {
 
-  public static final String DBNAME = "app-database";
+  private static final String DBNAME = "app-database";
   private static AppDatabase INSTANCE;
   public abstract ContactDAO contactDao();
   public abstract WalletDAO walletDao();

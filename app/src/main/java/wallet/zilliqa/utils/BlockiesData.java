@@ -13,12 +13,10 @@ import java.util.List;
  */
 
 public class BlockiesData {
-  private final String TAG = this.getClass().getName();
   public static final int DEFAULT_SIZE = 8;
 
-  private int[] randSeed;
+  private final int[] randSeed;
   private int imageData[];
-  private String seed;
 
   private int color;
   private int bgColor;
@@ -29,17 +27,16 @@ public class BlockiesData {
     if(seed == null){
       seed = "";
     }
-    this.seed = seed.toLowerCase();
+    String seed1 = seed.toLowerCase();
     this.randSeed = new int[]{0,0,0,0};
-    seedRand(this.seed);
+    seedRand(seed1);
     createIcon(size);
   }
 
-  private int[] seedRand(String seed){
+  private void seedRand(String seed){
     for(int i = 0; i < seed.length(); i++){
       randSeed[i % 4] = ((randSeed[i % 4] << 5) - randSeed[i % 4]) + ((int) seed.charAt(i));
     }
-    return randSeed;
   }
 
   private void createIcon(int size){
@@ -55,8 +52,8 @@ public class BlockiesData {
     randSeed[1] = randSeed[2];
     randSeed[2] = randSeed[3];
     randSeed[3] = (randSeed[3] ^(randSeed[3] >> 19) ^ t ^ (t >> 8));
-    double num = (randSeed[3] >>> 0);
-    double den = ((1 << 31) >>> 0);
+    double num = (randSeed[3]);
+    double den = ((1 << 31));
     return Math.abs(num / den);
   }
 
@@ -68,12 +65,10 @@ public class BlockiesData {
   }
 
   private int[] createImageData(int size){
-    int width = size;
-    int height = size;
-    int dataWidth = (int) Math.ceil(width / 2);
-    int mirrorWidth = width - dataWidth;
+    int dataWidth = (int) Math.ceil((double)size / 2);
+    int mirrorWidth = size - dataWidth;
     ArrayList<Integer> data = new ArrayList<>();
-    for(int y = 0; y < height; y++){
+    for(int y = 0; y < size; y++){
       ArrayList<Integer> row = new ArrayList<>();
       for(int x = 0; x < dataWidth; x++){
         double r = rand() * 2.3;
@@ -88,12 +83,8 @@ public class BlockiesData {
       }
 
       Collections.reverse(r);
-      for(int i = 0; i < r.size(); i++){
-        row.add(r.get(i));
-      }
-      for(int i = 0; i < row.size(); i++){
-        data.add(row.get(i));
-      }
+      row.addAll(r);
+      data.addAll(row);
     }
     return toIntArray(data);
   }
@@ -102,7 +93,7 @@ public class BlockiesData {
     int[] ret = new int[list.size()];
     int i = 0;
     for (Integer e : list)
-      ret[i++] = e.intValue();
+      ret[i++] = e;
     return ret;
   }
 

@@ -28,7 +28,6 @@
 
 
     <TextView
-        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
@@ -68,7 +67,6 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
@@ -118,7 +116,7 @@
           android:text="Amount"
           android:layout_width="wrap_content"
           android:minWidth="75dp"
-          android:layout_height="wrap_content" android:id="@+id/textView5"
+          android:layout_height="wrap_content"
           android:textColor="@color/app_grey" android:textSize="18sp"
           android:layout_margin="4dp"/>
       <TextView
@@ -132,7 +130,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
       <TextView
-          android:id="@+id/textView7"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_margin="4dp"
@@ -154,7 +151,6 @@
         android:layout_height="match_parent" android:layout_margin="8dp"
         android:background="@drawable/border_round_red">
       <TextView
-          android:id="@+id/textView8"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="8dp"

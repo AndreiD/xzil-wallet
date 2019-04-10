@@ -13,7 +13,7 @@ public class NativeSecp256k1 {
     private static final int CAPACITY = 32;
     private static final ReentrantReadWriteLock RWL = new ReentrantReadWriteLock();
     private static final Lock R_LOCK;
-    private static ThreadLocal<ByteBuffer> nativeECDSABuffer;
+    private static final ThreadLocal<ByteBuffer> nativeECDSABuffer;
 
     public NativeSecp256k1() {
     }

@@ -14,6 +14,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import com.crashlytics.android.Crashlytics;
 import com.socks.library.KLog;
 import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -23,6 +24,7 @@ import wallet.zilliqa.BaseActivity;
 import wallet.zilliqa.BuildConfig;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
+import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
 
 public class SplashActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks {
@@ -39,6 +41,9 @@ public class SplashActivity extends BaseActivity implements EasyPermissions.Perm
     setContentView(R.layout.activity_splash);
 
     imageView_logo = findViewById(R.id.imageView_logo);
+
+    // get phone model for crash reporting
+    Crashlytics.setUserIdentifier(DUtils.getDeviceInfo());
 
     if (BuildConfig.DEBUG) {
       appPermissionsRequest();

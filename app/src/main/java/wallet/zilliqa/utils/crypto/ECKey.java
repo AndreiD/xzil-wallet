@@ -29,10 +29,7 @@ import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author fanyongpeng
- * @create 2018-08-13 11:14
- **/
+
 public class ECKey {
     private static final String COMMON_CURVE = "secp256k1";
     private static final byte ADDRESS_HEADER_TEST = 0;
@@ -731,8 +728,7 @@ public class ECKey {
                     if (decoder != null) {
                         try {
                             decoder.close();
-                        } catch (IOException var15) {
-                            ;
+                        } catch (IOException ignored) {
                         }
                     }
 

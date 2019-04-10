@@ -46,7 +46,6 @@ public class NewAccountFragment extends BaseFragment {
   @BindView(R.id.toolbar) android.support.v7.widget.Toolbar toolbar;
   private ProgressDialog progressDialog;
   private PreferencesHelper preferencesHelper;
-  private Cryptography cryptography;
 
   public NewAccountFragment() {
   }
@@ -66,7 +65,6 @@ public class NewAccountFragment extends BaseFragment {
   @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     preferencesHelper = new PreferencesHelper(getActivity());
-    cryptography = new Cryptography(getActivity());
 
     toolbar.setTitle(getString(R.string.wallet_creation));
     toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
@@ -84,9 +82,13 @@ public class NewAccountFragment extends BaseFragment {
 
     String privateKey = editText_private_key.getText().toString().trim();
 
-    if (privateKey.length() != 64) {
-      DialogFactory.error_toast(getActivity(), "Invalid Private Key Length (expected 64 characters)").show();
+    if (privateKey.length() < 63) {
+      DialogFactory.error_toast(getActivity(), "Invalid Private Key Length").show();
       return;
+    }
+
+    if (privateKey.startsWith("0x")) {
+      privateKey = privateKey.substring(2);
     }
 
     progressDialog =

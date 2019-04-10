@@ -1,13 +1,14 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
   compileSdkVersion 27
   defaultConfig {
     applicationId "wallet.zilliqa"
-    minSdkVersion 26
+    minSdkVersion 24
     targetSdkVersion 27
-    versionCode 14
-    versionName "2.04"
+    versionCode 15
+    versionName "2.05"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
 
@@ -31,6 +32,7 @@ android {
     debug {
       minifyEnabled false
       versionNameSuffix ".debug"
+      ext.enableCrashlytics = false
     }
   }
   compileOptions {
@@ -119,6 +121,8 @@ dependencies {
 
   implementation group: 'org.firestack', name: 'laksaj', version: '0.0.6-SNAPSHOT'
 
+  //------ Analytics
+  implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
 
 
   // Need them ?
@@ -130,4 +134,8 @@ dependencies {
     exclude group: 'com.android.support', module: 'support-annotations'
   }
   androidTestImplementation 'com.android.support.test:rules:1.0.2'
+
+  androidTestImplementation('com.schibsted.spain:barista:2.8.0') {
+    exclude group: 'com.android.support'
+  }
 }
