@@ -34,7 +34,6 @@ public class TxHashDialog extends DialogFragment {
 
   public static final String TXID = "txid";
   private Disposable disposable;
-  private Button btn_dlg_hash_etherscan;
   private TextView textView_dlg_status;
   private String txID;
   private ProgressBar progressBar_dlg_hash;
@@ -81,7 +80,7 @@ public class TxHashDialog extends DialogFragment {
     emptyList.add(txID);
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
         totalTries -= 1;
         if (totalTries == 0) {
           disposable.dispose();
@@ -89,7 +88,7 @@ public class TxHashDialog extends DialogFragment {
           progressBar_dlg_hash.setVisibility(View.GONE);
           return;
         }
-        if (response.body().toString().toLowerCase().contains("txn hash not present")) {
+        if (response.body() != null ? response.body().toString().toLowerCase().contains("txn hash not present") : false) {
           return;
         }
         if (response.code() == 200) {
@@ -108,7 +107,7 @@ public class TxHashDialog extends DialogFragment {
         }
       }
 
-      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+      @Override public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
         KLog.e(t);
       }
     });
@@ -128,13 +127,13 @@ public class TxHashDialog extends DialogFragment {
 
     getDialog().getWindow().setSoftInputMode(
         WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    txID = getArguments().getString(TXID, "");
+    txID = getArguments() != null ? getArguments().getString(TXID, "") : null;
 
     TextView textView_dlg_txHash = view.findViewById(R.id.textView_dlg_txHash);
     textView_dlg_txHash.setText("Transaction ID: " + txID);
     progressBar_dlg_hash = view.findViewById(R.id.progressBar_dlg_hash);
     textView_dlg_status = view.findViewById(R.id.textView_dlg_status);
-    btn_dlg_hash_etherscan = view.findViewById(R.id.btn_dlg_hash_etherscan);
+    Button btn_dlg_hash_etherscan = view.findViewById(R.id.btn_dlg_hash_etherscan);
     Button btn_dlg_hash_close = view.findViewById(R.id.btn_dlg_hash_close);
 
     btn_dlg_hash_etherscan.setOnClickListener(view1 -> {

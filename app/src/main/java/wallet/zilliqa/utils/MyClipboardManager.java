@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import wallet.zilliqa.R;
 
 public class MyClipboardManager {
@@ -45,7 +46,7 @@ public class MyClipboardManager {
     ClipboardManager clipboard = (ClipboardManager) context
         .getSystemService(Context.CLIPBOARD_SERVICE);
 
-    ClipData clip = clipboard.getPrimaryClip();
+    ClipData clip = clipboard != null ? clipboard.getPrimaryClip() : null;
     if (clip != null) {
       ClipData.Item item = clip.getItemAt(0);
       return coerceToText(context, item).toString();
@@ -74,9 +75,9 @@ public class MyClipboardManager {
         // Ask for a stream of the desired type.
         AssetFileDescriptor descr = context.getContentResolver()
             .openTypedAssetFileDescriptor(uri, "text/*", null);
-        stream = descr.createInputStream();
+        stream = descr != null ? descr.createInputStream() : null;
         InputStreamReader reader = new InputStreamReader(stream,
-            "UTF-8");
+            StandardCharsets.UTF_8);
 
         // Got it... copy the stream into a local string and return it.
         StringBuilder builder = new StringBuilder(128);
@@ -98,7 +99,7 @@ public class MyClipboardManager {
         if (stream != null) {
           try {
             stream.close();
-          } catch (IOException e) {
+          } catch (IOException ignored) {
           }
         }
       }

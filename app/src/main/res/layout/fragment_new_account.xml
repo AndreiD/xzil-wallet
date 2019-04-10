@@ -104,6 +104,7 @@
             android:textColor="@color/app_black"
             android:textColorHint="@color/app_black"
             android:textSize="16sp"
+            android:importantForAutofill="no"
             />
       </android.support.design.widget.TextInputLayout>
 

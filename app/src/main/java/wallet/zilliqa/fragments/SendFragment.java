@@ -72,7 +72,6 @@ public class SendFragment extends BaseFragment {
   private BigDecimal balanceZIL = new BigDecimal(0);
   private BigDecimal gasPriceInZil;
   private PreferencesHelper preferencesHelper;
-  private AppDatabase db;
   private Disposable disposable;
   private BigDecimal minimumGasPrice = new BigDecimal("1000000000"); // default min gas price
 
@@ -98,7 +97,7 @@ public class SendFragment extends BaseFragment {
     super.onActivityCreated(savedInstanceState);
 
     preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
-    db = BaseApplication.getAppDatabase(getActivity());
+    AppDatabase db = BaseApplication.getAppDatabase(getActivity());
 
     //TODO: remove me
     if (BuildConfig.DEBUG) {
@@ -157,9 +156,9 @@ public class SendFragment extends BaseFragment {
     emptyList.add("");
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
         if (response.code() == 200) {
-          String resp = response.body().get("result").getAsString();
+          String resp = response.body() != null ? response.body().get("result").getAsString() : null;
           minimumGasPrice = new BigDecimal(resp); // update min gas price
           //set default gas price (10% more)
           gasPriceInZil =
@@ -171,7 +170,7 @@ public class SendFragment extends BaseFragment {
         }
       }
 
-      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+      @Override public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
         KLog.e(t);
       }
     });
@@ -230,6 +229,9 @@ public class SendFragment extends BaseFragment {
     AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
     final EditText edittext = new EditText(getActivity());
     alert.setTitle("Enter Your PIN");
+    if(BuildConfig.DEBUG){
+      edittext.setText("123123");
+    }
 
     alert.setView(edittext);
 
@@ -340,7 +342,7 @@ public class SendFragment extends BaseFragment {
     emptyList.add(preferencesHelper.getDefaulAddress());
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
         if (response.code() == 200) {
           try {
             JsonObject body = response.body();
@@ -363,7 +365,7 @@ public class SendFragment extends BaseFragment {
         }
       }
 
-      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+      @Override public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
         KLog.e(t);
       }
     });

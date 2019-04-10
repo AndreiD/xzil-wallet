@@ -40,7 +40,7 @@ public class QRScannerActivity extends AppCompatActivity implements ZXingScanner
     }
 
     Bundle extras = getIntent().getExtras();
-    type = extras.getString("type");
+    type = extras != null ? extras.getString("type") : null;
   }
 
   private boolean checkPermission() {
@@ -63,16 +63,14 @@ public class QRScannerActivity extends AppCompatActivity implements ZXingScanner
             DialogFactory.error_toast(QRScannerActivity.this, getString(R.string.we_need_camera_permission)).show();
             finish();
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-              if (shouldShowRequestPermissionRationale(CAMERA)) {
-                DialogFactory.warning_toast(QRScannerActivity.this, getString(R.string.we_need_camera_permission)).show();
-                new DialogInterface.OnClickListener() {
-                  @Override public void onClick(DialogInterface dialog, int which) {
-                      requestPermissions(new String[] { CAMERA }, REQUEST_CAMERA);
-                  }
-                };
-                return;
-              }
+            if (shouldShowRequestPermissionRationale(CAMERA)) {
+              DialogFactory.warning_toast(QRScannerActivity.this, getString(R.string.we_need_camera_permission)).show();
+              new DialogInterface.OnClickListener() {
+                @Override public void onClick(DialogInterface dialog, int which) {
+                    requestPermissions(new String[] { CAMERA }, REQUEST_CAMERA);
+                }
+              };
+              return;
             }
           }
         }

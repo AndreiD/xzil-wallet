@@ -1,5 +1,6 @@
 package wallet.zilliqa.utils.crypto;
 
+import android.support.annotation.NonNull;
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Ints;
@@ -115,7 +116,7 @@ public class Sha256Hash implements Serializable, Comparable<Sha256Hash> {
         return CryptoUtils.reverseBytes(this.bytes);
     }
 
-    public int compareTo(Sha256Hash other) {
+    public int compareTo(@NonNull Sha256Hash other) {
         for(int i = 31; i >= 0; --i) {
             int thisByte = this.bytes[i] & 255;
             int otherByte = other.bytes[i] & 255;

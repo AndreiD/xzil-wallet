@@ -27,7 +27,7 @@
     <TextView
         android:text="hint: use letters and numbers"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:id="@+id/textView10"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="32dp" android:gravity="center"
         android:textColor="@color/DimGray"/>
 

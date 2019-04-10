@@ -18,7 +18,6 @@ public class Base58 {
         } else {
             int zeros;
             for(zeros = 0; zeros < input.length && input[zeros] == 0; ++zeros) {
-                ;
             }
 
             char[] encoded = new char[input.length * 2];
@@ -68,7 +67,6 @@ public class Base58 {
             }
 
             for(zeros = 0; zeros < input58.length && input58[zeros] == 0; ++zeros) {
-                ;
             }
 
             byte[] decoded = new byte[input.length()];
@@ -146,7 +144,6 @@ public class Base58 {
         Arrays.fill(INDEXES, -1);
 
         for(int i = 0; i < ALPHABET.length; INDEXES[ALPHABET[i]] = i++) {
-            ;
         }
 
     }

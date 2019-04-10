@@ -62,7 +62,6 @@ public class ConfirmPaymentDialog extends DialogFragment {
   private String gasPriceToSendInQA;
   private String toAddress;
   private String nonce = "1";
-  private Button btn_dlg_confirm_send;
   private String decryptedPrivateKey;
 
   public static ConfirmPaymentDialog newInstance(String toAddress, BigDecimal amount, BigDecimal gasPriceInZil) {
@@ -116,7 +115,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
-    toAddress = getArguments().getString(TOADDRESS, "");
+    toAddress = getArguments() != null ? getArguments().getString(TOADDRESS, "") : null;
 
     BigDecimal amountInZIL = new BigDecimal(getArguments().getString(AMOUNT, "0"));
     BigDecimal gasPriceInZIL = new BigDecimal(getArguments().getString(GAS_PRICE, "0"));
@@ -134,7 +133,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
     identicon_to.setAddress(toAddress);
     identicon_from.setAddress(preferencesHelper.getDefaulAddress());
 
-    btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
+    Button btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
 
     txt_dlg_confirm_to.setText(toAddress);
 
@@ -179,10 +178,10 @@ public class ConfirmPaymentDialog extends DialogFragment {
         emptyList.add(preferencesHelper.getDefaulAddress());
         rpcMethod.setParams(emptyList);
         zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-          @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+          @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
             if (response.code() == 200) {
               try {
-                String nonceResp = response.body().getAsJsonObject("result").get("nonce").getAsString();
+                String nonceResp = response.body() != null ? response.body().getAsJsonObject("result").get("nonce").getAsString() : null;
                 KLog.d("got nonce = ", nonceResp);
                 nonce = String.valueOf(Integer.valueOf(nonceResp) + 1);
 
@@ -195,7 +194,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
             }
           }
 
-          @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+          @Override public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
             KLog.e(t);
           }
         });
@@ -244,8 +243,10 @@ public class ConfirmPaymentDialog extends DialogFragment {
           txHashDialog.show(fm, "tx_id_dialog");
           txHashDialog.setOnDismissListener(dialogInterface -> {
             KLog.d(">>> on dismiss listener called");
-            getDialog().dismiss();
-            ((MainActivity) getActivity()).selectHome();
+            try {
+              getDialog().dismiss();
+              ((MainActivity) getActivity()).selectHome();
+            }catch (Exception ignored){}
           });
 
           //getActivity().getSupportFragmentManager().beginTransaction().

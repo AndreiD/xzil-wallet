@@ -81,7 +81,7 @@ public class HomeFragment extends BaseFragment {
     textView_fragmentHome_status.setText("Updating...");
     showGreeting();
 
-    boolean isjustcreated = getArguments().getBoolean("isjustcreated", false);
+    boolean isjustcreated = getArguments() != null ? getArguments().getBoolean("isjustcreated", false) : false;
 
     if (isjustcreated) {
       textView_fragmentHome_status.setText("Thank you for creating a wallet with us.");
@@ -106,7 +106,7 @@ public class HomeFragment extends BaseFragment {
     ExchangeRatesAPI exchangeRatesAPI = ExchangeRatesAPI.Factory.getIstance(getActivity());
 
     exchangeRatesAPI.getGraphData("ZIL").enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
         if (response.code() > 299) {
           KLog.e("failed to get historical data for the chart");
           home_line_chart.setVisibility(View.GONE);
@@ -115,7 +115,7 @@ public class HomeFragment extends BaseFragment {
 
         JsonObject jsonObject = response.body();
 
-        JsonArray jArrayData = jsonObject.get("Data").getAsJsonArray();
+        JsonArray jArrayData = jsonObject != null ? jsonObject.get("Data").getAsJsonArray() : null;
         for (int i = 0; i < jArrayData.size(); i++) {
           try {
             JsonObject dataJsonObject = jArrayData.get(i).getAsJsonObject();
@@ -164,7 +164,7 @@ public class HomeFragment extends BaseFragment {
         home_line_chart.invalidate();
       }
 
-      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+      @Override public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
         KLog.e(t.getLocalizedMessage());
         home_line_chart.setVisibility(View.GONE);
       }
@@ -201,7 +201,7 @@ public class HomeFragment extends BaseFragment {
     emptyList.add(preferencesHelper.getDefaulAddress());
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
         if (response.code() == 200) {
           try {
             JsonObject body = response.body();
@@ -230,7 +230,7 @@ public class HomeFragment extends BaseFragment {
         }
       }
 
-      @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+      @Override public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
         KLog.e(t);
         textView_fragmentHome_status.setText("failed to retrieve the balance.");
         textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
@@ -249,8 +249,6 @@ public class HomeFragment extends BaseFragment {
       textView_fragmentHome_greeting.setText("Good Afternoon");
     } else if (timeOfDay >= 16 && timeOfDay < 22) {
       textView_fragmentHome_greeting.setText("Good Evening");
-    } else if (timeOfDay >= 22 && timeOfDay < 2) {
-      textView_fragmentHome_greeting.setText("Good Night");
     }
 
     DateFormat formatter = new SimpleDateFormat("dd MMMM, yyyy", Locale.getDefault());

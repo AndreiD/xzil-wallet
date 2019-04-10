@@ -1,6 +1,5 @@
 package wallet.zilliqa.utils;
 
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -15,22 +14,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import wallet.zilliqa.R;
 
-/**
- * Custom view that is used to display a
- * original from:
- import com.luminiasoft.ethereum.blockiesandroid.blockiesandroid.BlockiesData;
- */
 
 public class BlockiesIdenticon extends View {
-  private final String TAG = this.getClass().getName();
-
-  private final float DEFAULT_RADIUS = 10;
 
   private BlockiesData mData;
   private Paint mColor;
   private Paint mBackground;
   private Paint mSpot;
-  private RectF mBlock = new RectF();
+  private final RectF mBlock = new RectF();
   private float cornerRadius = 20;
 
   private Paint mShadowPaint;
@@ -46,8 +37,9 @@ public class BlockiesIdenticon extends View {
   public BlockiesIdenticon(Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BlockiesIdenticon, 0, 0);
-    String address = "";
+    String address;
     try{
+      float DEFAULT_RADIUS = 10;
       cornerRadius = a.getFloat(R.styleable.BlockiesIdenticon_radius, DEFAULT_RADIUS);
       address = a.getString(R.styleable.BlockiesIdenticon_address);
     }finally{
@@ -87,11 +79,9 @@ public class BlockiesIdenticon extends View {
     float xpad = (float)(getPaddingLeft() + getPaddingRight());
     float ypad = (float)(getPaddingTop() + getPaddingBottom());
 
-    float left = xpad;
     float right = (xpad + width);
-    float top = ypad;
     float bottom = (ypad + height);
-    mBlock.set(left, top, right, bottom);
+    mBlock.set(xpad, ypad, right, bottom);
   }
 
   @Override
@@ -141,7 +131,7 @@ public class BlockiesIdenticon extends View {
     init();
   }
 
-  public void setAddress(String address, int size){
+  private void setAddress(String address, int size){
     mData = new BlockiesData(address, size);
     init();
   }

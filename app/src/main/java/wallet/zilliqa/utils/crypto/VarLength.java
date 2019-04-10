@@ -40,7 +40,7 @@ public class VarLength {
         } else if (value <= 65535L) {
             return 3;
         } else {
-            return value <= 65535L ? 5 : 9;
+            return 9;
         }
     }
 

@@ -2,46 +2,22 @@
 <resources>
 
   <string name="app_name">xZIL</string>
-  <string name="token_name">ANDY</string>
   <string name="action_settings">Settings</string>
-  <string name="action_exit">Exit</string>
-  <string name="action_feedback">Feedback</string>
-  <string name="retry">Retry</string>
-  <string name="internet_is_required_to_run_this_app">Internet is required to run this app</string>
-  <string name="enable_notifications">Enable Notifications</string>
-  <string name="perf_profile">Your Profile</string>
-  <string name="first_name">First Name</string>
-  <string name="options">Options</string>
-  <string name="share">Share</string>
-  <string name="settings_saved">Settings saved</string>
   <string name="send_feedback">Send Feedback</string>
   <string name="version">Beta 0.1</string>
-  <string name="about">About</string>
-  <string name="settings">Settings</string>
   <string name="dialog_action_ok">OK</string>
   <string name="generic_error_title">Error</string>
-  <string name="dialog_general_error_message">A general error has occurred.</string>
-  <string name="second_activity">Second activity</string>
   <string name="scan_barcode">Scan QR Code</string>
   <string name="we_need_camera_permission">We need the camera permission in order to scan the QR
     Code
   </string>
   <string name="xcontinue">CONTINUE</string>
-  <string name="done">SAVE NEW PIN</string>
   <string name="erase_everything">erase_everything</string>
-  <string name="enter">ENTER</string>
   <string name="share_using">Share Using</string>
   <string name="pin">PIN</string>
   <string name="repeat_pin">REPEAT PIN</string>
   <string name="unlock">UNLOCK</string>
-  <string name="publicPrivateKey">Public Address Private Key</string>
-  <string name="publicAddress">Public Address</string>
-  <string name="address_book">Address Book</string>
-  <string name="export_wallet">Export Wallet</string>
   <string name="change_pin">Change PIN</string>
-  <string name="set_fee">Set Fee</string>
-  <string name="seed">Seed</string>
-  <string name="password">Password</string>
   <string name="permissions_are_needed">
     <![CDATA[We need CAMERA for scanning QR Codes and Storage permissions in order for this xZIL to work]]></string>
   <string name="before_we_start">Before we start, we need couple of permissions.</string>
@@ -61,9 +37,7 @@
     DAMAGE WHATSOEVER
     SUFFERED AS A RESULT OF ACCESSING, USE OF, OR RELIANCE UPON xZIL INFORMATION AND SERVICES.
   </string>
-  <string name="action_manage_tokens">Manage Tokens</string>
   <string name="confirm_seed">Confirm Seed</string>
-  <string name="continue_lowercase">continue</string>
   <string name="action_manage_wallets">Manage Wallets</string>
   <string name="wallet_creation">Wallet Creation</string>
   <string name="export_wallets">Export Wallets</string>

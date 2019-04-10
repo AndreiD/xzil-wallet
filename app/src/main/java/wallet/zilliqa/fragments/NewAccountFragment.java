@@ -46,7 +46,6 @@ public class NewAccountFragment extends BaseFragment {
   @BindView(R.id.toolbar) android.support.v7.widget.Toolbar toolbar;
   private ProgressDialog progressDialog;
   private PreferencesHelper preferencesHelper;
-  private Cryptography cryptography;
 
   public NewAccountFragment() {
   }
@@ -66,7 +65,6 @@ public class NewAccountFragment extends BaseFragment {
   @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     preferencesHelper = new PreferencesHelper(getActivity());
-    cryptography = new Cryptography(getActivity());
 
     toolbar.setTitle(getString(R.string.wallet_creation));
     toolbar.setNavigationOnClickListener(v -> getActivity().getSupportFragmentManager().popBackStack());
@@ -92,7 +90,6 @@ public class NewAccountFragment extends BaseFragment {
     if (privateKey.startsWith("0x")) {
       privateKey = privateKey.substring(2);
     }
-
 
     progressDialog =
         DialogFactory.createProgressDialog(getActivity(),

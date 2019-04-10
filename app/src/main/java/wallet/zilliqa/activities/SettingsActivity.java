@@ -65,7 +65,7 @@ public class SettingsActivity extends BaseActivity {
       final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
       LayoutInflater inflater =
           (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      View view = inflater.inflate(R.layout.dialog_private_keys, null);
+      View view = inflater != null ? inflater.inflate(R.layout.dialog_private_keys, null) : null;
       alertDialogBuilder.setView(view);
       alertDialogBuilder.setCancelable(false);
       final AlertDialog dialog = alertDialogBuilder.create();
@@ -147,14 +147,14 @@ public class SettingsActivity extends BaseActivity {
             BaseApplication.getAppDatabase(getActivity());
         //populate wallets list
         db.walletDao().getAll().subscribe(wallets -> {
-          String output = "Scroll down if you have multiple wallets.\n";
+          StringBuilder output = new StringBuilder("Scroll down if you have multiple wallets.\n");
           for (Wallet wal : wallets) {
             String encPrivKey = wal.getEncrypted_private_key();
             Cryptography cryptography = new Cryptography(getActivity());
 
             try {
               String decryptedPrivateKey = cryptography.decryptData(encPrivKey);
-              output = output + "Address: " + wal.getAddress() + "\nPrivate Key: " + decryptedPrivateKey + "\n\n";
+              output.append("Address: ").append(wal.getAddress()).append("\nPrivate Key: ").append(decryptedPrivateKey).append("\n\n");
             } catch (NoSuchPaddingException | NoSuchAlgorithmException |
                 UnrecoverableEntryException | CertificateException | KeyStoreException |
                 IOException | InvalidAlgorithmParameterException | InvalidKeyException |
@@ -164,7 +164,7 @@ public class SettingsActivity extends BaseActivity {
                   .show();
             }
           }
-          showPrivateKeysDialog(getActivity(), output);
+          showPrivateKeysDialog(getActivity(), output.toString());
         }, throwable -> KLog.e(throwable));
 
         return true;
@@ -177,7 +177,7 @@ public class SettingsActivity extends BaseActivity {
             getActivity());
         LayoutInflater inflater = (LayoutInflater) getActivity()
             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.dialog_change_pin, null);
+        View view = inflater != null ? inflater.inflate(R.layout.dialog_change_pin, null) : null;
         alertDialogBuilder.setView(view);
         alertDialogBuilder.setCancelable(false);
         final AlertDialog dialog = alertDialogBuilder.create();

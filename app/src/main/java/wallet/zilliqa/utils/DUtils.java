@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.socks.library.KLog;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.List;
@@ -47,7 +48,7 @@ public class DUtils {
       byte[] buffer = new byte[size];
       is.read(buffer);
       is.close();
-      return new String(buffer, "UTF-8");
+      return new String(buffer, StandardCharsets.UTF_8);
     } catch (Exception ex) {
       ex.printStackTrace();
     }
