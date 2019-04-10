@@ -84,10 +84,15 @@ public class NewAccountFragment extends BaseFragment {
 
     String privateKey = editText_private_key.getText().toString().trim();
 
-    if (privateKey.length() != 64) {
-      DialogFactory.error_toast(getActivity(), "Invalid Private Key Length (expected 64 characters)").show();
+    if (privateKey.length() < 63) {
+      DialogFactory.error_toast(getActivity(), "Invalid Private Key Length").show();
       return;
     }
+
+    if (privateKey.startsWith("0x")) {
+      privateKey = privateKey.substring(2);
+    }
+
 
     progressDialog =
         DialogFactory.createProgressDialog(getActivity(),
