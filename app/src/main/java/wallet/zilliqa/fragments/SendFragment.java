@@ -147,7 +147,7 @@ public class SendFragment extends BaseFragment {
   }
 
   private void getMinimumGasPrice() {
-    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getInstance(getActivity());
     RpcMethod rpcMethod = new RpcMethod();
     rpcMethod.setId("1");
     rpcMethod.setJsonrpc("2.0");
@@ -333,7 +333,7 @@ public class SendFragment extends BaseFragment {
   }
 
   private void updateBalances(Long aLong) {
-    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getInstance(getActivity());
     RpcMethod rpcMethod = new RpcMethod();
     rpcMethod.setId("1");
     rpcMethod.setJsonrpc("2.0");
