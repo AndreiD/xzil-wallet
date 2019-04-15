@@ -62,7 +62,7 @@ public class TxHashDialog extends DialogFragment {
 
   @Override public void onResume() {
     super.onResume();
-    disposable = Observable.interval(5000, 3000,
+    disposable = Observable.interval(15000, 3000,
         TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(this::checkConfirmedTransaction);
@@ -71,7 +71,7 @@ public class TxHashDialog extends DialogFragment {
 
   private void checkConfirmedTransaction(Long aLong) {
 
-    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getInstance(getActivity());
     RpcMethod rpcMethod = new RpcMethod();
     rpcMethod.setId("1");
     rpcMethod.setJsonrpc("2.0");
@@ -138,7 +138,7 @@ public class TxHashDialog extends DialogFragment {
 
     btn_dlg_hash_etherscan.setOnClickListener(view1 -> {
 
-      String url = Constants.EXPLORER_URL + txID + "?network=testnet";
+      String url = Constants.getExplorerURL(getActivity()) + txID;
       Intent i = new Intent(Intent.ACTION_VIEW);
       i.setData(Uri.parse(url));
       startActivity(i);

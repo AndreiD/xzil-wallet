@@ -12,17 +12,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 import wallet.zilliqa.BuildConfig;
+import wallet.zilliqa.Constants;
 
 public interface ZilliqaRPC {
-
-  String BASE_URL = "https://dev-api.zilliqa.com";
 
   @POST("/") Call<JsonObject> executeRPCCall(@Body RpcMethod rpcMethod);
 
   class Factory {
-    private static ZilliqaRPC service;
+    public static ZilliqaRPC service;
 
-    public static ZilliqaRPC getIstance(Context context) {
+    public static ZilliqaRPC getInstance(Context context) {
       if (service == null) {
 
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
@@ -41,7 +40,10 @@ public interface ZilliqaRPC {
         builder.cache(cache);
 
         Retrofit retrofit =
-            new Retrofit.Builder().client(builder.build()).addConverterFactory(GsonConverterFactory.create()).baseUrl(BASE_URL).build();
+            new Retrofit.Builder().client(builder.build())
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(Constants.getNetworkAPIURL(context))
+                .build();
         service = retrofit.create(ZilliqaRPC.class);
         return service;
       } else {

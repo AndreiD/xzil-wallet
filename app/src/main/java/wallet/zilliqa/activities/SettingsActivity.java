@@ -3,10 +3,12 @@ package wallet.zilliqa.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.NavUtils;
@@ -34,6 +36,7 @@ import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.AppDatabase;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.local.Wallet;
+import wallet.zilliqa.data.remote.ZilliqaRPC;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DialogFactory;
 
@@ -57,7 +60,7 @@ public class SettingsActivity extends BaseActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  public static class MyPreferenceFragment extends PreferenceFragment {
+  public static class MyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     private ProgressDialog progressDialog;
 
     public static void showPrivateKeysDialog(Context context, String textToCopyToClipboard) {
@@ -259,6 +262,29 @@ public class SettingsActivity extends BaseActivity {
 
         return true;
       });
+    }
+
+    @Override
+    public void onResume() {
+      super.onResume();
+      // Set up a listener whenever a key changes
+      getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+      super.onPause();
+      // Set up a listener whenever a key changes
+      getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+      ListPreference lp = (ListPreference) findPreference("network_preference");
+      lp.setSummary(lp.getEntry());
+      DialogFactory.success_toast(getActivity(), "Network set to " + lp.getEntry()).show();
+      ZilliqaRPC.Factory.service = null; // sets to null the rpc api
     }
   }
 }

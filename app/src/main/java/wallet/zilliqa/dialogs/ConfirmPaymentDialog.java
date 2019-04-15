@@ -36,6 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import wallet.zilliqa.BaseApplication;
+import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.activities.MainActivity;
 import wallet.zilliqa.data.local.AppDatabase;
@@ -47,8 +48,6 @@ import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
-
-import static com.firestack.laksaj.account.Wallet.pack;
 
 public class ConfirmPaymentDialog extends DialogFragment {
 
@@ -144,7 +143,12 @@ public class ConfirmPaymentDialog extends DialogFragment {
     txt_dlg_confirm_amount.setText(String.format("%s ZIL",
         amountInZIL));
     txt_dlg_confirm_fee.setText(String.format("%s ZIL", gasPriceInZIL));
-    txt_dlg_confirm_total.setText(String.format("%s ZIL", amountInZIL.add(gasPriceInZIL)));
+
+    if(Constants.isMaiNet(getActivity())) {
+      txt_dlg_confirm_total.setText(String.format("%s ZIL", amountInZIL.add(gasPriceInZIL)));
+    }else{
+      txt_dlg_confirm_total.setText(String.format("%s ZIL (Test Net)", amountInZIL.add(gasPriceInZIL)));
+    }
 
     getDialog().setCancelable(true);
     getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -169,7 +173,7 @@ public class ConfirmPaymentDialog extends DialogFragment {
         amountToSendInQA = Convert.toQa(amountInZIL, Convert.Unit.ZIL).toString();
         gasPriceToSendInQA = Convert.toQa(gasPriceInZIL, Convert.Unit.ZIL).toString();
 
-        ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+        ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getInstance(getActivity());
         RpcMethod rpcMethod = new RpcMethod();
         rpcMethod.setId("1");
         rpcMethod.setJsonrpc("2.0");
@@ -215,8 +219,12 @@ public class ConfirmPaymentDialog extends DialogFragment {
       String pubKey = KeyTools.getPublicKeyFromPrivateKey(decryptedPrivateKey, false);
       KLog.d("got pubKey from private..");
 
+      if (toAddress.startsWith("0x")) {
+        toAddress = toAddress.substring(2);
+      }
+
       Transaction transaction = Transaction.builder()
-          .version(String.valueOf(pack(333, 8)))
+          .version(Constants.getVersion(getActivity()))
           .toAddr(toAddress.toLowerCase())
           .senderPubKey(pubKey)
           .amount(amountToSendInQA)
@@ -225,11 +233,11 @@ public class ConfirmPaymentDialog extends DialogFragment {
           .code("")
           .nonce(nonce)
           .data("")
-          .provider(new HttpProvider("https://dev-api.zilliqa.com"))
+          .provider(new HttpProvider(Constants.getNetworkAPIURL(getActivity())))
           .build();
 
       Wallet wallet = new Wallet();
-      wallet.setProvider(new HttpProvider("https://dev-api.zilliqa.com"));
+      wallet.setProvider(new HttpProvider(Constants.getNetworkAPIURL(getActivity())));
       wallet.addByPrivateKey(decryptedPrivateKey);
 
       Transaction signedTransaction = wallet.signWith(transaction, new Account(decryptedPrivateKey));
@@ -249,11 +257,8 @@ public class ConfirmPaymentDialog extends DialogFragment {
             }catch (Exception ignored){}
           });
 
-          //getActivity().getSupportFragmentManager().beginTransaction().
-          //    remove(getActivity().getSupportFragmentManager().findFragmentByTag("confirm_dialog_fragment")).commit();
-
         } else {
-          getActivity().runOnUiThread(() -> DialogFactory.warning_toast(getActivity(), "Please try again").show());
+          getActivity().runOnUiThread(() -> DialogFactory.warning_toast(getActivity(), "Please try again.").show());
         }
       } catch (IOException e) {
         e.printStackTrace();

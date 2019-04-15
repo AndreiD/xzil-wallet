@@ -1,5 +1,6 @@
 package wallet.zilliqa.fragments;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,6 +36,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
+import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.ExchangeRatesAPI;
@@ -192,7 +194,7 @@ public class HomeFragment extends BaseFragment {
   }
 
   private void updateBalances(Long aLong) {
-    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getIstance(getActivity());
+    ZilliqaRPC zilliqaRPC = ZilliqaRPC.Factory.getInstance(getActivity());
     RpcMethod rpcMethod = new RpcMethod();
     rpcMethod.setId("1");
     rpcMethod.setJsonrpc("2.0");
@@ -227,6 +229,11 @@ public class HomeFragment extends BaseFragment {
           textView_fragmentHome_status.setText("all looks good.");
           textView_fragmentHome_balance_zil.setVisibility(View.VISIBLE);
           textView_fragmentHome_balance_zil.setText("0 ZIL");
+        }
+
+        if(!Constants.isMaiNet(getActivity())){
+          textView_fragmentHome_status.setText("Test Net is Selected!");
+          textView_fragmentHome_status.setTextColor(getResources().getColor(R.color.appcolor_red));
         }
       }
 

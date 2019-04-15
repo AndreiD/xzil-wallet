@@ -12,3 +12,6 @@
 .idea
 .idea/
 /app/release
+/release
+/realease/
+*/release/*
