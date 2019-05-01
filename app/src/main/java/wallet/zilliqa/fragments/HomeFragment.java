@@ -1,6 +1,6 @@
 package wallet.zilliqa.fragments;
 
-import android.content.res.Resources;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import butterknife.BindView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -38,6 +39,7 @@ import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
+import wallet.zilliqa.activities.GetFreeZILs;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.ExchangeRatesAPI;
 import wallet.zilliqa.data.remote.RpcMethod;
@@ -53,6 +55,7 @@ public class HomeFragment extends BaseFragment {
   @BindView(R.id.textView_fragmentHome_date) TextView textView_fragmentHome_date;
   @BindView(R.id.home_line_chart) LineChart home_line_chart;
   @BindView(R.id.identicon_home) BlockiesIdenticon identicon_home;
+  @BindView(R.id.buttonGetFreeZils) Button buttonGetFreeZils;
   private Disposable disposable;
   private PreferencesHelper preferencesHelper;
 
@@ -83,11 +86,15 @@ public class HomeFragment extends BaseFragment {
     textView_fragmentHome_status.setText("Updating...");
     showGreeting();
 
-    boolean isjustcreated = getArguments() != null ? getArguments().getBoolean("isjustcreated", false) : false;
+    boolean isjustcreated =
+        getArguments() != null ? getArguments().getBoolean("isjustcreated", false) : false;
 
     if (isjustcreated) {
       textView_fragmentHome_status.setText("Thank you for creating a wallet with us.");
     }
+
+    buttonGetFreeZils.setOnClickListener(
+        v -> startActivity(new Intent(getActivity(), GetFreeZILs.class)));
 
     setupChart();
   }
@@ -108,7 +115,8 @@ public class HomeFragment extends BaseFragment {
     ExchangeRatesAPI exchangeRatesAPI = ExchangeRatesAPI.Factory.getIstance(getActivity());
 
     exchangeRatesAPI.getGraphData("ZIL").enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call,
+          @NonNull Response<JsonObject> response) {
         if (response.code() > 299) {
           KLog.e("failed to get historical data for the chart");
           home_line_chart.setVisibility(View.GONE);
@@ -176,8 +184,6 @@ public class HomeFragment extends BaseFragment {
   @Override public void onResume() {
     super.onResume();
 
-
-
     identicon_home.setAddress(preferencesHelper.getDefaulAddress());
     disposable = Observable.interval(500, 10000,
         TimeUnit.MILLISECONDS)
@@ -203,7 +209,8 @@ public class HomeFragment extends BaseFragment {
     emptyList.add(preferencesHelper.getDefaulAddress());
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call,
+          @NonNull Response<JsonObject> response) {
         if (response.code() == 200) {
           try {
             JsonObject body = response.body();
@@ -231,7 +238,7 @@ public class HomeFragment extends BaseFragment {
           textView_fragmentHome_balance_zil.setText("0 ZIL");
         }
 
-        if(!Constants.isMaiNet(getActivity())){
+        if (!Constants.isMaiNet(getActivity())) {
           textView_fragmentHome_status.setText("Test Net is Selected!");
           textView_fragmentHome_status.setTextColor(getResources().getColor(R.color.appcolor_red));
         }

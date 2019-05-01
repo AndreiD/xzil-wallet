@@ -7,8 +7,8 @@ android {
     applicationId "wallet.zilliqa"
     minSdkVersion 24
     targetSdkVersion 27
-    versionCode 17
-    versionName "2.07"
+    versionCode 18
+    versionName "2.08"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
 
@@ -138,4 +138,6 @@ dependencies {
   androidTestImplementation('com.schibsted.spain:barista:2.8.0') {
     exclude group: 'com.android.support'
   }
+
+  implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
 }

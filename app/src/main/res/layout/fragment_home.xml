@@ -75,6 +75,13 @@
     </LinearLayout>
 
 
+    <Button
+        android:id="@+id/buttonGetFreeZils"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Get Free ZILs"
+        />
     <TextView
         android:id="@+id/textView_fragmentHome_status"
         android:layout_width="match_parent"
@@ -84,7 +91,6 @@
         android:text="loading..."
         android:textColor="@color/grey_h"
         />
-
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/home_line_chart"
         android:layout_width="match_parent"
