@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:orientation="vertical"
+    tools:context=".activities.GetFreeZILs"
+    >
+
+
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+      <TextView
+          android:id="@+id/textView"
+          android:textSize="20sp"
+          android:gravity="center"
+          android:layout_width="wrap_content"
+          android:layout_marginBottom="16dp"
+          android:layout_height="wrap_content"
+          android:text="As part of a promotion for this wallet, each user that gives feedback on our facebook page will receive 0.5 ZILs. Offer is limited to the first 100 users that use this wallet."
+          />
+      <TextView
+          android:id="@+id/textView2"
+          android:textSize="20sp"
+          android:gravity="center"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="For now, each transfer is processed manually, so please be patient"
+          />
+
+      <Button
+          android:id="@+id/freezil_open_facebook_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_margin="16dp"
+          android:text="OPEN FACEBOOK PAGE"
+          />
+    </LinearLayout>
+
+  </ScrollView>
+
+</LinearLayout>
