@@ -3,11 +3,9 @@ package wallet.zilliqa.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,21 +23,10 @@ import com.socks.library.KLog;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,7 +42,6 @@ import wallet.zilliqa.data.remote.ZilliqaRPC;
 import wallet.zilliqa.dialogs.ConfirmPaymentDialog;
 import wallet.zilliqa.qrscanner.QRScannerActivity;
 import wallet.zilliqa.utils.Convert;
-import wallet.zilliqa.utils.Cryptography;
 import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
 
@@ -156,9 +142,11 @@ public class SendFragment extends BaseFragment {
     emptyList.add("");
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call,
+          @NonNull Response<JsonObject> response) {
         if (response.code() == 200) {
-          String resp = response.body() != null ? response.body().get("result").getAsString() : null;
+          String resp =
+              response.body() != null ? response.body().get("result").getAsString() : null;
           minimumGasPrice = new BigDecimal(resp); // update min gas price
           //set default gas price (10% more)
           gasPriceInZil =
@@ -192,7 +180,8 @@ public class SendFragment extends BaseFragment {
   @OnClick(R.id.send_button_send) public void onClickSend() {
 
     // hides the keyboard
-    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+    InputMethodManager imm =
+        (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(send_editText_amount.getWindowToken(), 0);
     imm.hideSoftInputFromWindow(send_editText_to.getWindowToken(), 0);
 
@@ -220,101 +209,7 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    askForPINDialog(amount_to_send);
-  }
-
-  private void askForPINDialog(BigDecimal amount_to_send) {
-    KLog.d("asking for PIN now...");
-
-    AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
-    final EditText edittext = new EditText(getActivity());
-    alert.setTitle("Enter Your PIN");
-    if(BuildConfig.DEBUG){
-      edittext.setText("123123");
-    }
-
-    alert.setView(edittext);
-
-    alert.setPositiveButton("VERIFY", (dialog, whichButton) -> {
-      //What ever you want to do with the value
-      String enteredPIN = edittext.getText().toString();
-
-      if (enteredPIN.length() < 3) {
-        DialogFactory.error_toast(getActivity(), "Pin should be at least 4 numbers").show();
-        return;
-      }
-
-      // makes it faster for debug builds
-      long defaultInterval = 1000L;
-      if (BuildConfig.DEBUG) {
-        defaultInterval = 1L;
-      }
-
-      int invalidPins = preferencesHelper.getInvalidPins();
-      defaultInterval = invalidPins * defaultInterval + 1;
-
-      if (invalidPins > 10) {
-        DialogFactory.createGenericErrorDialog(getActivity(),
-            "Attention! The application data was wiped. Please import your seed or create a new wallet.")
-            .show();
-        preferencesHelper.clear();
-        return;
-      }
-
-      // add a delay to prevent brute forcing
-      new CountDownTimer(defaultInterval, defaultInterval) {
-        @Override public void onTick(long l) {
-        }
-
-        @Override public void onFinish() {
-
-          //Check the pin
-          DUtils.hideKeyboard(getActivity());
-          InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-          imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
-          imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
-
-          String encryptedPIN = preferencesHelper.getPIN();
-
-          try {
-            Cryptography cryptography = new Cryptography(getActivity());
-            String decryptedPIN = cryptography.decryptData(encryptedPIN);
-            if (decryptedPIN.equals(enteredPIN)) {
-              preferencesHelper.setInvalidPins(0);
-
-              // ALL IS GOOD
-              sendTheMoney(send_editText_to.getText().toString().trim(), amount_to_send, gasPriceInZil);
-            } else {
-
-              if (preferencesHelper.getInvalidPins() > 4) {
-                getActivity().finish();
-              }
-
-              DialogFactory.error_toast(getActivity(), "Incorrect PIN").show();
-              preferencesHelper.setInvalidPins(preferencesHelper.getInvalidPins() + 1);
-
-              if (preferencesHelper.getInvalidPins() == 3) {
-                DialogFactory.createGenericErrorDialog(getActivity(),
-                    "Attention! If you enter more than 10 times an incorrect pin the application will reset. After that the only way to get your money is by importing your seed.")
-                    .show();
-              }
-            }
-          } catch (NoSuchPaddingException | NoSuchAlgorithmException |
-              UnrecoverableEntryException | CertificateException | KeyStoreException |
-              IOException | InvalidAlgorithmParameterException | InvalidKeyException |
-              NoSuchProviderException | BadPaddingException | IllegalBlockSizeException e) {
-            e.printStackTrace();
-            DialogFactory.createGenericErrorDialog(getActivity(), e.getLocalizedMessage()).show();
-          }
-        }
-      }.start();
-    });
-
-    alert.setNegativeButton("CANCEL", (dialog, whichButton) -> dialog.dismiss());
-
-    alert.show();
-    // if it's good then
-
+    sendTheMoney(send_editText_to.getText().toString().trim(), amount_to_send, gasPriceInZil);
   }
 
   private void sendTheMoney(String destinationAddress, BigDecimal amount,
@@ -342,7 +237,8 @@ public class SendFragment extends BaseFragment {
     emptyList.add(preferencesHelper.getDefaulAddress());
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
-      @Override public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+      @Override public void onResponse(@NonNull Call<JsonObject> call,
+          @NonNull Response<JsonObject> response) {
         if (response.code() == 200) {
           try {
             JsonObject body = response.body();

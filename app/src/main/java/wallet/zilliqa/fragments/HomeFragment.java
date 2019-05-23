@@ -1,6 +1,5 @@
 package wallet.zilliqa.fragments;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import butterknife.BindView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -39,7 +37,6 @@ import wallet.zilliqa.BaseApplication;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.Constants;
 import wallet.zilliqa.R;
-import wallet.zilliqa.activities.GetFreeZILs;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.remote.ExchangeRatesAPI;
 import wallet.zilliqa.data.remote.RpcMethod;
@@ -55,7 +52,6 @@ public class HomeFragment extends BaseFragment {
   @BindView(R.id.textView_fragmentHome_date) TextView textView_fragmentHome_date;
   @BindView(R.id.home_line_chart) LineChart home_line_chart;
   @BindView(R.id.identicon_home) BlockiesIdenticon identicon_home;
-  @BindView(R.id.buttonGetFreeZils) Button buttonGetFreeZils;
   private Disposable disposable;
   private PreferencesHelper preferencesHelper;
 
@@ -93,8 +89,6 @@ public class HomeFragment extends BaseFragment {
       textView_fragmentHome_status.setText("Thank you for creating a wallet with us.");
     }
 
-    buttonGetFreeZils.setOnClickListener(
-        v -> startActivity(new Intent(getActivity(), GetFreeZILs.class)));
 
     setupChart();
   }

@@ -21,11 +21,13 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.socks.library.KLog;
 import java.util.Hashtable;
 import wallet.zilliqa.BaseFragment;
 import wallet.zilliqa.R;
 import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.utils.DialogFactory;
+import wallet.zilliqa.utils.crypto.Bech32;
 
 public class ReceiveFragment extends BaseFragment {
 
@@ -84,6 +86,12 @@ public class ReceiveFragment extends BaseFragment {
 
     PreferencesHelper preferencesHelper = new PreferencesHelper(getActivity());
     String defaulAddress = preferencesHelper.getDefaulAddress();
+
+    try {
+      defaulAddress = Bech32.toBech32Address(defaulAddress);
+    } catch (Exception e) {
+      KLog.e(e);
+    }
 
     textView_receive_ethaddress.setText(defaulAddress);
     
