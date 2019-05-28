@@ -44,6 +44,7 @@ import wallet.zilliqa.qrscanner.QRScannerActivity;
 import wallet.zilliqa.utils.Convert;
 import wallet.zilliqa.utils.DUtils;
 import wallet.zilliqa.utils.DialogFactory;
+import wallet.zilliqa.utils.crypto.Bech32;
 
 public class SendFragment extends BaseFragment {
 
@@ -196,8 +197,8 @@ public class SendFragment extends BaseFragment {
       return;
     }
 
-    if (!Validation.isAddress(send_editText_to.getText().toString().trim())) {
-      DialogFactory.warning_toast(getActivity(), "The destination address is not valid.")
+    if (!Bech32.isBech32(send_editText_to.getText().toString().trim())) {
+      DialogFactory.warning_toast(getActivity(), "The destination address is not valid. Must start with 'zil'")
           .show();
       return;
     }
@@ -234,7 +235,19 @@ public class SendFragment extends BaseFragment {
     rpcMethod.setJsonrpc("2.0");
     rpcMethod.setMethod("GetBalance");
     List<String> emptyList = new ArrayList<>();
-    emptyList.add(preferencesHelper.getDefaulAddress());
+
+
+    String ofAddress = preferencesHelper.getDefaulAddress();
+    if(ofAddress.startsWith("zil")) {
+      try {
+        ofAddress = Bech32.fromBech32Address(preferencesHelper.getDefaulAddress());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    emptyList.add(ofAddress);
+
+
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
       @Override public void onResponse(@NonNull Call<JsonObject> call,

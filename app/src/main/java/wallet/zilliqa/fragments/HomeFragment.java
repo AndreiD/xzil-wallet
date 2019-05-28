@@ -43,6 +43,7 @@ import wallet.zilliqa.data.remote.RpcMethod;
 import wallet.zilliqa.data.remote.ZilliqaRPC;
 import wallet.zilliqa.utils.BlockiesIdenticon;
 import wallet.zilliqa.utils.Convert;
+import wallet.zilliqa.utils.crypto.Bech32;
 
 public class HomeFragment extends BaseFragment {
 
@@ -200,7 +201,16 @@ public class HomeFragment extends BaseFragment {
     rpcMethod.setJsonrpc("2.0");
     rpcMethod.setMethod("GetBalance");
     List<String> emptyList = new ArrayList<>();
-    emptyList.add(preferencesHelper.getDefaulAddress());
+    String ofAddress = preferencesHelper.getDefaulAddress();
+    if(ofAddress.startsWith("zil")) {
+      try {
+        ofAddress = Bech32.fromBech32Address(preferencesHelper.getDefaulAddress());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    emptyList.add(ofAddress);
+
     rpcMethod.setParams(emptyList);
     zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
       @Override public void onResponse(@NonNull Call<JsonObject> call,

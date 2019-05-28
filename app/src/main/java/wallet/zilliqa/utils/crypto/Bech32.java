@@ -6,10 +6,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class Bech32 {
+
+
+  public static boolean isBech32(String str) {
+    Pattern pattern = Pattern.compile("^zil1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}");
+    Matcher matcher = pattern.matcher(str);
+    return matcher.matches();
+  }
+
   /**
    * The Bech32 character set for encoding.
    */
