@@ -74,14 +74,6 @@
           />
     </LinearLayout>
 
-
-    <Button
-        android:id="@+id/buttonGetFreeZils"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Get Free ZILs"
-        />
     <TextView
         android:id="@+id/textView_fragmentHome_status"
         android:layout_width="match_parent"

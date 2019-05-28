@@ -20,6 +20,7 @@ import wallet.zilliqa.data.local.PreferencesHelper;
 import wallet.zilliqa.data.local.Wallet;
 import wallet.zilliqa.utils.BlockiesIdenticon;
 import wallet.zilliqa.utils.DialogFactory;
+import wallet.zilliqa.utils.crypto.Bech32;
 
 public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdapter.TokenViewHolder> {
 
@@ -46,10 +47,16 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
   public void onBindViewHolder(@NonNull TokenViewHolder holder, int position) {
 
     Wallet wallet = walletList.get(position);
-    String address = wallet.getAddress();
+     String address = "";
+    try {
+      address = Bech32.toBech32Address(wallet.getAddress());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     holder.wallet_address.setText(address);
     holder.identicon.setAddress(address);
+    String finalAddress = address;
     holder.cardView_wallet.setOnClickListener(view -> {
 
       AlertDialog.Builder builder = new AlertDialog.Builder(ctx, R.style.AppCompatAlertDialogStyle);
@@ -58,9 +65,9 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
       builder.setCancelable(true);
 
       // if it's already DEFAULT, don't suggest it
-      if (!address.equals(preferencesHelper.getDefaulAddress())) {
+      if (!finalAddress.equals(preferencesHelper.getDefaulAddress())) {
         builder.setNegativeButton("SET AS DEFAULT", (dialog, which) -> {
-          preferencesHelper.setDefaultAddress(address);
+          preferencesHelper.setDefaultAddress(finalAddress);
           DialogFactory.success_toast(ctx, "address set as default").show();
           dialog.dismiss();
           ((MainActivity) ctx).getSupportFragmentManager().popBackStack();
@@ -69,7 +76,7 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
 
       builder.setPositiveButton("REMOVE", (dialog, which) -> {
 
-        if (address.equals(preferencesHelper.getDefaulAddress())) {
+        if (finalAddress.equals(preferencesHelper.getDefaulAddress())) {
           DialogFactory.error_toast(ctx, "cannot remove your default address").show();
           return;
         }
@@ -90,7 +97,7 @@ public class ManageWalletsAdapter extends RecyclerView.Adapter<ManageWalletsAdap
           dialog.dismiss();
         }, throwable -> {
           KLog.e(throwable);
-          DialogFactory.error_toast(ctx, address + " failed to be removed. This should never happen :)").show();
+          DialogFactory.error_toast(ctx, finalAddress + " failed to be removed. This should never happen :)").show();
           dialog.dismiss();
         });
       });
