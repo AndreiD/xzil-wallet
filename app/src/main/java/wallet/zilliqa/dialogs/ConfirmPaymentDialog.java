@@ -136,15 +136,19 @@ public class ConfirmPaymentDialog extends DialogFragment {
 
         preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
 
+        fromAddress = preferencesHelper.getDefaulAddress();
         try {
-            fromAddress = Bech32.toBech32Address(preferencesHelper.getDefaulAddress());
+            if (!fromAddress.startsWith("zil")) {
+                fromAddress = Bech32.toBech32Address(preferencesHelper.getDefaulAddress());
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            KLog.e("From is ..." + fromAddress);
         }
 
         identicon_to.setAddress(toAddress);
 
-            identicon_from.setAddress(fromAddress);
+        identicon_from.setAddress(fromAddress);
 
 
         Button btn_dlg_confirm_send = view.findViewById(R.id.btn_dlg_confirm_send);
@@ -180,8 +184,18 @@ public class ConfirmPaymentDialog extends DialogFragment {
                     "Sending " + txt_dlg_confirm_total.getText().toString() + ". Please wait...");
             progressDialog.show();
 
-            db.walletDao().findByAddress(preferencesHelper.getDefaulAddress()).subscribe(wallet -> {
+            final String[] ofAddress = {preferencesHelper.getDefaulAddress()};
 
+            if(ofAddress[0].startsWith("zil")){
+                try {
+                    ofAddress[0] = Bech32.fromBech32Address(ofAddress[0]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            db.walletDao().findByAddress(ofAddress[0]).subscribe(wallet -> {
+                KLog.d("FOUND WALLET OF " + wallet.getAddress());
                 Cryptography cryptography = new Cryptography(getActivity());
                 decryptedPrivateKey = cryptography.decryptData(wallet.getEncrypted_private_key());
 
@@ -194,7 +208,18 @@ public class ConfirmPaymentDialog extends DialogFragment {
                 rpcMethod.setJsonrpc("2.0");
                 rpcMethod.setMethod("GetBalance");
                 List<String> emptyList = new ArrayList<>();
-                emptyList.add(preferencesHelper.getDefaulAddress());
+
+
+                ofAddress[0] = preferencesHelper.getDefaulAddress();
+                if(ofAddress[0].startsWith("zil")) {
+                    try {
+                        ofAddress[0] = Bech32.fromBech32Address(preferencesHelper.getDefaulAddress());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                emptyList.add(ofAddress[0]);
+
                 rpcMethod.setParams(emptyList);
                 zilliqaRPC.executeRPCCall(rpcMethod).enqueue(new Callback<JsonObject>() {
                     @Override
@@ -236,10 +261,12 @@ public class ConfirmPaymentDialog extends DialogFragment {
             String pubKey = KeyTools.getPublicKeyFromPrivateKey(decryptedPrivateKey, false);
             KLog.d("got pubKey from private..");
 
-            try {
-                toAddress = Bech32.fromBech32Address(toAddress);
-            } catch (Exception e) {
-                KLog.e(e);
+            if(toAddress.startsWith("zil")) {
+                try {
+                    toAddress = Bech32.fromBech32Address(toAddress);
+                } catch (Exception e) {
+                    KLog.e(e);
+                }
             }
 
             Transaction transaction = Transaction.builder()

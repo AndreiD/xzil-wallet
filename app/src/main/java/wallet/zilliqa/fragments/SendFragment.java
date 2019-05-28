@@ -84,7 +84,6 @@ public class SendFragment extends BaseFragment {
     super.onActivityCreated(savedInstanceState);
 
     preferencesHelper = BaseApplication.getPreferencesHelper(getActivity());
-    AppDatabase db = BaseApplication.getAppDatabase(getActivity());
 
     //TODO: remove me
     if (BuildConfig.DEBUG) {
