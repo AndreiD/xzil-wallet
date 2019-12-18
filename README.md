@@ -1,4 +1,4 @@
-# Zil Android Wallet
+# Zil Android Wallet DAPP!
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 :snowflake: This is an android application for ZIL blockchain  https://zilliqa.com/index.html
